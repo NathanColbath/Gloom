@@ -31,6 +31,14 @@ export default defineConfig({
         items: [{ text: 'Home', link: '/' }],
       },
       {
+        text: 'Architecture',
+        collapsed: true,
+        items: [
+          { text: 'Engine Overview', link: '/architecture/engine-overview' },
+          { text: 'Render Pipeline Deep Dive', link: '/architecture/render-pipeline' },
+        ],
+      },
+      {
         text: 'Tutorials',
         collapsed: false,
         items: [
