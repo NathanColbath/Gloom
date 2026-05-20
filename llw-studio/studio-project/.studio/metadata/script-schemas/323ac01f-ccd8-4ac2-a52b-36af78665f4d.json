@@ -1,0 +1,19 @@
+{
+  "fields": [
+    {
+      "name": "moveAngle",
+      "type": "number",
+      "default": 0
+    },
+    {
+      "name": "moveSpeed",
+      "type": "number",
+      "default": 10
+    },
+    {
+      "name": "dieTime",
+      "type": "number",
+      "default": 5
+    }
+  ]
+}

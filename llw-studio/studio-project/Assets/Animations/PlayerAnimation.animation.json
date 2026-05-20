@@ -1,0 +1,37 @@
+{
+  "version" : 1,
+  "defaultState" : "Idle",
+  "states" : [ {
+    "name" : "Idle",
+    "clipGuid" : "7d313ad9-52e9-4918-83d2-4a5ac591d177"
+  }, {
+    "name" : "Down",
+    "clipGuid" : "fe6c5fa3-97be-46d8-8452-670203d6cad4"
+  }, {
+    "name" : "Left",
+    "clipGuid" : "2578d64d-0121-418c-9c9f-9e82314d0e72"
+  }, {
+    "name" : "Right",
+    "clipGuid" : "b8e7be3b-2bad-4c09-a0ef-07bf445faada"
+  }, {
+    "name" : "Up",
+    "clipGuid" : "574d0918-6e30-41f8-a62c-8fd1a02fd714"
+  } ],
+  "clips" : [ {
+    "guid" : "fe6c5fa3-97be-46d8-8452-670203d6cad4",
+    "name" : "Down",
+    "path" : "Down.anim.json"
+  }, {
+    "guid" : "2578d64d-0121-418c-9c9f-9e82314d0e72",
+    "name" : "Left",
+    "path" : "Left.anim.json"
+  }, {
+    "guid" : "b8e7be3b-2bad-4c09-a0ef-07bf445faada",
+    "name" : "Right",
+    "path" : "Right.anim.json"
+  }, {
+    "guid" : "574d0918-6e30-41f8-a62c-8fd1a02fd714",
+    "name" : "Up",
+    "path" : "Up.anim.json"
+  } ]
+}

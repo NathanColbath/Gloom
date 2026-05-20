@@ -1,0 +1,203 @@
+{
+  "version" : 2,
+  "name" : "Untitled",
+  "objects" : [ {
+    "id" : 0,
+    "name" : "Player",
+    "tag" : "",
+    "parentId" : -1,
+    "active" : true,
+    "transform" : {
+      "x" : -517.5482,
+      "y" : -380.5317,
+      "rotation" : 0.0,
+      "scaleX" : 7.476905,
+      "scaleY" : 7.476905
+    },
+    "spriteRenderer" : {
+      "spriteGuid" : "d34e89d8-5281-4345-8fcd-8f3d890ee869",
+      "textureGuid" : "bfbc2ac8-54d9-4da8-9df5-bbaac2b45aaf",
+      "sortingOrder" : 0,
+      "r" : 1.0,
+      "g" : 1.0,
+      "b" : 1.0,
+      "a" : 1.0
+    },
+    "animation2D" : {
+      "animationGuid" : "75b3216a-dbf0-41a0-80ae-b1231da796c0",
+      "defaultState" : "Idle",
+      "currentState" : "Idle",
+      "playOnStart" : true,
+      "speed" : 1.0,
+      "loop" : true
+    },
+    "script" : {
+      "scriptGuid" : "06e29ee0-9f75-4930-ad1e-5e00267a829b",
+      "enabled" : true,
+      "fields" : {
+        "target" : {
+          "sceneId" : 1
+        },
+        "bullet" : {
+          "prefab" : "390bc0fc-5ce8-4ceb-a44b-279be482c74e"
+        }
+      }
+    },
+    "rigidbody2D" : {
+      "bodyType" : "KINEMATIC",
+      "mass" : 1.0,
+      "gravityScale" : 1.0,
+      "linearDrag" : 0.0,
+      "angularDrag" : 0.0,
+      "freezeRotation" : false,
+      "simulated" : true
+    },
+    "boxCollider2D" : {
+      "sizeX" : 100.0,
+      "sizeY" : 100.0,
+      "offsetX" : 0.0,
+      "offsetY" : 0.0,
+      "isTrigger" : false,
+      "layer" : 0,
+      "layerMask" : -1
+    }
+  }, {
+    "id" : 2,
+    "name" : "Main Cam",
+    "tag" : "",
+    "parentId" : -1,
+    "active" : true,
+    "transform" : {
+      "x" : 79.085815,
+      "y" : -8.7872925,
+      "rotation" : 0.0,
+      "scaleX" : 1.0,
+      "scaleY" : 1.0
+    },
+    "script" : {
+      "scriptGuid" : "6b516b6a-41d1-4917-8e63-0674910fa086",
+      "enabled" : true,
+      "fields" : {
+        "target" : {
+          "sceneId" : 0
+        },
+        "lerpSpeed" : 0.009999999776482582
+      }
+    },
+    "camera2D" : {
+      "orthographicSize" : 993.0,
+      "depth" : 0.0,
+      "mainCamera" : true,
+      "r" : 0.14901961,
+      "g" : 0.14901961,
+      "b" : 0.14901961,
+      "a" : 1.0
+    }
+  }, {
+    "id" : 3,
+    "name" : "Bullet",
+    "tag" : "",
+    "parentId" : -1,
+    "active" : true,
+    "transform" : {
+      "x" : 291.6276,
+      "y" : -98.37904,
+      "rotation" : 0.0,
+      "scaleX" : 1.0,
+      "scaleY" : 1.0
+    },
+    "spriteRenderer" : {
+      "spriteGuid" : "f1ff308f-e53b-4c00-b77d-1c48c9ddff4d",
+      "textureGuid" : "1b440e48-10bc-48cd-b4fd-4f5a5dc26f5c",
+      "sortingOrder" : 0,
+      "r" : 1.0,
+      "g" : 0.0,
+      "b" : 0.0,
+      "a" : 1.0
+    },
+    "script" : {
+      "scriptGuid" : "323ac01f-ccd8-4ac2-a52b-36af78665f4d",
+      "enabled" : true
+    }
+  }, {
+    "id" : 4,
+    "name" : "TestObject",
+    "tag" : "",
+    "parentId" : -1,
+    "active" : true,
+    "transform" : {
+      "x" : -17.853394,
+      "y" : -263.28314,
+      "rotation" : 0.0,
+      "scaleX" : 6.4660635,
+      "scaleY" : 6.4660635
+    },
+    "spriteRenderer" : {
+      "spriteGuid" : "f1ff308f-e53b-4c00-b77d-1c48c9ddff4d",
+      "textureGuid" : "1b440e48-10bc-48cd-b4fd-4f5a5dc26f5c",
+      "sortingOrder" : 0,
+      "r" : 1.0,
+      "g" : 1.0,
+      "b" : 1.0,
+      "a" : 1.0
+    },
+    "rigidbody2D" : {
+      "bodyType" : "DYNAMIC",
+      "mass" : 1.0,
+      "gravityScale" : 1.0,
+      "linearDrag" : 0.0,
+      "angularDrag" : 0.0,
+      "freezeRotation" : false,
+      "simulated" : true
+    },
+    "boxCollider2D" : {
+      "sizeX" : 150.0,
+      "sizeY" : 150.0,
+      "offsetX" : 0.0,
+      "offsetY" : 0.0,
+      "isTrigger" : false,
+      "layer" : 0,
+      "layerMask" : -1
+    }
+  }, {
+    "id" : 5,
+    "name" : "GameObject",
+    "tag" : "",
+    "parentId" : -1,
+    "active" : true,
+    "transform" : {
+      "x" : 0.0,
+      "y" : 0.0,
+      "rotation" : 0.0,
+      "scaleX" : 27.634792,
+      "scaleY" : 2.6857452
+    },
+    "spriteRenderer" : {
+      "spriteGuid" : "f1ff308f-e53b-4c00-b77d-1c48c9ddff4d",
+      "textureGuid" : "1b440e48-10bc-48cd-b4fd-4f5a5dc26f5c",
+      "sortingOrder" : 0,
+      "r" : 1.0,
+      "g" : 1.0,
+      "b" : 1.0,
+      "a" : 1.0
+    },
+    "rigidbody2D" : {
+      "bodyType" : "STATIC",
+      "mass" : 1.0,
+      "gravityScale" : 1.0,
+      "linearDrag" : 0.0,
+      "angularDrag" : 0.0,
+      "freezeRotation" : false,
+      "simulated" : true
+    },
+    "boxCollider2D" : {
+      "sizeX" : 1000.0,
+      "sizeY" : 100.0,
+      "offsetX" : 0.0,
+      "offsetY" : 0.0,
+      "isTrigger" : false,
+      "layer" : 0,
+      "layerMask" : -1
+    }
+  } ]
+}

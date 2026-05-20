@@ -1,0 +1,21 @@
+{
+  "guid" : "1b440e48-10bc-48cd-b4fd-4f5a5dc26f5c",
+  "type" : "TEXTURE",
+  "importer" : {
+    "texture" : {
+      "spriteMode" : "single",
+      "sprites" : [ {
+        "guid" : "f1ff308f-e53b-4c00-b77d-1c48c9ddff4d",
+        "name" : "player",
+        "x" : 0,
+        "y" : 0,
+        "width" : 32,
+        "height" : 32,
+        "pivotX" : 0.5,
+        "pivotY" : 0.5
+      } ],
+      "filter" : "linear",
+      "wrap" : "clamp"
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "version" : 1,
+  "objects" : [ {
+    "id" : 1,
+    "name" : "Bullet",
+    "parentId" : -1,
+    "active" : true,
+    "transform" : {
+      "x" : -267.3543,
+      "y" : -616.40027,
+      "rotation" : 0.0,
+      "scaleX" : 1.0,
+      "scaleY" : 1.0
+    },
+    "spriteRenderer" : {
+      "textureGuid" : "1b440e48-10bc-48cd-b4fd-4f5a5dc26f5c",
+      "sortingOrder" : 0,
+      "r" : 1.0,
+      "g" : 1.0,
+      "b" : 1.0,
+      "a" : 1.0
+    },
+    "script" : {
+      "scriptGuid" : "323ac01f-ccd8-4ac2-a52b-36af78665f4d",
+      "enabled" : true,
+      "fields" : {
+        "moveSpeed" : 15.0,
+        "dieTime" : 2.0
+      }
+    },
+    "rigidbody2D" : {
+      "bodyType" : "KINEMATIC",
+      "mass" : 1.0,
+      "gravityScale" : 1.0,
+      "linearDrag" : 0.0,
+      "angularDrag" : 0.0,
+      "freezeRotation" : false,
+      "simulated" : true
+    },
+    "boxCollider2D" : {
+      "sizeX" : 32.0,
+      "sizeY" : 32.0,
+      "offsetX" : 0.0,
+      "offsetY" : 0.0,
+      "isTrigger" : false,
+      "layer" : 0,
+      "layerMask" : -1
+    }
+  } ]
+}

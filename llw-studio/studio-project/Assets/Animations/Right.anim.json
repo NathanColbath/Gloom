@@ -1,0 +1,43 @@
+{
+  "version" : 1,
+  "length" : 1.0,
+  "frameRate" : 4.0,
+  "loop" : true,
+  "tracks" : [ {
+    "path" : "SpriteRenderer.spriteGuid",
+    "type" : "sprite",
+    "keyframes" : [ {
+      "time" : 0.0,
+      "spriteGuid" : "f303fa0a-e15a-4e0b-9a88-8ab1c6452301"
+    }, {
+      "time" : 0.25,
+      "spriteGuid" : "a275507b-86a5-45e1-8f2e-a42c46c77493"
+    }, {
+      "time" : 0.5,
+      "spriteGuid" : "314b21cb-c218-446f-86a5-e335e4552e6f"
+    }, {
+      "time" : 0.75,
+      "spriteGuid" : "a275507b-86a5-45e1-8f2e-a42c46c77493"
+    } ]
+  }, {
+    "path" : "Transform2D.x",
+    "type" : "float",
+    "keyframes" : [ ]
+  }, {
+    "path" : "Transform2D.y",
+    "type" : "float",
+    "keyframes" : [ ]
+  }, {
+    "path" : "Transform2D.rotation",
+    "type" : "float",
+    "keyframes" : [ ]
+  }, {
+    "path" : "Transform2D.scaleX",
+    "type" : "float",
+    "keyframes" : [ ]
+  }, {
+    "path" : "Transform2D.scaleY",
+    "type" : "float",
+    "keyframes" : [ ]
+  } ]
+}

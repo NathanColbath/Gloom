@@ -1,0 +1,60 @@
+/* LLW Studio logo on home hero and nav */
+.VPHero .image img {
+  max-width: min(28rem, 92vw);
+  height: auto;
+}
+
+.VPNavBarTitle .logo {
+  height: 1.75rem;
+  width: auto;
+}
+
+.vp-doc img[alt*="LLW Studio"] {
+  display: block;
+  max-width: min(28rem, 100%);
+  margin: 0 auto 1.5rem;
+}
+
+.studio-screenshot {
+  margin: 1.25rem 0;
+  text-align: center;
+}
+
+.studio-screenshot img {
+  max-width: 100%;
+  border-radius: 6px;
+  border: 1px solid var(--vp-c-divider);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.studio-screenshot figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--vp-c-text-2);
+}
+
+.studio-screenshot-placeholder {
+  margin: 1.25rem 0;
+  padding: 1.25rem 1.5rem;
+  border: 2px dashed var(--vp-c-brand-1);
+  border-radius: 8px;
+  background: var(--vp-c-bg-soft);
+}
+
+.studio-screenshot-placeholder__header {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--vp-c-text-1);
+}
+
+.studio-screenshot-placeholder__caption {
+  margin: 0.5rem 0;
+  color: var(--vp-c-text-2);
+  font-size: 0.9rem;
+}
+
+.studio-screenshot-placeholder__hint {
+  margin: 0.75rem 0 0;
+  font-size: 0.8rem;
+  color: var(--vp-c-text-3);
+}

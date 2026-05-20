@@ -1,0 +1,34 @@
+{
+  "fields": [
+    {
+      "name": "speed",
+      "type": "number",
+      "default": 5
+    },
+    {
+      "name": "label",
+      "type": "string",
+      "default": "Player"
+    },
+    {
+      "name": "bullet",
+      "type": "entity",
+      "default": null
+    },
+    {
+      "name": "shootSpeed",
+      "type": "number",
+      "default": 5
+    },
+    {
+      "name": "timer",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "direction",
+      "type": "string",
+      "default": ""
+    }
+  ]
+}

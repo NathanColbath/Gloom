@@ -1,0 +1,41 @@
+package org.llw.resources;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+/**
+ * Tiny binary fixtures for resource tests.
+ */
+public final class TestAssets {
+  /** Valid 1×1 RGBA PNG. */
+  public static final byte[] PNG_1X1 = {
+      (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+      0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
+      0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+      0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, (byte) 0xC4, (byte) 0x89,
+      0x00, 0x00, 0x00, 0x0A, 0x49, 0x44, 0x41, 0x54,
+      0x78, (byte) 0x9C, 0x63, 0x00, 0x01, 0x00, 0x00, 0x05,
+      0x00, 0x01, 0x0D, 0x0A, 0x2D, (byte) 0xB4,
+      0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44,
+      (byte) 0xAE, 0x42, 0x60, (byte) 0x82
+  };
+
+  private TestAssets() {}
+
+  public static Path writePng(Path dir) throws IOException {
+    Path file = dir.resolve("pixel.png");
+    Files.write(file, PNG_1X1);
+    return file;
+  }
+
+  public static byte[] loadClasspath(String path) throws IOException {
+    try (InputStream in = TestAssets.class.getClassLoader().getResourceAsStream(path)) {
+      if (in == null) {
+        throw new IOException("Missing classpath resource: " + path);
+      }
+      return in.readAllBytes();
+    }
+  }
+}

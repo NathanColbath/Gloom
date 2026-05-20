@@ -1,0 +1,14 @@
+{
+  "fields": [
+    {
+      "name": "target",
+      "type": "entity",
+      "default": null
+    },
+    {
+      "name": "lerpSpeed",
+      "type": "number",
+      "default": 0.5
+    }
+  ]
+}
