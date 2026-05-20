@@ -1,8 +1,71 @@
 # Render Overview
 
-`org.llw.render` is an SFML-inspired 2D rendering stack on OpenGL 3.3 core.
+`org.llw.render` is an SFML-inspired 2D rendering stack on OpenGL 3.3 core. It provides window management, input handling, a batched sprite/shape/text renderer, offscreen framebuffers, and a camera system — all with a single-threaded, deferred-draw model.
 
-## In this section
+## Package Tree
+
+```
+org.llw.render/
+├── core/              Color, Clock, IntSize — non-spatial utilities
+├── window/            Window, WindowSettings, Key, WindowEvent — GLFW window + input
+├── graphics/          GraphicsContext, Camera2d, Texture2d, Font, ShaderProgram
+│   ├── RenderTarget   (interface)
+│   ├── AbstractRenderTarget
+│   ├── OffscreenTarget
+│   └── system/        SystemFontResolver, SystemFonts (platform font discovery)
+├── renderables/       Sprite, Rectangle, Circle, Text, VertexGeometry
+├── gl/                OpenGlBackend, SpriteBatch, ShapeRenderer, TextRenderer,
+│                     DrawQueue, GlStateTracker, ShaderLibrary, FramebufferObject
+├── input/             Input, Keyboard, Mouse, Gamepads, Gamepad
+└── resources/         ResourceLoader — classpath I/O for assets
+```
+
+Spatial math types (`Vector2f`, `Matrix3x2`, `RectF`) live in [`org.llw.math`](/math/overview).
+
+## How the Pipeline Works (In Brief)
+
+```mermaid
+flowchart LR
+    App[Your Code] --> Draw[gfx.draw renderable]
+    Draw --> Queue[DrawQueue.enqueue]
+    Queue --> Present[gfx.present]
+    Present --> Sort[sort by layer]
+    Sort --> Batch[OpenGlBackend batches]
+    Batch --> GPU[glDrawElements / glDrawArrays]
+    GPU --> Swap[glfwSwapBuffers]
+```
+
+1. **`draw()`** — appends a `Renderable` + `DrawState` to the draw queue (O(1), no GPU work).
+2. **`present()`** — flushes the queue: sort by layer, then execute each renderable through `OpenGlBackend`.
+3. **Batching** — `SpriteBatch` accumulates textured quads; a new batch begins when shader, blend mode, or texture changes.
+4. **GPU** — each batch = one `glDrawElements` call. Shapes use immediate `glDrawArrays`.
+
+> For the full trace of a single draw call through every layer, see [Render Pipeline Deep Dive](/architecture/render-pipeline).
+
+## Draw Queue
+
+`draw()` calls are **queued** and sorted by layer, then submission order, shader, texture, and blend mode. The GPU is touched only when you `present()` (on-screen) or `flush()` (offscreen).
+
+The sort key is a single 64-bit integer:
+
+```java
+sortKey = ((long) layer << 32) | submissionOrder
+```
+
+This ensures lower layers draw first (behind) and within the same layer, FIFO order is preserved.
+
+## Default Camera
+
+`GraphicsContext` creates a `Camera2d` initialised to the window size:
+
+```java
+camera.setSize(window.settings().width(), window.settings().height());
+camera.setCenter(window.settings().width() / 2f, window.settings().height() / 2f);
+```
+
+This gives 1:1 pixel mapping by default. Change `camera.setSize()` to zoom; change `camera.setCenter()` to pan.
+
+## Minimal draw loop
 
 | Topic | Page |
 |-------|------|
@@ -62,10 +125,6 @@ while (gfx.isActive()) {
     gfx.present();
 }
 ```
-
-## Draw queue
-
-`draw()` calls are **queued** and sorted by layer, then submission order, shader, texture, and blend mode. The GPU is touched only when you `present()` (on-screen) or `flush()` (offscreen).
 
 ## Common pitfalls
 
