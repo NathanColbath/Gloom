@@ -53,6 +53,7 @@ public final class ProjectPanel implements EditorPanel {
   private final EditorMenuActions menuActions;
   private final AssetEditorActions assetActions;
   private final ShaderGraphPanel shaderGraphPanel;
+  private final ParticlePanel particlePanel;
   private boolean gridMode = true;
   private String currentFolderGuid;
   private StudioAsset pendingDeleteAsset;
@@ -69,7 +70,8 @@ public final class ProjectPanel implements EditorPanel {
       SelectionService selection,
       EditorMenuActions menuActions,
       AssetEditorActions assetActions,
-      ShaderGraphPanel shaderGraphPanel
+      ShaderGraphPanel shaderGraphPanel,
+      ParticlePanel particlePanel
   ) {
     this.window = window;
     this.assets = assets;
@@ -79,6 +81,7 @@ public final class ProjectPanel implements EditorPanel {
     this.menuActions = menuActions;
     this.assetActions = assetActions;
     this.shaderGraphPanel = shaderGraphPanel;
+    this.particlePanel = particlePanel;
   }
 
   @Override
@@ -290,6 +293,11 @@ public final class ProjectPanel implements EditorPanel {
             asset -> {
               if (shaderGraphPanel != null) {
                 shaderGraphPanel.openAsset(asset.guid(), asset.path());
+              }
+            },
+            asset -> {
+              if (particlePanel != null) {
+                particlePanel.openAsset(asset.guid(), asset.path());
               }
             },
             this::onAssetsChanged

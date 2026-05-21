@@ -258,6 +258,7 @@ public final class EntityBinding {
             case "SpriteRenderer" -> world.removeComponent(entity, org.llw.studio.ecs.components.SpriteRendererComponent.class);
             case "Camera2D" -> world.removeComponent(entity, org.llw.studio.ecs.components.Camera2DComponent.class);
             case "Animation2D" -> world.removeComponent(entity, org.llw.studio.ecs.components.Animation2DComponent.class);
+            case "ParticleEmitter" -> world.removeComponent(entity, org.llw.studio.ecs.components.ParticleEmitterComponent.class);
             case "AudioSource" -> world.removeComponent(entity, org.llw.studio.ecs.components.AudioSourceComponent.class);
             case "Script" -> world.removeComponent(entity, org.llw.studio.scripting.ScriptComponent.class);
             case "Rigidbody2D" -> world.removeComponent(entity, org.llw.studio.ecs.components.Rigidbody2DComponent.class);

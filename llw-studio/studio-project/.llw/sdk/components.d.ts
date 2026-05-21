@@ -1,6 +1,12 @@
 import type { CameraPoint } from "./camera";
 
 import type { Collision2D, Collider2D } from "./physics2d";
+import type {
+  UIButtonComponent,
+  UILabelComponent,
+  UITextFieldComponent,
+  UIToggleComponent,
+} from "./ui";
 
 export type ComponentType =
   | "SpriteRenderer"
@@ -12,7 +18,11 @@ export type ComponentType =
   | "Rigidbody2D"
   | "BoxCollider2D"
   | "CircleCollider2D"
-  | "EdgeCollider2D";
+  | "EdgeCollider2D"
+  | "UILabel"
+  | "UIButton"
+  | "UIToggle"
+  | "UITextField";
 
 export type Component =
   | SpriteRendererComponent
@@ -24,7 +34,11 @@ export type Component =
   | Rigidbody2DComponent
   | BoxCollider2DComponent
   | CircleCollider2DComponent
-  | EdgeCollider2DComponent;
+  | EdgeCollider2DComponent
+  | UILabelComponent
+  | UIButtonComponent
+  | UIToggleComponent
+  | UITextFieldComponent;
 
 export type { Color } from "./color";
 
@@ -87,6 +101,7 @@ export interface AudioSourceComponent {
   stop(): void;
 }
 
+/** First script attachment on the entity (editor may attach multiple script components). */
 export interface ScriptComponentRef {
   scriptGuid: string;
   enabled: boolean;

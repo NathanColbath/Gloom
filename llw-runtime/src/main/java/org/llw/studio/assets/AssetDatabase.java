@@ -6,6 +6,8 @@ import org.llw.resources.AssetRef;
 import org.llw.resources.ResourceManager;
 import org.llw.studio.animation.AnimationClip;
 import org.llw.studio.animation.AnimationClipSerializer;
+import org.llw.studio.particles.ParticleSystemSerializer;
+import org.llw.studio.particles.model.ParticleSystemDocument;
 import org.llw.studio.shadergraph.assets.ShaderGraphSerializer;
 import org.llw.studio.shadergraph.model.ShaderGraphDocument;
 import org.llw.studio.ui.UiFontCache;
@@ -49,6 +51,7 @@ public final class AssetDatabase {
     private final Map<String, TileDefinition> tileBySpriteGuid = new HashMap<>();
     private final Map<String, TextureImportSettings> textureImportSettingsByGuid = new HashMap<>();
     private final Map<String, Integer> shaderGraphRevision = new HashMap<>();
+    private final Map<String, Integer> particleRevision = new HashMap<>();
     private String selectedGuid;
     private String infoGuid;
 
@@ -93,6 +96,7 @@ public final class AssetDatabase {
         tilesetByTextureGuid.clear();
         tileBySpriteGuid.clear();
         shaderGraphRevision.clear();
+        particleRevision.clear();
         selectedGuid = null;
         infoGuid = null;
         try {
@@ -313,6 +317,9 @@ public final class AssetDatabase {
         if (type == AssetType.SHADER_GRAPH) {
             shaderGraphRevision.put(meta.guid, (int) modified.toEpochMilli());
         }
+        if (type == AssetType.PARTICLE_SYSTEM) {
+            particleRevision.put(meta.guid, (int) modified.toEpochMilli());
+        }
         return new StudioAsset(meta.guid, path, type, name, modified);
     }
 
@@ -340,6 +347,33 @@ public final class AssetDatabase {
     public void bumpShaderGraphRevision(String guid) {
         if (guid != null && !guid.isBlank()) {
             shaderGraphRevision.merge(guid, 1, Integer::sum);
+        }
+    }
+
+    /**
+     * @param path absolute or assets-relative path to a particle system file
+     * @return loaded document, or null on failure
+     */
+    public ParticleSystemDocument loadParticleSystem(Path path) {
+        try {
+            return ParticleSystemSerializer.load(path);
+        } catch (IOException ex) {
+            return null;
+        }
+    }
+
+    /**
+     * @param guid particle system asset GUID
+     * @return revision token for editor preview invalidation
+     */
+    public int particleRevision(String guid) {
+        return particleRevision.getOrDefault(guid, 0);
+    }
+
+    /** Invalidates cached preview state for a particle system asset. */
+    public void bumpParticleRevision(String guid) {
+        if (guid != null && !guid.isBlank()) {
+            particleRevision.merge(guid, 1, Integer::sum);
         }
     }
 

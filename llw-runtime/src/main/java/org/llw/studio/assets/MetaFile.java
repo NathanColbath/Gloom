@@ -328,6 +328,12 @@ public final class MetaFile {
 
         }
 
+        if (name.endsWith(".particle.json")) {
+
+            return AssetType.PARTICLE_SYSTEM;
+
+        }
+
         if (name.endsWith(".java") || name.endsWith(".js") || name.endsWith(".ts")) {
 
             return AssetType.SCRIPT;

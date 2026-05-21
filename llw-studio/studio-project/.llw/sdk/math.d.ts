@@ -49,6 +49,9 @@ export declare class Mathf {
   static min(a: number, b: number): number;
   static max(a: number, b: number): number;
   static abs(value: number): number;
+  static round(value: number): number;
+  static floor(value: number): number;
+  static ceil(value: number): number;
   /** @param value angle in radians */
   static sin(value: number): number;
   /** @param value angle in radians */
@@ -74,6 +77,9 @@ export declare namespace Math {
   function min(a: number, b: number): number;
   function max(a: number, b: number): number;
   function abs(value: number): number;
+  function round(value: number): number;
+  function floor(value: number): number;
+  function ceil(value: number): number;
   /** @param value angle in radians */
   function sin(value: number): number;
   /** @param value angle in radians */

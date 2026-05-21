@@ -18,9 +18,12 @@ import org.llw.studio.editor.widgets.TopToolbar;
 import org.llw.studio.assets.AssetDatabase;
 import org.llw.studio.log.ConsoleLogSink;
 import org.llw.studio.memory.StudioMemory;
+import org.llw.studio.ecs.components.ParticleEmitterComponent;
 import org.llw.studio.playmode.PlayModeRunner;
 import org.llw.studio.ui.PlayUiInputBridge;
 import org.llw.studio.ecs.EntityId;
+import org.llw.studio.particles.runtime.EmitterState;
+import org.llw.studio.particles.runtime.ParticleWorld;
 import org.llw.studio.scene.Scene;
 import org.llw.studio.scene.SceneObjectIds;
 
@@ -135,6 +138,7 @@ public final class EditorShell {
       context.setPlayScene(null);
       playModeRunner.stop();
       session.setPlayScriptSystem(null);
+      session.setPlayParticleWorld(null);
       selection.clear();
       org.llw.studio.scripting.js.PlayCameraBridge.reset();
       if (selectedSceneId >= 0) {
@@ -192,6 +196,12 @@ public final class EditorShell {
         animState.advancePreview(deltaTime);
       }
       animState.applyScenePreview(context.editScene(), assets);
+    } else if (session.particleEditorState() != null) {
+      var particleState = session.particleEditorState();
+      particleState.applyScenePreview(context.editScene(), assets, session.particleWorld());
+      stepEditSceneParticles(context.editScene(), deltaTime);
+    } else {
+      stepEditSceneParticles(context.editScene(), deltaTime);
     }
 
     menuBar.render();
@@ -271,6 +281,7 @@ public final class EditorShell {
     context.setPlayScene(playScene);
     context.setPlaying(true);
     session.setPlayScriptSystem(playModeRunner.scriptSystem());
+    session.setPlayParticleWorld(playModeRunner.particleWorld());
     if (selectedSceneId >= 0) {
       EntityId playEntity = playModeRunner.playEntityForSceneId(selectedSceneId);
       if (!playEntity.isNone()) {
@@ -289,5 +300,25 @@ public final class EditorShell {
    */
   public void onScriptRecompiled(String scriptGuid) {
     playModeRunner.reloadScript(scriptGuid);
+  }
+
+  private void stepEditSceneParticles(Scene scene, float deltaTime) {
+    if (scene == null || deltaTime <= 0f) {
+      return;
+    }
+    var emitters = scene.world().store(ParticleEmitterComponent.class);
+    if (emitters.size() == 0) {
+      return;
+    }
+    ParticleWorld world = session.particleWorld();
+    world.syncScene(scene.world(), assets);
+    for (int i = 0; i < emitters.size(); i++) {
+      EntityId entity = emitters.entityAt(i);
+      ParticleEmitterComponent component = emitters.componentAt(i);
+      EmitterState state = world.emitter(entity);
+      if (state != null && component.emitting) {
+        world.stepEmitter(state, component, deltaTime, assets, null);
+      }
+    }
   }
 }

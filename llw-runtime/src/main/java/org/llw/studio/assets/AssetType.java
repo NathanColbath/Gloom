@@ -26,6 +26,8 @@ public enum AssetType {
     ANIMATION_CLIP,
     /** Fragment shader graph ({@code .shadergraph.json}). */
     SHADER_GRAPH,
+    /** Particle system ({@code .particle.json}). */
+    PARTICLE_SYSTEM,
     /** Unrecognized file type. */
     UNKNOWN
 }

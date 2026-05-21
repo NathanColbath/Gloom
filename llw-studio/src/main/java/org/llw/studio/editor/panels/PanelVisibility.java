@@ -16,7 +16,7 @@ import java.util.Set;
  * <p>State is persisted in {@code [StudioPanels]} inside the ImGui layout ini.
  */
 public final class PanelVisibility {
-    private static final List<String> PERSISTED_PANELS = List.of("animation", "tile_palette");
+    private static final List<String> PERSISTED_PANELS = List.of("animation", "tile_palette", "particle_system");
 
     private final Path iniPath;
     private final Map<String, ImBoolean> openStates = new LinkedHashMap<>();

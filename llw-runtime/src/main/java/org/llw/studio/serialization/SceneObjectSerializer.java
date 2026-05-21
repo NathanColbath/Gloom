@@ -12,6 +12,7 @@ import org.llw.studio.ecs.components.CircleCollider2DComponent;
 import org.llw.studio.ecs.components.EdgeCollider2DComponent;
 import org.llw.studio.ecs.components.HierarchyComponent;
 import org.llw.studio.ecs.components.NameComponent;
+import org.llw.studio.ecs.components.ParticleEmitterComponent;
 import org.llw.studio.ecs.components.Rigidbody2DComponent;
 import org.llw.studio.ecs.components.SpriteRendererComponent;
 import org.llw.studio.ecs.components.TilemapCell;
@@ -84,6 +85,7 @@ public final class SceneObjectSerializer {
         writeSprite(node, scene.world().getComponent(entity, SpriteRendererComponent.class));
         writeTilemap(node, scene.world().getComponent(entity, TilemapComponent.class));
         writeAnimation2D(node, scene.world().getComponent(entity, Animation2DComponent.class));
+        writeParticleEmitter(node, scene.world().getComponent(entity, ParticleEmitterComponent.class));
         writeScript(node, scene.world().getComponent(entity, ScriptComponent.class), entityRefRemap);
         writeCamera(node, scene.world().getComponent(entity, Camera2DComponent.class));
         writeAudio(node, scene.world().getComponent(entity, AudioSourceComponent.class));
@@ -131,6 +133,16 @@ public final class SceneObjectSerializer {
             anim.speed = (float) a.path("speed").asDouble(1.0);
             anim.loop = a.path("loop").asBoolean(true);
             object.addComponent(Animation2DComponent.class, anim);
+        }
+        if (objectNode.has("particleEmitter")) {
+            ParticleEmitterComponent emitter = new ParticleEmitterComponent();
+            JsonNode p = objectNode.path("particleEmitter");
+            emitter.particleSystemGuid = p.path("particleSystemGuid").asText("");
+            emitter.playOnAwake = p.path("playOnAwake").asBoolean(true);
+            emitter.looping = p.path("looping").asBoolean(true);
+            emitter.sortingOrder = p.path("sortingOrder").asInt();
+            emitter.emitting = p.path("emitting").asBoolean(true);
+            object.addComponent(ParticleEmitterComponent.class, emitter);
         }
         if (objectNode.has("spriteRenderer")) {
             SpriteRendererComponent sprite = new SpriteRendererComponent();
@@ -285,6 +297,18 @@ public final class SceneObjectSerializer {
         a.put("playOnStart", anim.playOnStart);
         a.put("speed", anim.speed);
         a.put("loop", anim.loop);
+    }
+
+    public static void writeParticleEmitter(ObjectNode node, ParticleEmitterComponent emitter) {
+        if (emitter == null) {
+            return;
+        }
+        ObjectNode p = node.putObject("particleEmitter");
+        p.put("particleSystemGuid", emitter.particleSystemGuid == null ? "" : emitter.particleSystemGuid);
+        p.put("playOnAwake", emitter.playOnAwake);
+        p.put("looping", emitter.looping);
+        p.put("sortingOrder", emitter.sortingOrder);
+        p.put("emitting", emitter.emitting);
     }
 
     public static void writeSprite(ObjectNode node, SpriteRendererComponent sprite) {

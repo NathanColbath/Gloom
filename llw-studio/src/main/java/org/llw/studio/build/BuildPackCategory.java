@@ -12,6 +12,7 @@ public enum BuildPackCategory {
     PREFABS("prefabs.pack"),
     ANIMATIONS("animations.pack"),
     SHADERS("shaders.pack"),
+    PARTICLES("particles.pack"),
     METADATA("metadata.pack");
 
     private final String fileName;

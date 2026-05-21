@@ -12,6 +12,8 @@ import org.llw.render.window.Window;
 import org.llw.resources.ResourceManager;
 import org.llw.studio.log.StudioLogSink;
 import org.llw.studio.playmode.PlayModeRunner;
+import org.llw.studio.particles.render.ParticleDrawPass;
+import org.llw.studio.particles.runtime.ParticleWorld;
 import org.llw.studio.render.SceneDrawPass;
 import org.llw.studio.render.TilemapDrawPass;
 import org.llw.studio.render.UiDrawPass;
@@ -84,6 +86,10 @@ public final class PlayerGameLoop implements AutoCloseable {
         ));
         TilemapDrawPass.draw(playScene, target, content.assets());
         SceneDrawPass.draw(playScene, target, content.assets(), shaderGraphs);
+        ParticleWorld particleWorld = playMode.particleWorld();
+        if (particleWorld != null) {
+            ParticleDrawPass.draw(particleWorld, target, content.assets(), shaderGraphs);
+        }
         target.flush();
         UiDrawPass.draw(playScene, target, content.assets().uiFontCache(), width, height);
         target.flush();

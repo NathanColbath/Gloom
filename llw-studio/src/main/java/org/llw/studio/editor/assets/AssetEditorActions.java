@@ -247,6 +247,7 @@ public final class AssetEditorActions {
         return switch (asset.type()) {
             case ANIMATION -> stem + ".animation.json";
             case ANIMATION_CLIP -> stem + ".anim.json";
+            case PARTICLE_SYSTEM -> stem + ".particle.json";
             case SCENE -> stem.endsWith(".scene") ? stem : stem + ".scene.json";
             case PREFAB -> {
                 if (stem.endsWith(".prefab.json")) {

@@ -1,34 +1,19 @@
 {
   "fields": [
     {
-      "name": "speed",
+      "name": "moveSpeed",
       "type": "number",
-      "default": 5
+      "default": 0
     },
     {
-      "name": "label",
-      "type": "string",
-      "default": "Player"
-    },
-    {
-      "name": "bullet",
-      "type": "entity",
-      "default": null
-    },
-    {
-      "name": "shootSpeed",
+      "name": "acceleration",
       "type": "number",
-      "default": 5
+      "default": 80
     },
     {
-      "name": "timer",
-      "type": "string",
-      "default": ""
-    },
-    {
-      "name": "direction",
-      "type": "string",
-      "default": ""
+      "name": "rotationSpeed",
+      "type": "number",
+      "default": 120
     }
   ]
 }

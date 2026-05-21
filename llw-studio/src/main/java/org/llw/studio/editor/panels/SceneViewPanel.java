@@ -23,6 +23,8 @@ import org.llw.studio.render.PhysicsGizmoDrawPass;
 import org.llw.studio.render.GizmoDrawPass;
 import org.llw.studio.render.GridDrawPass;
 import org.llw.studio.render.SceneBounds;
+import org.llw.studio.particles.render.ParticleDrawPass;
+import org.llw.studio.particles.runtime.ParticleWorld;
 import org.llw.studio.render.SceneDrawPass;
 import org.llw.studio.shadergraph.runtime.ShaderGraphProgramCache;
 import org.llw.studio.render.UiDrawPass;
@@ -145,6 +147,10 @@ public final class SceneViewPanel implements EditorPanel {
     }
     TilemapDrawPass.draw(sceneToRender, target, assets);
     SceneDrawPass.draw(sceneToRender, target, assets, shaderGraphs);
+    ParticleWorld particles = session.playParticleWorld() != null && context.isPlaying()
+            ? session.playParticleWorld()
+            : session.particleWorld();
+    ParticleDrawPass.draw(particles, target, assets, shaderGraphs);
     if (!context.isPlaying()) {
       CameraGizmoDrawPass.draw(
               context.editScene(),

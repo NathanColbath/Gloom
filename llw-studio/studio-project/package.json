@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "devDependencies": {
-    "@llw/studio": "file:.llw/sdk",
+    "llw.core": "file:.llw/sdk",
     "esbuild": "^0.25.0",
     "typescript": "^5.8.0"
   }

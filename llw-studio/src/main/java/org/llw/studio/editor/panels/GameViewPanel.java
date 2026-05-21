@@ -10,6 +10,7 @@ import org.llw.studio.assets.AssetDatabase;
 import org.llw.studio.editor.EditorSession;
 import org.llw.studio.editor.StudioContext;
 import org.llw.studio.editor.theme.EditorStyle;
+import org.llw.studio.particles.render.ParticleDrawPass;
 import org.llw.studio.render.SceneDrawPass;
 import org.llw.studio.shadergraph.runtime.ShaderGraphProgramCache;
 import org.llw.studio.render.TilemapDrawPass;
@@ -93,6 +94,9 @@ public final class GameViewPanel implements EditorPanel {
       ));
       TilemapDrawPass.draw(scene, target, assets);
       SceneDrawPass.draw(scene, target, assets, shaderGraphs);
+      if (session.playParticleWorld() != null) {
+        ParticleDrawPass.draw(session.playParticleWorld(), target, assets, shaderGraphs);
+      }
       target.flush();
       UiDrawPass.draw(scene, target, assets.uiFontCache(), w, h);
       target.flush();

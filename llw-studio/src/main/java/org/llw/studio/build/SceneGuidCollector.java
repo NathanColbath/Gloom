@@ -3,6 +3,7 @@ package org.llw.studio.build;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.llw.studio.ecs.components.Animation2DComponent;
 import org.llw.studio.ecs.components.AudioSourceComponent;
+import org.llw.studio.ecs.components.ParticleEmitterComponent;
 import org.llw.studio.ecs.components.SpriteRendererComponent;
 import org.llw.studio.ecs.components.TilemapCell;
 import org.llw.studio.ecs.components.TilemapComponent;
@@ -52,6 +53,11 @@ public final class SceneGuidCollector {
         var audioSources = scene.world().store(AudioSourceComponent.class);
         for (int i = 0; i < audioSources.size(); i++) {
             addGuid(guids, audioSources.componentAt(i).clipGuid);
+        }
+
+        var particleEmitters = scene.world().store(ParticleEmitterComponent.class);
+        for (int i = 0; i < particleEmitters.size(); i++) {
+            addGuid(guids, particleEmitters.componentAt(i).particleSystemGuid);
         }
 
         var tilemaps = scene.world().store(TilemapComponent.class);
@@ -124,6 +130,11 @@ public final class SceneGuidCollector {
                 : objectNode.path("audio");
         if (audio.isObject()) {
             addGuid(guids, audio.path("clipGuid").asText(""));
+        }
+
+        JsonNode particleEmitter = objectNode.path("particleEmitter");
+        if (particleEmitter.isObject()) {
+            addGuid(guids, particleEmitter.path("particleSystemGuid").asText(""));
         }
 
         JsonNode tilemap = objectNode.path("tilemap");

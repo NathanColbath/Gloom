@@ -19,6 +19,7 @@ public final class AssetDisplayNames {
             case PREFAB -> prefabLabel(asset.displayName());
             case ANIMATION -> animationLabel(asset.displayName());
             case ANIMATION_CLIP -> clipLabel(asset.displayName());
+            case PARTICLE_SYSTEM -> particleLabel(asset.displayName());
             default -> asset.displayName();
         };
     }
@@ -59,6 +60,17 @@ public final class AssetDisplayNames {
      * @param fileName on-disk prefab file name
      * @return label suitable for the asset browser
      */
+    public static String particleLabel(String fileName) {
+        if (fileName == null || fileName.isBlank()) {
+            return "Particles";
+        }
+        String lower = fileName.toLowerCase();
+        if (lower.endsWith(".particle.json")) {
+            return fileName.substring(0, fileName.length() - ".particle.json".length());
+        }
+        return fileName;
+    }
+
     public static String prefabLabel(String fileName) {
         if (fileName == null || fileName.isBlank()) {
             return "GameObject.prefab";

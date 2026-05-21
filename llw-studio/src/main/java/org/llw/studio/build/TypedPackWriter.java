@@ -183,7 +183,7 @@ public final class TypedPackWriter {
             case TEXTURES -> org.llw.resources.AssetType.TEXTURE;
             case FONTS -> org.llw.resources.AssetType.FONT;
             case AUDIO -> org.llw.resources.AssetType.SOUND;
-            case SCENES, PREFABS, ANIMATIONS -> org.llw.resources.AssetType.RAW;
+            case SCENES, PREFABS, ANIMATIONS, PARTICLES -> org.llw.resources.AssetType.RAW;
             default -> org.llw.resources.AssetType.RAW;
         };
     }

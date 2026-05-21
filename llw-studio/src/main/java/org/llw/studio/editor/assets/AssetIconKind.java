@@ -15,6 +15,7 @@ public enum AssetIconKind {
     ANIMATION,
     ANIMATION_STATE,
     ANIMATION_CLIP,
+    PARTICLE_SYSTEM,
     UNKNOWN,
     CHEVRON_RIGHT,
     CHEVRON_DOWN

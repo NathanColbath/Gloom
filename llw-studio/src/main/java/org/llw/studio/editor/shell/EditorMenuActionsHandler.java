@@ -14,7 +14,9 @@ import org.llw.studio.editor.launcher.CreateScriptDialog;
 import org.llw.studio.editor.launcher.NativeFolderChooser;
 import org.llw.studio.editor.launcher.NewProjectDialog;
 import org.llw.studio.editor.panels.PanelVisibility;
+import org.llw.studio.editor.panels.ParticlePanel;
 import org.llw.studio.editor.panels.ShaderGraphPanel;
+import org.llw.studio.particles.assets.ParticleSystemActions;
 import org.llw.studio.shadergraph.assets.ShaderGraphActions;
 import org.llw.studio.log.ConsoleLogSink;
 import org.llw.studio.playmode.PlayModeRunner;
@@ -38,6 +40,7 @@ public final class EditorMenuActionsHandler implements EditorMenuActions {
     private final EditorSession session;
     private final PanelVisibility panelVisibility;
     private ShaderGraphPanel shaderGraphPanel;
+    private ParticlePanel particlePanel;
     private EditorShell shell;
     private final NativeFolderChooser folderChooser;
     private final NewProjectDialog newProjectDialog;
@@ -108,6 +111,10 @@ public final class EditorMenuActionsHandler implements EditorMenuActions {
     /** @param shaderGraphPanel panel opened by asset create / inspector edit actions */
     public void bindShaderGraphPanel(ShaderGraphPanel shaderGraphPanel) {
         this.shaderGraphPanel = shaderGraphPanel;
+    }
+
+    public void bindParticlePanel(ParticlePanel panel) {
+        this.particlePanel = panel;
     }
 
     /** {@inheritDoc} */
@@ -324,6 +331,36 @@ public final class EditorMenuActionsHandler implements EditorMenuActions {
     @Override
     public boolean isShaderGraphPanelOpen() {
         return panelVisibility.isOpen("shader_graph");
+    }
+
+    @Override
+    public void toggleParticlePanel() {
+        panelVisibility.toggle("particle_system");
+    }
+
+    @Override
+    public void createParticleSystem() {
+        createParticleSystemInFolder(null);
+    }
+
+    @Override
+    public void createParticleSystemInFolder(Path folder) {
+        try {
+            String guid = ParticleSystemActions.createParticleSystem(assets, folder, "NewParticles");
+            if (particlePanel != null) {
+                StudioAsset asset = assets.get(guid);
+                if (asset != null) {
+                    particlePanel.openAsset(guid, asset.path());
+                }
+            }
+        } catch (IOException ex) {
+            logError("Failed to create particle system: " + ex.getMessage());
+        }
+    }
+
+    @Override
+    public boolean isParticlePanelOpen() {
+        return panelVisibility.isOpen("particle_system");
     }
 
     /** {@inheritDoc} */

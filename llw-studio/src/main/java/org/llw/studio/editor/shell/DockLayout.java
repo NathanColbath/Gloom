@@ -56,6 +56,7 @@ final class DockLayout {
     imgui.internal.ImGui.dockBuilderDockWindow("Inspector", inspector.get());
     imgui.internal.ImGui.dockBuilderDockWindow("Tile Palette", inspector.get());
     imgui.internal.ImGui.dockBuilderDockWindow("Shader Graph", animation.get());
+    imgui.internal.ImGui.dockBuilderDockWindow("Particles", animation.get());
 
     imgui.internal.ImGui.dockBuilderFinish(dockspaceId);
   }

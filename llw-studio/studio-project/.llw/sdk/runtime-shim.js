@@ -148,6 +148,15 @@ class FallbackMathf {
   static abs(value) {
     return Math.abs(value);
   }
+  static round(value) {
+    return Math.round(value);
+  }
+  static floor(value) {
+    return Math.floor(value);
+  }
+  static ceil(value) {
+    return Math.ceil(value);
+  }
   static sin(value) {
     return Math.sin(value);
   }

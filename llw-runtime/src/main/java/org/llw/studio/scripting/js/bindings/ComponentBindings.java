@@ -9,6 +9,7 @@ import org.llw.studio.ecs.components.Camera2DComponent;
 import org.llw.studio.ecs.components.CircleCollider2DComponent;
 import org.llw.studio.ecs.components.EdgeCollider2DComponent;
 import org.llw.studio.ecs.components.Rigidbody2DComponent;
+import org.llw.studio.ecs.components.ParticleEmitterComponent;
 import org.llw.studio.ecs.components.SpriteRendererComponent;
 import org.llw.studio.ecs.components.TilemapComponent;
 import org.llw.studio.ecs.components.UIButtonComponent;
@@ -31,6 +32,7 @@ public final class ComponentBindings {
         register("SpriteRenderer", SpriteRendererBinding::new);
         register("Tilemap2D", Tilemap2DBinding::new);
         register("Animation2D", Animation2DBinding::new);
+        register("ParticleEmitter", ParticleEmitterBinding::new);
         register("AudioSource", AudioSourceBinding::new);
         register("Script", (ctx, entity) -> new ScriptComponentBinding(ctx, entity));
         register("Rigidbody2D", Rigidbody2DBinding::new);
@@ -93,6 +95,7 @@ public final class ComponentBindings {
             case "SpriteRenderer" -> world.getComponent(entity, SpriteRendererComponent.class) != null;
             case "Tilemap2D" -> world.getComponent(entity, TilemapComponent.class) != null;
             case "Animation2D" -> world.getComponent(entity, Animation2DComponent.class) != null;
+            case "ParticleEmitter" -> world.getComponent(entity, ParticleEmitterComponent.class) != null;
             case "Camera2D" -> world.getComponent(entity, Camera2DComponent.class) != null;
             case "AudioSource" -> world.getComponent(entity, AudioSourceComponent.class) != null;
             case "Script" -> world.getComponent(entity, ScriptComponent.class) != null;
@@ -131,6 +134,11 @@ public final class ComponentBindings {
                 case "Animation2D" -> {
                     if (world.getComponent(entity, Animation2DComponent.class) == null) {
                         world.addComponent(entity, Animation2DComponent.class, new Animation2DComponent());
+                    }
+                }
+                case "ParticleEmitter" -> {
+                    if (world.getComponent(entity, ParticleEmitterComponent.class) == null) {
+                        world.addComponent(entity, ParticleEmitterComponent.class, new ParticleEmitterComponent());
                     }
                 }
                 case "Camera2D" -> {

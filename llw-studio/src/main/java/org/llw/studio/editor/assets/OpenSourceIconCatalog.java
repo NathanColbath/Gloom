@@ -24,6 +24,7 @@ public final class OpenSourceIconCatalog {
             case ANIMATION -> new OpenSourceIconSpec("lucide", "circle-play");
             case ANIMATION_STATE -> new OpenSourceIconSpec("lucide", "layers");
             case ANIMATION_CLIP -> new OpenSourceIconSpec("lucide", "play");
+            case PARTICLE_SYSTEM -> new OpenSourceIconSpec("lucide", "sparkles");
             case UNKNOWN -> new OpenSourceIconSpec("lucide", "help-circle");
             case CHEVRON_RIGHT -> new OpenSourceIconSpec("lucide", "chevron-right");
             case CHEVRON_DOWN -> new OpenSourceIconSpec("lucide", "chevron-down");

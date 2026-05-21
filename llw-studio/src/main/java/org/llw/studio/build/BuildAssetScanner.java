@@ -5,6 +5,8 @@ import org.llw.studio.assets.AssetDatabase;
 import org.llw.studio.assets.AssetType;
 import org.llw.studio.assets.StudioAsset;
 import org.llw.studio.project.StudioProjectLayout;
+import org.llw.studio.particles.ParticleSystemRefs;
+import org.llw.studio.particles.model.ParticleSystemDocument;
 import org.llw.studio.serialization.PrefabSerializer;
 import org.llw.studio.serialization.SceneSerializer;
 
@@ -150,6 +152,14 @@ public final class BuildAssetScanner {
                         pending.add(prefabGuid);
                     }
                 }
+                case PARTICLE_SYSTEM -> {
+                    ParticleSystemDocument document = assets.loadParticleSystem(asset.path());
+                    if (document != null) {
+                        for (String ref : ParticleSystemRefs.collectGuids(document)) {
+                            pending.add(ref);
+                        }
+                    }
+                }
                 default -> {
                 }
             }
@@ -190,6 +200,7 @@ public final class BuildAssetScanner {
             case PREFAB -> BuildPackCategory.PREFABS;
             case ANIMATION, ANIMATION_CLIP -> BuildPackCategory.ANIMATIONS;
             case SHADER_GRAPH -> BuildPackCategory.SHADERS;
+            case PARTICLE_SYSTEM -> BuildPackCategory.PARTICLES;
             default -> null;
         };
     }

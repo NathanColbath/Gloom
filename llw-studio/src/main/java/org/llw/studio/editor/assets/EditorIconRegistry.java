@@ -68,6 +68,8 @@ public final class EditorIconRegistry {
             case FONT -> AssetIconKind.FONT;
             case ANIMATION -> AssetIconKind.ANIMATION;
             case ANIMATION_CLIP -> AssetIconKind.ANIMATION_CLIP;
+            case SHADER_GRAPH -> AssetIconKind.SCRIPT;
+            case PARTICLE_SYSTEM -> AssetIconKind.PARTICLE_SYSTEM;
             default -> AssetIconKind.UNKNOWN;
         };
     }
@@ -190,6 +192,7 @@ public final class EditorIconRegistry {
             case ANIMATION -> 0xE8A878;
             case ANIMATION_STATE -> 0xA8B8E8;
             case ANIMATION_CLIP -> 0xE89898;
+            case PARTICLE_SYSTEM -> 0xD8A8F0;
             case CHEVRON_RIGHT, CHEVRON_DOWN -> 0xB0B0B0;
             case UNKNOWN -> 0x909090;
         };

@@ -36,6 +36,7 @@ public final class AssetBrowserItemInteractions {
             Consumer<Path> onOpenScene,
             Consumer<Path> onOpenScript,
             Consumer<StudioAsset> onOpenShaderGraph,
+            Consumer<StudioAsset> onOpenParticleSystem,
             Runnable onAssetsChanged
     ) {
         public Context(
@@ -64,6 +65,7 @@ public final class AssetBrowserItemInteractions {
                     onEnterFolder,
                     onOpenScene,
                     onOpenScript,
+                    null,
                     null,
                     null
             );
@@ -113,6 +115,10 @@ public final class AssetBrowserItemInteractions {
             } else if (asset.type() == AssetType.SHADER_GRAPH) {
                 if (context.onOpenShaderGraph() != null) {
                     context.onOpenShaderGraph().accept(asset);
+                }
+            } else if (asset.type() == AssetType.PARTICLE_SYSTEM) {
+                if (context.onOpenParticleSystem() != null) {
+                    context.onOpenParticleSystem().accept(asset);
                 }
             }
         }

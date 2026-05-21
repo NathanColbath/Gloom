@@ -95,6 +95,19 @@ public interface EditorMenuActions {
      */
     void createShaderGraphInFolder(java.nio.file.Path folder);
 
+    /** Toggles the Particles panel visibility. */
+    void toggleParticlePanel();
+
+    /** Creates a particle system asset in the project assets root. */
+    void createParticleSystem();
+
+    /**
+     * Creates a particle system under a folder.
+     *
+     * @param folder parent folder under assets, or null for root
+     */
+    void createParticleSystemInFolder(java.nio.file.Path folder);
+
     /** @return whether the Animation panel tab is open */
     boolean isAnimationPanelOpen();
 
@@ -103,6 +116,9 @@ public interface EditorMenuActions {
 
     /** @return whether the Shader Graph panel tab is open */
     boolean isShaderGraphPanelOpen();
+
+    /** @return whether the Particles panel tab is open */
+    boolean isParticlePanelOpen();
 
     /** Deletes ImGui ini and reapplies {@link DockLayout}. */
     void resetLayout();

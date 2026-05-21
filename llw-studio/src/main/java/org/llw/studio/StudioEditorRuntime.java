@@ -29,6 +29,7 @@ import org.llw.studio.editor.panels.PanelRegistry;
 import org.llw.studio.editor.panels.PanelVisibility;
 import org.llw.studio.editor.panels.ProjectPanel;
 import org.llw.studio.editor.panels.SceneViewPanel;
+import org.llw.studio.editor.panels.ParticlePanel;
 import org.llw.studio.editor.panels.ShaderGraphPanel;
 import org.llw.studio.editor.panels.TilePalettePanel;
 import org.llw.studio.shadergraph.runtime.ShaderGraphProgramCache;
@@ -128,6 +129,7 @@ public final class StudioEditorRuntime {
 
         panelVisibility = new PanelVisibility(ImGuiContext.globalIniPath());
         panelVisibility.setOpen("shader_graph", false);
+        panelVisibility.setOpen("particle_system", false);
         shaderGraphCache = new ShaderGraphProgramCache(backend.shaderLibrary(), assets);
         menuActions = new EditorMenuActionsHandler(
                 this,
@@ -152,11 +154,23 @@ public final class StudioEditorRuntime {
         shaderGraphPanel = new ShaderGraphPanel(backend, assets, editorSession, panelVisibility, shaderGraphCache);
         editorSession.setShaderGraphPanel(shaderGraphPanel);
         menuActions.bindShaderGraphPanel(shaderGraphPanel);
+        ParticlePanel particlePanel = new ParticlePanel(
+                backend,
+                assets,
+                selection,
+                editorSession,
+                panelVisibility,
+                editorSession.particleWorld(),
+                shaderGraphCache
+        );
+        editorSession.setParticlePanel(particlePanel);
+        menuActions.bindParticlePanel(particlePanel);
         panels.register(new HierarchyPanel(selection, assets));
         panels.register(new InspectorPanel(selection, undoStack, assets, previews, componentCatalog, editorSession));
         panels.register(new AnimationPanel(selection, assets, editorSession, undoStack, panelVisibility));
         panels.register(new TilePalettePanel(assets, previews, selection, editorSession, panelVisibility));
         panels.register(shaderGraphPanel);
+        panels.register(particlePanel);
         panels.register(scenePanel);
         panels.register(gamePanel);
         panels.register(consolePanel);
@@ -168,7 +182,8 @@ public final class StudioEditorRuntime {
                 selection,
                 menuActions,
                 assetActions,
-                shaderGraphPanel
+                shaderGraphPanel,
+                particlePanel
         ));
 
         shell = new EditorShell(

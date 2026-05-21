@@ -1,8 +1,11 @@
 package org.llw.studio.editor;
 
 import org.llw.studio.editor.animation.AnimationEditorState;
+import org.llw.studio.editor.panels.ParticlePanel;
 import org.llw.studio.editor.panels.ShaderGraphPanel;
+import org.llw.studio.editor.particles.ParticleEditorState;
 import org.llw.studio.editor.tilemap.TilemapEditState;
+import org.llw.studio.particles.runtime.ParticleWorld;
 import org.llw.studio.shadergraph.editor.ShaderGraphEditorState;
 import org.llw.studio.scene.Scene;
 import org.llw.studio.systems.JsScriptSystem;
@@ -24,6 +27,10 @@ public final class EditorSession {
   private AnimationEditorState animationEditorState;
   private ShaderGraphEditorState shaderGraphEditorState;
   private ShaderGraphPanel shaderGraphPanel;
+  private ParticlePanel particlePanel;
+  private ParticleEditorState particleEditorState;
+  private final ParticleWorld particleWorld = new ParticleWorld();
+  private ParticleWorld playParticleWorld;
   private final TilemapEditState tilemapEditState = new TilemapEditState();
 
   /** @return shared scene-tool state for toolbar and scene view */
@@ -152,5 +159,37 @@ public final class EditorSession {
   /** @return shader graph dock panel for inspector shortcuts */
   public ShaderGraphPanel shaderGraphPanel() {
     return shaderGraphPanel;
+  }
+
+  public void setParticlePanel(ParticlePanel particlePanel) {
+    this.particlePanel = particlePanel;
+  }
+
+  /** @return particle system dock panel for inspector shortcuts */
+  public ParticlePanel particlePanel() {
+    return particlePanel;
+  }
+
+  public void setParticleEditorState(ParticleEditorState particleEditorState) {
+    this.particleEditorState = particleEditorState;
+  }
+
+  /** @return particle editor state for preview and scene sync */
+  public ParticleEditorState particleEditorState() {
+    return particleEditorState;
+  }
+
+  /** @return shared particle simulation world for editor preview and edit scene */
+  public ParticleWorld particleWorld() {
+    return particleWorld;
+  }
+
+  public void setPlayParticleWorld(ParticleWorld playParticleWorld) {
+    this.playParticleWorld = playParticleWorld;
+  }
+
+  /** @return particle world during play mode, or null when stopped */
+  public ParticleWorld playParticleWorld() {
+    return playParticleWorld;
   }
 }

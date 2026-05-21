@@ -4,6 +4,7 @@ package org.llw.studio.editor.components;
 
 import org.llw.studio.editor.inspector.builtin.ActiveDrawer;
 import org.llw.studio.editor.inspector.builtin.Animation2DDrawer;
+import org.llw.studio.editor.inspector.builtin.ParticleEmitterDrawer;
 
 import org.llw.studio.editor.inspector.builtin.AudioSourceDrawer;
 
@@ -27,6 +28,7 @@ import org.llw.studio.editor.inspector.builtin.TransformDrawer;
 
 import org.llw.studio.ecs.components.ActiveComponent;
 import org.llw.studio.ecs.components.Animation2DComponent;
+import org.llw.studio.ecs.components.ParticleEmitterComponent;
 
 import org.llw.studio.ecs.components.Camera2DComponent;
 
@@ -105,6 +107,12 @@ public final class ComponentCatalog {
                 Animation2DComponent.class, "Animation 2D", "Animation", true, false,
 
                 Animation2DComponent::new, new Animation2DDrawer()));
+
+        register(new ComponentTypeInfo(
+
+                ParticleEmitterComponent.class, "Particle Emitter", "Effects", true, false,
+
+                ParticleEmitterComponent::new, new ParticleEmitterDrawer()));
 
         register(new ComponentTypeInfo(
 

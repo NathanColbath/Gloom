@@ -8,6 +8,7 @@ import org.llw.studio.ecs.components.ActiveComponent;
 import org.llw.studio.ecs.components.HierarchyComponent;
 import org.llw.studio.ecs.components.NameComponent;
 import org.llw.studio.ecs.components.Animation2DComponent;
+import org.llw.studio.ecs.components.ParticleEmitterComponent;
 import org.llw.studio.ecs.components.SpriteRendererComponent;
 import org.llw.studio.ecs.components.Transform2DComponent;
 import org.llw.studio.log.StudioLogSink;
@@ -27,7 +28,10 @@ import org.llw.studio.physics.PhysicsContactBridge;
 import org.llw.studio.physics.PhysicsWorld;
 import org.llw.studio.physics.PlayPhysicsBridge;
 import org.llw.studio.scripting.js.PlayAnimationBridge;
+import org.llw.studio.scripting.js.PlayParticleBridge;
 import org.llw.studio.systems.AudioSystem;
+import org.llw.studio.particles.runtime.ParticleWorld;
+import org.llw.studio.particles.systems.ParticleSimulationSystem;
 import org.llw.studio.systems.AnimationSystem;
 import org.llw.studio.systems.JsScriptSystem;
 import org.llw.studio.systems.PhysicsSystem;
@@ -63,6 +67,8 @@ public final class PlayModeRunner {
     private PhysicsWorld physicsWorld;
     private PhysicsSystem physicsSystem;
     private AnimationSystem animationSystem;
+    private ParticleWorld particleWorld;
+    private ParticleSimulationSystem particleSimulationSystem;
     private PhysicsContactBridge physicsContactBridge;
     private long windowHandle;
     private final Map<Integer, EntityId> playEntityBySceneId = new HashMap<>();
@@ -128,6 +134,13 @@ public final class PlayModeRunner {
             playScene.world().scheduler().add(org.llw.studio.ecs.SystemGroup.LOGIC, animationSystem);
             PlayAnimationBridge.setActive(animationSystem);
         }
+        particleWorld = new ParticleWorld();
+        if (assets != null) {
+            particleSimulationSystem = new ParticleSimulationSystem(assets, particleWorld);
+            particleSimulationSystem.setPhysicsWorld(physicsWorld);
+            playScene.world().scheduler().add(org.llw.studio.ecs.SystemGroup.LOGIC, particleSimulationSystem);
+            PlayParticleBridge.setActive(particleSimulationSystem);
+        }
         playScene.world().scheduler().add(org.llw.studio.ecs.SystemGroup.LOGIC, new TransformSystem());
         playScene.world().scheduler().add(org.llw.studio.ecs.SystemGroup.LOGIC, physicsSystem);
         PlayClock.reset();
@@ -173,10 +186,13 @@ public final class PlayModeRunner {
         physicsSystem = null;
         physicsContactBridge = null;
         animationSystem = null;
+        particleWorld = null;
+        particleSimulationSystem = null;
         scriptSystem = null;
         runtime = null;
         PlayPhysicsBridge.clear();
         PlayAnimationBridge.clear();
+        PlayParticleBridge.clear();
         PlayClock.reset();
         PlayInputBridge.configure(windowHandle, false);
         PlayAudioBridge.reset();
@@ -213,6 +229,16 @@ public final class PlayModeRunner {
     /** @return active script system, or {@code null} when not in play mode */
     public JsScriptSystem scriptSystem() {
         return scriptSystem;
+    }
+
+    /** @return particle simulation state during play mode, or {@code null} when inactive */
+    public ParticleWorld particleWorld() {
+        return particleWorld;
+    }
+
+    /** @return particle logic system during play mode */
+    public ParticleSimulationSystem particleSimulationSystem() {
+        return particleSimulationSystem;
     }
 
     /**
@@ -265,6 +291,10 @@ public final class PlayModeRunner {
             Animation2DComponent srcAnim = source.world().getComponent(id, Animation2DComponent.class);
             if (srcAnim != null) {
                 object.addComponent(Animation2DComponent.class, srcAnim.copy());
+            }
+            ParticleEmitterComponent srcParticles = source.world().getComponent(id, ParticleEmitterComponent.class);
+            if (srcParticles != null) {
+                object.addComponent(ParticleEmitterComponent.class, srcParticles.copy());
             }
             ScriptComponent srcScript = source.world().getComponent(id, ScriptComponent.class);
             if (srcScript != null) {

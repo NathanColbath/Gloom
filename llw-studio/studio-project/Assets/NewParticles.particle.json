@@ -1,0 +1,119 @@
+{
+  "version" : 1,
+  "maxParticles" : 256,
+  "duration" : 5.0,
+  "looping" : true,
+  "simulationSpace" : "world",
+  "modules" : {
+    "emission" : {
+      "rateOverTime" : 20.0,
+      "bursts" : [ ]
+    },
+    "lifetime" : {
+      "curve" : {
+        "mode" : "CONSTANT",
+        "constant" : 1.2,
+        "min" : 0.0,
+        "max" : 1.0,
+        "keyframes" : [ ]
+      }
+    },
+    "shape" : {
+      "type" : "circle",
+      "radius" : 0.5,
+      "width" : 1.0,
+      "height" : 1.0,
+      "arc" : 360.0
+    },
+    "velocity" : {
+      "speed" : {
+        "mode" : "TWO_CONSTANTS",
+        "constant" : 1.0,
+        "min" : 40.0,
+        "max" : 120.0,
+        "keyframes" : [ ]
+      },
+      "angle" : {
+        "mode" : "TWO_CONSTANTS",
+        "constant" : 1.0,
+        "min" : 250.0,
+        "max" : 290.0,
+        "keyframes" : [ ]
+      }
+    },
+    "sizeOverLifetime" : {
+      "enabled" : true,
+      "curve" : {
+        "mode" : "CONSTANT",
+        "constant" : 32.0,
+        "min" : 0.0,
+        "max" : 1.0,
+        "keyframes" : [ ]
+      }
+    },
+    "colorOverLifetime" : {
+      "enabled" : true,
+      "gradient" : {
+        "keys" : [ {
+          "time" : 0.0,
+          "r" : 1.0,
+          "g" : 1.0,
+          "b" : 1.0,
+          "a" : 1.0
+        }, {
+          "time" : 1.0,
+          "r" : 1.0,
+          "g" : 1.0,
+          "b" : 1.0,
+          "a" : 0.0
+        } ]
+      }
+    },
+    "rotationOverLifetime" : {
+      "enabled" : false,
+      "curve" : {
+        "mode" : "CONSTANT",
+        "constant" : 1.0,
+        "min" : 0.0,
+        "max" : 1.0,
+        "keyframes" : [ ]
+      }
+    },
+    "force" : {
+      "gravity" : 0.0,
+      "drag" : 0.1
+    },
+    "renderer" : {
+      "spriteGuid" : "f1ff308f-e53b-4c00-b77d-1c48c9ddff4d",
+      "blendMode" : "ADDITIVE",
+      "sortingOrder" : 0,
+      "shaderGraphGuid" : ""
+    },
+    "textureSheet" : {
+      "enabled" : false,
+      "tilesX" : 1,
+      "tilesY" : 1,
+      "frameRate" : 12.0,
+      "cycle" : true
+    },
+    "subEmitters" : [ ],
+    "noise" : {
+      "enabled" : false,
+      "strength" : 10.0,
+      "frequency" : 0.5,
+      "scrollSpeed" : 1.0
+    },
+    "trails" : {
+      "enabled" : false,
+      "lifetime" : 0.3,
+      "width" : 4.0,
+      "minVertexDistance" : 8.0
+    },
+    "collision" : {
+      "enabled" : false,
+      "mode" : "world",
+      "bounce" : 0.3,
+      "lifetimeLoss" : 0.1
+    }
+  }
+}

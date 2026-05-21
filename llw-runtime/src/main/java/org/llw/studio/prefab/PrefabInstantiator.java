@@ -12,6 +12,7 @@ import org.llw.studio.ecs.components.Camera2DComponent;
 import org.llw.studio.ecs.components.CircleCollider2DComponent;
 import org.llw.studio.ecs.components.EdgeCollider2DComponent;
 import org.llw.studio.ecs.components.Rigidbody2DComponent;
+import org.llw.studio.ecs.components.ParticleEmitterComponent;
 import org.llw.studio.ecs.components.SpriteRendererComponent;
 import org.llw.studio.ecs.components.Transform2DComponent;
 import org.llw.studio.scene.GameObject;
@@ -240,6 +241,10 @@ public final class PrefabInstantiator {
         var srcAnim = scene.world().getComponent(sourceId, org.llw.studio.ecs.components.Animation2DComponent.class);
         if (srcAnim != null) {
             target.addComponent(org.llw.studio.ecs.components.Animation2DComponent.class, srcAnim.copy());
+        }
+        ParticleEmitterComponent srcParticles = scene.world().getComponent(sourceId, ParticleEmitterComponent.class);
+        if (srcParticles != null) {
+            target.addComponent(ParticleEmitterComponent.class, srcParticles.copy());
         }
         ScriptComponent srcScript = scene.world().getComponent(sourceId, ScriptComponent.class);
         if (srcScript != null) {

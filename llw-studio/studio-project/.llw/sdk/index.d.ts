@@ -8,6 +8,7 @@ export * from "./scene";
 export * from "./assets";
 export * from "./camera";
 export * from "./physics2d";
+export * from "./ui";
 
 export { Vector2f, Vec2, Mathf } from "./math";
 export { Color } from "./color";
@@ -16,6 +17,13 @@ export type { Tilemap2DComponent, Animation2DComponent } from "./components";
 
 import type { Vector2f } from "./math";
 import type { Collision2D, Collider2D, Physics2DNamespace } from "./physics2d";
+import type {
+  UIButtonComponent,
+  UICanvasComponent,
+  UILabelComponent,
+  UITextFieldComponent,
+  UIToggleComponent,
+} from "./ui";
 import type {
   AudioSourceComponent,
   BoxCollider2DComponent,
@@ -39,7 +47,8 @@ export declare class Script {
   enabled: boolean;
   /**
    * Public instance fields on your default-export script class are shown in the Inspector and
-   * serialized on the entity. Supported types: number, boolean, string, Vector2, Entity | null.
+   * serialized on the entity. Supported types: number, boolean, string, Vector2,
+   * {@link Entity} | null (scene entity or prefab reference).
    *
    * Fields are **not** exposed when declared with {@code private}, {@code protected},
    * {@code static}, or ECMAScript private syntax ({@code #name}). Use those for runtime-only
@@ -95,12 +104,22 @@ export interface Entity {
   getComponent(type: "BoxCollider2D"): BoxCollider2DComponent | null;
   getComponent(type: "CircleCollider2D"): CircleCollider2DComponent | null;
   getComponent(type: "EdgeCollider2D"): EdgeCollider2DComponent | null;
+  getComponent(type: "UILabel"): UILabelComponent | null;
+  getComponent(type: "UIButton"): UIButtonComponent | null;
+  getComponent(type: "UIToggle"): UIToggleComponent | null;
+  getComponent(type: "UITextField"): UITextFieldComponent | null;
   getComponent<T extends Script>(scriptClass: ScriptConstructor<T>): T | null;
   getComponent<T extends Component = Component>(type: ComponentType): T | null;
   addComponent(type: ComponentType): void;
   removeComponent(type: ComponentType): void;
   destroy(): void;
 }
+
+/**
+ * Prefab asset reference assigned in the Inspector on an entity field.
+ * Pass to {@link Scene.createEntity} to instantiate the prefab.
+ */
+export type Prefab = Entity;
 
 export interface Transform {
   position: Vector2;

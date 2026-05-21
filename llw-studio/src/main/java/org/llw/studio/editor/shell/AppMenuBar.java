@@ -94,6 +94,9 @@ public final class AppMenuBar {
       if (ImGui.menuItem("Create Shader Graph")) {
         actions.createShaderGraph();
       }
+      if (ImGui.menuItem("Create Particle System")) {
+        actions.createParticleSystem();
+      }
       if (ImGui.menuItem("Refresh Scripts")) {
         actions.refreshScripts();
       }
@@ -108,6 +111,9 @@ public final class AppMenuBar {
       }
       if (ImGui.menuItem("Shader Graph", "", actions.isShaderGraphPanelOpen())) {
         actions.toggleShaderGraphPanel();
+      }
+      if (ImGui.menuItem("Particles", "", actions.isParticlePanelOpen())) {
+        actions.toggleParticlePanel();
       }
       ImGui.separator();
       if (ImGui.menuItem("Frame Scene")) {
