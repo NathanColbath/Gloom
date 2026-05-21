@@ -7,7 +7,7 @@ import org.llw.render.window.WindowSettings;
 import org.llw.resources.ResourceManager;
 import org.llw.studio.editor.imgui.ImGuiContext;
 import org.llw.studio.editor.launcher.ProjectLauncherScreen;
-import org.llw.studio.editor.theme.UnityTheme;
+import org.llw.studio.editor.theme.GloomTheme;
 import org.llw.studio.memory.StudioMemory;
 import org.llw.util.log.Log;
 import org.llw.util.log.LogConfig;
@@ -46,7 +46,7 @@ public final class StudioLauncher {
         ResourceManager resources = new ResourceManager(backend, audio);
 
         ImGuiContext imgui = new ImGuiContext(window);
-        UnityTheme.apply();
+        GloomTheme.apply();
 
         StudioEditorRuntime runtime = new StudioEditorRuntime(window, backend, resources, imgui, bootstrapRoot);
         Path sampleProject = Paths.get("studio-project").toAbsolutePath().normalize();
