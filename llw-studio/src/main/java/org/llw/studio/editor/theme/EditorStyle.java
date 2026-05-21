@@ -2,6 +2,7 @@ package org.llw.studio.editor.theme;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
+import imgui.flag.ImGuiStyleVar;
 
 /**
  * Scoped ImGui style pushes for panels, selection, headers, and log lines.
@@ -118,5 +119,65 @@ public final class EditorStyle {
       }
     }
     return builder + ellipsis;
+  }
+
+  // ────────────────────────────────────────────────────────────────────
+  // Axis label helpers
+  // ────────────────────────────────────────────────────────────────────
+
+  /** Push subdued text color for axis/sublabels (e.g. R/G/B/A, X/Y). */
+  public static void pushAxisLabel() {
+    ImGui.pushStyleColor(ImGuiCol.Text, EditorColors.TEXT_SUBDUED[0], EditorColors.TEXT_SUBDUED[1],
+        EditorColors.TEXT_SUBDUED[2], EditorColors.TEXT_SUBDUED[3]);
+  }
+
+  public static void popAxisLabel() {
+    ImGui.popStyleColor();
+  }
+
+  /** Convenience: push subdued text color, draw label, pop. */
+  public static void axisLabel(String text) {
+    pushAxisLabel();
+    ImGui.text(text);
+    popAxisLabel();
+  }
+
+  // ────────────────────────────────────────────────────────────────────
+  // Panel header spacing
+  // ────────────────────────────────────────────────────────────────────
+
+  /** Tighten item spacing for compact panel header toolbars. */
+  public static void pushPanelHeaderSpacing() {
+    ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 4f, 4f);
+  }
+
+  public static void popPanelHeaderSpacing() {
+    ImGui.popStyleVar();
+  }
+
+  // ────────────────────────────────────────────────────────────────────
+  // Character-based middle-truncation (no ImGui dependency)
+  // ────────────────────────────────────────────────────────────────────
+
+  /**
+   * Truncates {@code text} so the result is at most {@code maxChars} characters,
+   * keeping both prefix and suffix separated by {@code ...}.
+   * Falls back to simple end‑truncation when {@code maxChars < 4}.
+   */
+  public static String middleTruncate(String text, int maxChars) {
+    if (text == null || text.isEmpty()) {
+      return "";
+    }
+    if (text.length() <= maxChars) {
+      return text;
+    }
+    if (maxChars < 4) {
+      return text.substring(0, maxChars);
+    }
+    String ellipsis = "...";
+    int remaining = maxChars - ellipsis.length();
+    int left = remaining / 2;
+    int right = remaining - left;
+    return text.substring(0, left) + ellipsis + text.substring(text.length() - right);
   }
 }

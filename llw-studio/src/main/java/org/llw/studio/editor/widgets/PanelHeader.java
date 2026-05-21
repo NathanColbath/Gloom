@@ -2,6 +2,7 @@ package org.llw.studio.editor.widgets;
 
 import imgui.ImGui;
 import imgui.type.ImString;
+import org.llw.studio.editor.theme.EditorStyle;
 
 /**
  * Shared panel chrome: tightened spacing, separator, search field, and right-aligned buttons.
@@ -10,11 +11,11 @@ public final class PanelHeader {
   private PanelHeader() {}
 
   public static void begin() {
-    ImGui.pushStyleVar(imgui.flag.ImGuiStyleVar.ItemSpacing, 4f, 4f);
+    EditorStyle.pushPanelHeaderSpacing();
   }
 
   public static void end() {
-    ImGui.popStyleVar();
+    EditorStyle.popPanelHeaderSpacing();
     ImGui.separator();
   }
 
