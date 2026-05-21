@@ -14,6 +14,8 @@ public final class EditorColors {
   public static final float[] TEXT_PRIMARY = {0.90f, 0.90f, 0.90f, 1f};
   public static final float[] TEXT_SECONDARY = {0.65f, 0.65f, 0.65f, 1f};
   public static final float[] TEXT_MUTED = {0.50f, 0.50f, 0.50f, 1f};
+  /** Axis label / sub-label text (labels in multi-field rows, e.g. R/G/B/A, X/Y). */
+  public static final float[] TEXT_SUBDUED = {0.55f, 0.55f, 0.55f, 1f};
   public static final float[] ACCENT = {0.26f, 0.59f, 0.98f, 1f};
   public static final float[] ACCENT_HOVER = {0.35f, 0.65f, 1.00f, 1f};
   public static final float[] SELECTION_BG = {0.20f, 0.45f, 0.75f, 0.55f};

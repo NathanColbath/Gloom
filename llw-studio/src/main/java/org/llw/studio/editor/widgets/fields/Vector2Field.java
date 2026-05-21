@@ -2,6 +2,7 @@ package org.llw.studio.editor.widgets.fields;
 
 import imgui.ImGui;
 import imgui.type.ImFloat;
+import org.llw.studio.editor.theme.EditorStyle;
 import org.llw.studio.editor.widgets.PropertyRow;
 
 /**
@@ -19,25 +20,16 @@ public final class Vector2Field {
     ImFloat fx = new ImFloat(x);
     ImFloat fy = new ImFloat(y);
 
-    EditorStyleMuted.axisLabel("X");
+    EditorStyle.axisLabel("X");
     ImGui.sameLine();
     ImGui.setNextItemWidth(fieldW);
     ImGui.inputFloat("##x", fx);
     ImGui.sameLine(0f, spacing);
-    EditorStyleMuted.axisLabel("Y");
+    EditorStyle.axisLabel("Y");
     ImGui.sameLine();
     ImGui.setNextItemWidth(fieldW);
     ImGui.inputFloat("##y", fy);
     ImGui.popID();
     return new float[]{fx.get(), fy.get()};
-  }
-
-  /** Muted axis labels for compact multi-field rows. */
-  private static final class EditorStyleMuted {
-    static void axisLabel(String text) {
-      ImGui.pushStyleColor(imgui.flag.ImGuiCol.Text, 0.55f, 0.55f, 0.55f, 1f);
-      ImGui.text(text);
-      ImGui.popStyleColor();
-    }
   }
 }

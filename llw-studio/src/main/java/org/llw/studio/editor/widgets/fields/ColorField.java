@@ -2,6 +2,7 @@ package org.llw.studio.editor.widgets.fields;
 
 import imgui.ImGui;
 import imgui.type.ImFloat;
+import org.llw.studio.editor.theme.EditorStyle;
 import org.llw.studio.editor.widgets.PropertyRow;
 
 /**
@@ -55,8 +56,6 @@ public final class ColorField {
   }
 
   private static void axisLabel(String text) {
-    ImGui.pushStyleColor(imgui.flag.ImGuiCol.Text, 0.55f, 0.55f, 0.55f, 1f);
-    ImGui.text(text);
-    ImGui.popStyleColor();
+    EditorStyle.axisLabel(text);
   }
 }
