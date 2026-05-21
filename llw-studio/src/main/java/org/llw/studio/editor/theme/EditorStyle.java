@@ -11,10 +11,10 @@ public final class EditorStyle {
   private EditorStyle() {}
 
   public static void pushPanelChrome() {
-    ImGui.pushStyleColor(ImGuiCol.ChildBg, EditorColors.EDITOR_SURFACE[0], EditorColors.EDITOR_SURFACE[1],
-        EditorColors.EDITOR_SURFACE[2], EditorColors.EDITOR_SURFACE[3]);
-    ImGui.pushStyleColor(ImGuiCol.Border, EditorColors.EDITOR_BORDER[0], EditorColors.EDITOR_BORDER[1],
-        EditorColors.EDITOR_BORDER[2], EditorColors.EDITOR_BORDER[3]);
+    ImGui.pushStyleColor(ImGuiCol.ChildBg, EditorColors.SURFACE[0], EditorColors.SURFACE[1],
+        EditorColors.SURFACE[2], EditorColors.SURFACE[3]);
+    ImGui.pushStyleColor(ImGuiCol.Border, EditorColors.BORDER[0], EditorColors.BORDER[1],
+        EditorColors.BORDER[2], EditorColors.BORDER[3]);
   }
 
   public static void popPanelChrome() {

@@ -52,7 +52,7 @@ public final class SpritesheetGridPreview {
         int rows = countRows(cells, settings);
 
         ImDrawList drawList = ImGui.getWindowDrawList();
-        int borderColor = colorU32(EditorColors.EDITOR_BORDER_STRONG);
+        int borderColor = colorU32(EditorColors.BORDER_STRONG);
         int lineColor = colorU32(EditorColors.ACCENT);
         int fillColor = colorU32(0.26f, 0.59f, 0.98f, 0.12f);
         int hoverColor = colorU32(0.26f, 0.59f, 0.98f, 0.35f);
