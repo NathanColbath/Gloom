@@ -115,7 +115,7 @@ public final class AssetGridCell {
     private static void drawHoverBox(float startX, float startY, float size) {
         var drawList = ImGui.getWindowDrawList();
         int fill = colorU32(EditorColors.ASSET_BROWSER_HOVER);
-        int border = colorU32(EditorColors.EDITOR_BORDER_STRONG);
+        int border = colorU32(EditorColors.BORDER_STRONG);
         drawList.addRectFilled(startX, startY, startX + size, startY + size, fill, 4f);
         drawList.addRect(startX, startY, startX + size, startY + size, border, 4f, 0, 1f);
     }
