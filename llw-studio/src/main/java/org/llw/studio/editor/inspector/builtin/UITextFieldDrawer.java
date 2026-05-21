@@ -4,6 +4,7 @@ import imgui.ImGui;
 import imgui.type.ImString;
 import org.llw.studio.editor.components.ComponentDrawer;
 import org.llw.studio.editor.components.InspectorContext;
+import org.llw.studio.editor.widgets.TextFieldEditState;
 import org.llw.studio.editor.widgets.fields.ColorField;
 import org.llw.studio.editor.widgets.fields.FloatField;
 import org.llw.studio.ecs.components.UITextFieldComponent;
@@ -12,19 +13,28 @@ import org.llw.studio.ecs.components.UITextFieldComponent;
 public final class UITextFieldDrawer implements ComponentDrawer<UITextFieldComponent> {
     private final ImString valueBuffer = new ImString(512);
     private final ImString placeholderBuffer = new ImString(256);
+    private final TextFieldEditState valueEditState = new TextFieldEditState();
+    private final TextFieldEditState placeholderEditState = new TextFieldEditState();
 
     @Override
     public void draw(UITextFieldComponent component, InspectorContext context) {
-        valueBuffer.set(component.value == null ? "" : component.value);
+        if (valueEditState.shouldSync(valueBuffer.get(), component.value)) {
+            valueBuffer.set(component.value == null ? "" : component.value);
+        }
         if (ImGui.inputText("Value", valueBuffer)) {
             component.value = valueBuffer.get();
             context.markDirty();
         }
-        placeholderBuffer.set(component.placeholder == null ? "" : component.placeholder);
+        valueEditState.setActive(ImGui.isItemActive());
+
+        if (placeholderEditState.shouldSync(placeholderBuffer.get(), component.placeholder)) {
+            placeholderBuffer.set(component.placeholder == null ? "" : component.placeholder);
+        }
         if (ImGui.inputText("Placeholder", placeholderBuffer)) {
             component.placeholder = placeholderBuffer.get();
             context.markDirty();
         }
+        placeholderEditState.setActive(ImGui.isItemActive());
         component.width = FloatField.draw("Width", component.width);
         component.height = FloatField.draw("Height", component.height);
         component.fontSize = (int) FloatField.draw("Font Size", component.fontSize);
