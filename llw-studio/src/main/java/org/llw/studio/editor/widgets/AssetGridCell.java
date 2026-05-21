@@ -9,6 +9,7 @@ import org.llw.studio.assets.StudioAsset;
 import org.llw.studio.editor.assets.AssetIconKind;
 import org.llw.studio.editor.assets.EditorIconRegistry;
 import org.llw.studio.editor.theme.EditorColors;
+import org.llw.studio.editor.theme.EditorStyle;
 
 /**
  * Draws a single project browser grid cell (chevron, thumbnail/icon, label).
@@ -89,19 +90,8 @@ public final class AssetGridCell {
     }
 
     private static String clipText(String text, float maxWidth) {
-        if (text == null || text.isEmpty()) {
-            return "";
-        }
-        if (ImGui.calcTextSize(text).x <= maxWidth) {
-            return text;
-        }
-        String ellipsis = "...";
-        float ellipsisWidth = ImGui.calcTextSize(ellipsis).x;
-        int end = text.length();
-        while (end > 0 && ImGui.calcTextSize(text.substring(0, end)).x + ellipsisWidth > maxWidth) {
-            end--;
-        }
-        return end <= 0 ? ellipsis : text.substring(0, end) + ellipsis;
+        // Delegate to EditorStyle.middleTruncate for pixel‑aware middle‑ellipsis
+        return EditorStyle.middleTruncate(text, maxWidth);
     }
 
     private static void drawSelectionBox(float startX, float startY, float size) {

@@ -180,4 +180,64 @@ public final class EditorStyle {
     int right = remaining - left;
     return text.substring(0, left) + ellipsis + text.substring(text.length() - right);
   }
+
+  /**
+   * Shortens text to fit {@code maxWidth} pixels, placing {@code ...} in the middle
+   * so both prefix and suffix are preserved. Falls back to {@link #truncate(String, float)}
+   * (end‑truncation) when there isn't enough room for middle‑ellipsis punctuation.
+   */
+  public static String middleTruncate(String text, float maxWidth) {
+    if (text == null || text.isEmpty()) {
+      return "";
+    }
+    if (ImGui.calcTextSize(text).x <= maxWidth) {
+      return text;
+    }
+    String ellipsis = "...";
+    float ellipsisWidth = ImGui.calcTextSize(ellipsis).x;
+    float available = maxWidth - ellipsisWidth;
+    if (available <= 8f) {
+      // Not enough room for a meaningful middle split — fall back to end‑truncation
+      return truncate(text, maxWidth);
+    }
+
+    // Binary‑search the largest left+right split that fits within available width.
+    // We keep the first K characters from the start and last K characters from the
+    // end (balanced), shrinking K until the combined width fits.
+    int maxK = Math.min(text.length() / 2, 200);
+    int lo = 0;
+    int hi = maxK;
+    int bestLeft = 0;
+    int bestRight = 0;
+
+    while (lo <= hi) {
+      int mid = (lo + hi) / 2;
+      String left = text.substring(0, mid);
+      String right = text.substring(text.length() - mid);
+      float w = ImGui.calcTextSize(left).x + ImGui.calcTextSize(right).x;
+      if (w <= available) {
+        bestLeft = mid;
+        bestRight = mid;
+        lo = mid + 1;
+      } else {
+        hi = mid - 1;
+      }
+    }
+
+    // Try one more character on the right if we still have room
+    if (bestLeft + bestRight + 1 < text.length()) {
+      String right = text.substring(text.length() - bestRight - 1);
+      float w = ImGui.calcTextSize(text.substring(0, bestLeft)).x + ImGui.calcTextSize(right).x;
+      if (w <= available) {
+        bestRight++;
+      }
+    }
+
+    // If no meaningful split, fall back to end‑truncation
+    if (bestLeft == 0 && bestRight == 0) {
+      return truncate(text, maxWidth);
+    }
+
+    return text.substring(0, bestLeft) + ellipsis + text.substring(text.length() - bestRight);
+  }
 }
