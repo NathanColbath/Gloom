@@ -27,7 +27,7 @@ public final class TilemapDrawer implements ComponentDrawer<TilemapComponent> {
         String previousTexture = component.tilesetTextureGuid;
         component.tilesetTextureGuid = drawTextureField("Tileset", component.tilesetTextureGuid, context.assets());
         if (!component.tilesetTextureGuid.equals(previousTexture)) {
-            syncCellSizeFromTileset(component, context.assets());
+            syncCellSizeFromTileset(component, context.assets()); // New tileset drives cell grid size for paint math.
         }
         component.cellWidth = FloatField.draw("Cell Width", component.cellWidth);
         component.cellHeight = FloatField.draw("Cell Height", component.cellHeight);
@@ -44,7 +44,7 @@ public final class TilemapDrawer implements ComponentDrawer<TilemapComponent> {
             boolean selected = activeLayerIndex.get() == i;
             if (ImGui.radioButton(layer.name + "##layer" + i, selected)) {
                 activeLayerIndex.set(i);
-                syncActiveLayerToSession(context.editorSession(), component, i);
+                syncActiveLayerToSession(context.editorSession(), component, i); // Inspector layer drives scene paint tool.
             }
             ImGui.sameLine();
             ImGui.textDisabled(layer.enabled ? "" : "(hidden)");
@@ -117,7 +117,7 @@ public final class TilemapDrawer implements ComponentDrawer<TilemapComponent> {
 
     private static void syncActiveLayerToSession(EditorSession session, TilemapComponent component, int layerIndex) {
         if (session != null && session.tilemapEdit() != null) {
-            session.tilemapEdit().activeLayerIndex = layerIndex;
+            session.tilemapEdit().activeLayerIndex = layerIndex; // Shared with TilemapPaintController via EditorSession.
         }
     }
 }

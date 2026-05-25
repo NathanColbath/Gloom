@@ -4,6 +4,7 @@ import imgui.ImGui;
 import imgui.flag.ImGuiDragDropFlags;
 import org.llw.studio.assets.AssetDatabase;
 import org.llw.studio.editor.EditorDragDrop;
+import org.llw.studio.editor.HierarchyEntityOrder;
 import org.llw.studio.editor.prefab.PrefabEditorActions;
 import org.llw.studio.editor.SelectionService;
 import org.llw.studio.editor.StudioContext;
@@ -45,6 +46,7 @@ public final class HierarchyRow {
         String label = name == null ? "GameObject" : name.name();
         boolean labelMatches = filter.isEmpty() || label.toLowerCase().contains(filter);
         if (!labelMatches) {
+            // Keep branch open when a descendant matches so filtered tree stays connected.
             if (hasMatchingDescendant(object, filter)) {
                 return new DrawResult(true, false);
             }
@@ -79,8 +81,24 @@ public final class HierarchyRow {
         }
 
         if (ImGui.isItemClicked() && !EditorDragDrop.shouldSuppressSelectionChange()) {
-            boolean additive = ImGui.getIO().getKeyCtrl();
-            if (EditorDragDrop.shouldDeferHierarchySelection(object.entity(), additive)) {
+            boolean ctrl = ImGui.getIO().getKeyCtrl();
+            boolean shift = ImGui.getIO().getKeyShift();
+            boolean additive = ctrl && !shift;
+            if (shift && !ctrl) {
+                EntityId anchor = selection.rangeAnchor();
+                if (anchor.isNone()) {
+                    anchor = selection.selected();
+                }
+                if (!anchor.isNone()) {
+                    selection.selectRange(
+                            HierarchyEntityOrder.collect(context.activeScene()),
+                            anchor,
+                            object.entity()
+                    );
+                } else {
+                    selection.select(object.entity());
+                }
+            } else if (EditorDragDrop.shouldDeferHierarchySelection(object.entity(), additive)) {
                 EditorDragDrop.deferHierarchySelection(object.entity());
             } else {
                 selection.toggleSelect(object.entity(), additive);
@@ -124,6 +142,7 @@ public final class HierarchyRow {
                     draggedObject.setParent(object, false);
                 }
             }
+            // Prefab asset drop instantiates under this object (edit mode only).
             String prefabGuid = ImGui.acceptDragDropPayload(AssetDatabase.PAYLOAD_ASSET_GUID, String.class);
             if (prefabGuid != null && !context.isPlaying()) {
                 PrefabEditorActions.tryInstantiatePrefab(
@@ -133,6 +152,7 @@ public final class HierarchyRow {
         }
 
         if (active != null) {
+            // Active toggle pinned to right edge so it does not shift with tree indent.
             float checkboxX = ImGui.getWindowContentRegionMaxX() - 24f;
             ImGui.sameLine(checkboxX);
             boolean selfActive = active.selfActive;

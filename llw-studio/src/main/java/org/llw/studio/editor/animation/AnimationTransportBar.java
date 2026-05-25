@@ -18,12 +18,12 @@ public final class AnimationTransportBar {
         AnimationClip clip = state.clip();
         boolean previewPanel = state.previewInPanel();
         if (ImGui.checkbox("Preview##panel", previewPanel)) {
-            state.setPreviewInPanel(!previewPanel);
+            state.setPreviewInPanel(!previewPanel); // Panel preview: sprite in animation panel only.
         }
         ImGui.sameLine(0f, 12f);
         boolean previewScene = state.previewInScene();
         if (ImGui.checkbox("Scene##preview", previewScene)) {
-            state.setPreviewInScene(!previewScene);
+            state.setPreviewInScene(!previewScene); // Scene preview: sample clip onto selected edit-scene entity.
         }
         ImGui.sameLine(0f, 16f);
         if (ImGui.button(state.playing() ? "Pause" : "Play")) {

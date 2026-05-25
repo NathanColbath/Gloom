@@ -22,6 +22,7 @@ final class DockLayout {
     );
     imgui.internal.ImGui.dockBuilderSetNodeSize(dockspaceId, width, height);
 
+    // --- Left rail + center/right split ---
     ImInt hierarchy = new ImInt();
     ImInt centerRight = new ImInt();
     imgui.internal.ImGui.dockBuilderSplitNode(dockspaceId, ImGuiAxis.X, 0.20f, hierarchy, centerRight);
@@ -30,6 +31,7 @@ final class DockLayout {
     ImInt inspector = new ImInt();
     imgui.internal.ImGui.dockBuilderSplitNode(centerRight.get(), ImGuiAxis.X, 0.75f, center, inspector);
 
+    // --- Viewports (scene/game) vs bottom asset strip ---
     ImInt viewStack = new ImInt();
     ImInt bottom = new ImInt();
     imgui.internal.ImGui.dockBuilderSplitNode(center.get(), ImGuiAxis.Y, 0.72f, viewStack, bottom);
@@ -38,6 +40,7 @@ final class DockLayout {
     ImInt sceneGame = new ImInt();
     imgui.internal.ImGui.dockBuilderSplitNode(viewStack.get(), ImGuiAxis.Y, 0.10f, toolbar, sceneGame);
 
+    // --- Bottom: animation row + project/console ---
     ImInt animation = new ImInt();
     ImInt projectConsole = new ImInt();
     imgui.internal.ImGui.dockBuilderSplitNode(bottom.get(), ImGuiAxis.Y, 0.55f, animation, projectConsole);
@@ -46,6 +49,7 @@ final class DockLayout {
     ImInt console = new ImInt();
     imgui.internal.ImGui.dockBuilderSplitNode(projectConsole.get(), ImGuiAxis.X, 0.55f, project, console);
 
+    // Tab groups: Scene+Game share a node; optional panels stack on animation/inspector nodes.
     imgui.internal.ImGui.dockBuilderDockWindow("Hierarchy", hierarchy.get());
     imgui.internal.ImGui.dockBuilderDockWindow("Toolbar", toolbar.get());
     imgui.internal.ImGui.dockBuilderDockWindow("Scene", sceneGame.get());

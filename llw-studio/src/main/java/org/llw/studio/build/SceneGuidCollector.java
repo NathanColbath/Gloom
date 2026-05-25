@@ -33,6 +33,7 @@ public final class SceneGuidCollector {
             return Set.of();
         }
         Set<String> guids = new LinkedHashSet<>();
+        // ScriptSceneIndex catches module-level refs; component loops below cover ECS fields.
         guids.addAll(ScriptSceneIndex.collectGuids(scene));
 
         var sprites = scene.world().store(SpriteRendererComponent.class);
@@ -117,6 +118,7 @@ public final class SceneGuidCollector {
             addGuid(guids, legacySprite.path("shaderGraphGuid").asText(""));
         }
 
+        // Prefab JSON may use legacy component keys from older serializers.
         JsonNode animation = objectNode.has("animation2D")
                 ? objectNode.path("animation2D")
                 : objectNode.path("animation2d");
@@ -158,6 +160,7 @@ public final class SceneGuidCollector {
     }
 
     private static void collectPrefabScriptGuids(Set<String> guids, JsonNode objectNode) {
+        // scripts[] flat array vs nested script.attachments — both on-disk prefab shapes.
         JsonNode scripts = objectNode.path("scripts");
         if (scripts.isArray()) {
             for (JsonNode attachmentNode : scripts) {

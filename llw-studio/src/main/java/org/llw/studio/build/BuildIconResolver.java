@@ -52,6 +52,7 @@ public final class BuildIconResolver {
     }
 
     private static Path resolveSourcePath(AssetDatabase assets, StudioAsset asset) {
+        // Icon picker may reference a sprite slice; Windows .ico needs the parent raster texture file.
         if (asset.type() == AssetType.SPRITE && asset.parentTextureGuid() != null) {
             StudioAsset texture = assets.get(asset.parentTextureGuid());
             if (texture != null) {

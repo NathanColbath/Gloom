@@ -157,6 +157,7 @@ public final class PanelVisibility {
             lastIniReconcileMs = now;
             return;
         }
+        // ImGui rewrites imgui.ini on save; re-merge our [StudioPanels] section if it was lost.
         if (now - lastIniReconcileMs < 3000L) {
             return;
         }

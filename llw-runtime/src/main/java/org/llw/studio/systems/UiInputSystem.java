@@ -11,6 +11,7 @@ import org.llw.studio.scripting.js.PlayInputBridge;
 import org.llw.studio.ui.PlayUiInputBridge;
 import org.llw.studio.ui.UiDrawItem;
 import org.llw.studio.ui.UiLayout;
+import org.llw.studio.ui.UiLayoutContext;
 import org.llw.studio.ui.UiWidgetKind;
 import org.llw.studio.scene.Scene;
 import org.lwjgl.glfw.GLFW;
@@ -45,7 +46,7 @@ public final class UiInputSystem implements EcsSystem {
                 && mouseX <= PlayUiInputBridge.viewportWidth()
                 && mouseY <= PlayUiInputBridge.viewportHeight();
 
-        List<UiDrawItem> items = UiLayout.collect(scene);
+        List<UiDrawItem> items = UiLayout.collect(scene, UiLayoutContext.forPlay());
         UiDrawItem topmost = insideView ? pickTopmost(items, mouseX, mouseY) : null;
 
         boolean mouseDown = PlayInputBridge.getMouseButton(MOUSE_LEFT);

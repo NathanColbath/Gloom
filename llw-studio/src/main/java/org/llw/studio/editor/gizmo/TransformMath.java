@@ -56,6 +56,7 @@ public final class TransformMath {
 
         HierarchyComponent hierarchy = world.getComponent(entity, HierarchyComponent.class);
 
+        // Root entities: local position equals world position.
         if (hierarchy == null || hierarchy.parentIndex < 0) {
 
             local.x = worldX;

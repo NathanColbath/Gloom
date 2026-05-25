@@ -9,18 +9,17 @@ import org.llw.render.graphics.Texture2d;
 import org.llw.studio.assets.AssetDatabase;
 import org.llw.studio.editor.EditorSession;
 import org.llw.studio.editor.StudioContext;
+import org.llw.studio.editor.render.PlaySceneViewportPipeline;
 import org.llw.studio.editor.theme.EditorStyle;
-import org.llw.studio.particles.render.ParticleDrawPass;
-import org.llw.studio.render.SceneDrawPass;
 import org.llw.studio.shadergraph.runtime.ShaderGraphProgramCache;
-import org.llw.studio.render.TilemapDrawPass;
-import org.llw.studio.render.UiDrawPass;
 import org.llw.studio.ui.PlayUiInputBridge;
 import org.llw.studio.scene.Scene;
 import org.llw.studio.scripting.js.PlayCameraBridge;
 
 /**
  * Play-mode game camera preview rendered to an offscreen texture.
+ *
+ * @see PlaySceneViewportPipeline
  */
 public final class GameViewPanel implements EditorPanel {
   private final OpenGlBackend backend;
@@ -31,11 +30,6 @@ public final class GameViewPanel implements EditorPanel {
   private int lastWidth = 640;
   private int lastHeight = 360;
 
-  /**
-   * @param backend OpenGL backend for offscreen targets
-   * @param assets  assets for scene draw
-   * @param session session (focus, viewport size for scripts)
-   */
   public GameViewPanel(OpenGlBackend backend, AssetDatabase assets, EditorSession session, ShaderGraphProgramCache shaderGraphs) {
     this.backend = backend;
     this.assets = assets;
@@ -44,19 +38,16 @@ public final class GameViewPanel implements EditorPanel {
     target = new OffscreenTarget(backend, new IntSize(lastWidth, lastHeight));
   }
 
-  /** {@inheritDoc} */
   @Override
   public String id() {
     return "game";
   }
 
-  /** {@inheritDoc} */
   @Override
   public String title() {
     return "Game";
   }
 
-  /** {@inheritDoc} */
   @Override
   public void render(StudioContext context) {
     if (session.consumeFocusGameView()) {
@@ -77,10 +68,11 @@ public final class GameViewPanel implements EditorPanel {
       lastWidth = w;
       lastHeight = h;
     }
-      session.setGameViewSize(w, h);
-      PlayUiInputBridge.setViewportSize(w, h);
-      if (context.isPlaying() && context.playScene() != null) {
+    session.setGameViewSize(w, h);
+    PlayUiInputBridge.setViewportSize(w, h);
+    if (context.isPlaying() && context.playScene() != null) {
       Scene scene = context.playScene();
+      // Screen origin of the game-view image — scripts/UI map pointer into this rect.
       float contentX = ImGui.getCursorScreenPosX();
       float contentY = ImGui.getCursorScreenPosY();
       PlayCameraBridge.syncScene(scene, w, h);
@@ -92,14 +84,7 @@ public final class GameViewPanel implements EditorPanel {
               Math.round(PlayCameraBridge.backgroundB() * 255f),
               Math.round(PlayCameraBridge.backgroundA() * 255f)
       ));
-      TilemapDrawPass.draw(scene, target, assets);
-      SceneDrawPass.draw(scene, target, assets, shaderGraphs);
-      if (session.playParticleWorld() != null) {
-        ParticleDrawPass.draw(session.playParticleWorld(), target, assets, shaderGraphs);
-      }
-      target.flush();
-      UiDrawPass.draw(scene, target, assets.uiFontCache(), w, h);
-      target.flush();
+      PlaySceneViewportPipeline.draw(scene, target, assets, shaderGraphs, session.playParticleWorld(), w, h);
       Texture2d texture = target.colorTexture();
       ImGui.image(texture.id(), width, height, 0f, 1f, 1f, 0f);
     } else {
@@ -113,7 +98,6 @@ public final class GameViewPanel implements EditorPanel {
     ImGui.end();
   }
 
-  /** Releases the offscreen render target. */
   public void dispose() {
     target.dispose();
   }

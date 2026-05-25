@@ -12,7 +12,7 @@ import java.nio.file.StandardCopyOption;
  * Ensures TypeScript SDK files, {@code package.json}, and {@code tsconfig.json} exist in a project.
  */
 public final class ScriptProjectGenerator {
-    private static final String SDK_VERSION = "18";
+    private static final String SDK_VERSION = "19";
     private static final String[] SDK_FILES = {
             "index.d.ts",
             "core.d.ts",

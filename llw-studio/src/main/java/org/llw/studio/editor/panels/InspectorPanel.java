@@ -87,6 +87,7 @@ public final class InspectorPanel implements EditorPanel {
       ImGui.end();
       return;
     }
+    // Inspector follows drag-pinned entity, not live selection, during hierarchy drags.
     EntityId selected = EditorDragDrop.inspectorEntity(selection.selected());
     if (selected.isNone()) {
       StudioAsset asset = assets.selected() != null ? assets.selected() : assets.infoTarget();
@@ -101,6 +102,7 @@ public final class InspectorPanel implements EditorPanel {
     assets.clearSelection();
     assets.clearInfo();
     inspectorContext.setStudioContext(context);
+    // activeScene() returns play clone while running; inspector edits follow that scene.
     GameObject object = context.activeScene().find(selected);
     if (object == null) {
       EmptyState.render("Invalid selection");
@@ -123,6 +125,7 @@ public final class InspectorPanel implements EditorPanel {
 
   private void renderObjectInspector(GameObject object, StudioContext context) {
     EntityId entity = object.entity();
+    // Rebind name/tag buffers only when selection changes to avoid clobbering in-progress edits.
     if (!entity.equals(lastRenderedEntity)) {
       lastRenderedEntity = entity;
       NameComponent identity = object.getComponent(NameComponent.class);
@@ -164,6 +167,7 @@ public final class InspectorPanel implements EditorPanel {
       if (component == null) {
         continue;
       }
+      // Script attachments render inline without foldout remove — attachments are managed per row.
       if (info.type() == ScriptComponent.class) {
         drawDrawer(info, component);
         continue;

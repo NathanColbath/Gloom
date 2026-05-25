@@ -110,8 +110,9 @@ public final class ScenePicker {
 
     ) {
 
-        new TransformSystem().onUpdate(scene.world(), 0f);
+        org.llw.studio.editor.render.EditorWorldTransforms.ensureUpdated(scene);
 
+        // Smallest overlapping bounds wins (front-to-back by screen area, not entity id).
         EntityId best = EntityId.none();
 
         float bestArea = Float.MAX_VALUE;

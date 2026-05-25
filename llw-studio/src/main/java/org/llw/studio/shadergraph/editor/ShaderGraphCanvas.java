@@ -37,6 +37,7 @@ public final class ShaderGraphCanvas {
 
     public void render(ShaderGraphEditorState state) {
         ImGui.beginChild("##ShaderGraphCanvas", 0f, 0f, true, ImGuiWindowFlags.HorizontalScrollbar);
+        // Middle-drag pans; wheel zooms around fixed origin (node positions stay in graph space).
         if (ImGui.isWindowHovered() && ImGui.isMouseDragging(ImGuiMouseButton.Middle)) {
             ImVec2 delta = ImGui.getMouseDragDelta(ImGuiMouseButton.Middle);
             panX += delta.x;
@@ -50,6 +51,7 @@ public final class ShaderGraphCanvas {
             }
         }
 
+        // Graph origin in screen space — all node/link geometry is offset from here then scaled by zoom.
         float originX = ImGui.getCursorScreenPosX() + panX;
         float originY = ImGui.getCursorScreenPosY() + panY;
         var drawList = ImGui.getWindowDrawList();
@@ -61,6 +63,7 @@ public final class ShaderGraphCanvas {
 
         drawGrid(drawList, originX, originY);
         handleLinkInteraction(state, originX, originY);
+        // Links under nodes so pins stay clickable; in-progress drag wire drawn last in drawLinks.
         drawLinks(state.document(), drawList, originX, originY);
         drawNodes(state, drawList, originX, originY);
 
@@ -70,6 +73,7 @@ public final class ShaderGraphCanvas {
         }
         renderAddNodePopup(state);
 
+        // Delete removes selected link first; otherwise deletes the selected node and its links.
         if (ImGui.isWindowFocused() && ImGui.isKeyPressed(ImGuiKey.Delete)) {
             if (selectedLinkIndex >= 0) {
                 removeLinkAt(state, selectedLinkIndex);
@@ -139,6 +143,7 @@ public final class ShaderGraphCanvas {
             float w = NODE_WIDTH * zoom;
             float h = nodeHeight(node) * zoom;
             boolean selected = node.id.equals(state.selectedNodeId());
+            // Highlight preview root when compile failed so the broken subgraph is obvious.
             boolean compileError = state.lastCompileError() != null
                     && !state.lastCompileError().isBlank()
                     && node.id.equals(state.previewRootNodeId());
@@ -147,6 +152,7 @@ public final class ShaderGraphCanvas {
             drawList.addRectFilled(x, y, x + w, y + HEADER_HEIGHT * zoom, headerColor, 6f);
             drawList.addText(x + 6f, y + 4f, 0xFFFFFFFF, node.type.name());
 
+            // Node drag converts screen delta back to graph space; skip while link drag is active.
             if (selected && ImGui.isMouseDragging(ImGuiMouseButton.Left) && ImGui.isMouseDown(ImGuiMouseButton.Left)
                     && !isLinkDragActive()) {
                 ImVec2 delta = ImGui.getMouseDragDelta(ImGuiMouseButton.Left);
@@ -206,6 +212,7 @@ public final class ShaderGraphCanvas {
 
         ShaderGraphDocument document = state.document();
 
+        // Right-click on a pin disconnects all links on that pin (input or output side).
         if (ImGui.isMouseClicked(ImGuiMouseButton.Right)) {
             if (input) {
                 disconnectInput(document, node.id, pin.id());
@@ -229,6 +236,7 @@ public final class ShaderGraphCanvas {
                 cancelLinkDrag();
                 return true;
             }
+            // Click occupied input: rip existing link and start drag from its source (Unity-style rewire).
             if (existing != null) {
                 beginLinkDrag(existing.from.nodeId, existing.from.pinId);
                 document.links.remove(existing);
@@ -274,6 +282,7 @@ public final class ShaderGraphCanvas {
             return;
         }
         ShaderGraphDocument document = state.document();
+        // Each input pin accepts at most one link — replace on drop.
         document.links.removeIf(link -> link.to.nodeId.equals(toNode) && link.to.pinId.equals(toPin));
         ShaderGraphLink link = new ShaderGraphLink();
         link.from = new ShaderGraphPinRef(fromNode, fromPin);
@@ -311,6 +320,7 @@ public final class ShaderGraphCanvas {
     }
 
     private int hitTestLink(ShaderGraphDocument document, float originX, float originY, ImVec2 mouse) {
+        // Top-most link wins when beziers overlap.
         List<ShaderGraphLink> links = document.links;
         for (int i = links.size() - 1; i >= 0; i--) {
             ShaderGraphLink link = links.get(i);

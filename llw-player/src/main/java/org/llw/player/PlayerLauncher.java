@@ -1,7 +1,12 @@
 package org.llw.player;
 
 import org.llw.audio.AudioContext;
-import org.llw.render.gl.OpenGlBackend;
+import org.llw.render.backend.BackendInitOptions;
+import org.llw.render.backend.RenderBackend;
+import org.llw.render.backend.RenderBackendFactory;
+import org.llw.render.backend.RendererPreferences;
+import org.llw.render.backend.RendererType;
+import org.llw.render.bgfx.BgfxRenderBackend;
 import org.llw.render.window.Window;
 import org.llw.render.window.WindowSettings;
 import org.llw.resources.ResourceManager;
@@ -31,8 +36,8 @@ public final class PlayerLauncher {
                 .vsync(windowSettings.vsync());
 
         Window window = new Window(settings);
-        OpenGlBackend backend = new OpenGlBackend();
-        backend.initialize(window);
+        BackendInitOptions backendOptions = resolveBackendOptions(args, windowSettings.vsync());
+        RenderBackend backend = RenderBackendFactory.create(window, backendOptions);
         AudioContext audio = new AudioContext();
         ResourceManager resources = new ResourceManager(backend, audio);
         GraalScriptRuntime.warmupSharedEngine();
@@ -47,7 +52,9 @@ public final class PlayerLauncher {
                     float delta = (now - lastFrame) / 1_000_000_000f;
                     lastFrame = now;
                     loop.frame(delta);
-                    window.swapBuffers();
+                    if (!usesBgfxPresentation(backend)) {
+                        window.swapBuffers();
+                    }
                 }
             } finally {
                 resources.dispose();
@@ -55,6 +62,26 @@ public final class PlayerLauncher {
         } finally {
             window.destroy();
         }
+    }
+
+    private static BackendInitOptions resolveBackendOptions(String[] args, boolean vsync) {
+        RendererType type = RendererPreferences.load().rendererType();
+        for (int i = 0; i < args.length - 1; i++) {
+            if ("--renderer".equals(args[i])) {
+                type = RendererType.fromEnvAlias(args[i + 1]);
+            }
+        }
+        String env = System.getenv("GLOOM_RENDERER");
+        if (env != null && !env.isBlank()) {
+            type = RendererType.fromEnvAlias(env);
+        }
+        return new BackendInitOptions(type, vsync);
+    }
+
+    private static boolean usesBgfxPresentation(RenderBackend backend) {
+        return backend instanceof BgfxRenderBackend bgfx
+                && bgfx.isBgfxInitialized()
+                && backend.rendererType().usesBgfx();
     }
 
     private static Path resolveContentDir(String[] args) {

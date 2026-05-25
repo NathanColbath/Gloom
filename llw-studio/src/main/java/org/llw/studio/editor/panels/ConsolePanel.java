@@ -52,6 +52,7 @@ public final class ConsolePanel implements EditorPanel {
   public void append(LogLevel level, String message) {
     if (!lines.isEmpty()) {
       ConsoleEntry last = lines.peekLast();
+      // Coalesce spammy identical lines so high-frequency logs do not evict history.
       if (last.level() == level && last.message().equals(message)) {
         lines.removeLast();
         lines.addLast(new ConsoleEntry(level, message, last.repeatCount() + 1));
@@ -102,6 +103,7 @@ public final class ConsolePanel implements EditorPanel {
     ImGui.beginChild("##console_scroll", 0f, 0f, false, ImGuiWindowFlags.HorizontalScrollbar);
     float scrollY = ImGui.getScrollY();
     float scrollMaxY = ImGui.getScrollMaxY();
+    // Stick to bottom only when user was already at bottom — avoid fighting manual scroll-up.
     boolean stickToBottom = scrollMaxY <= 0f || scrollY >= scrollMaxY - SCROLL_BOTTOM_THRESHOLD;
 
     String search = searchBuffer.get().trim().toLowerCase(Locale.ROOT);

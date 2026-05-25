@@ -13,7 +13,9 @@ import org.llw.studio.editor.commands.UndoStack;
 import org.llw.studio.editor.gizmo.GizmoContext;
 
 import org.llw.studio.editor.gizmo.GizmoController;
+import org.llw.studio.editor.HierarchyEntityOrder;
 import org.llw.studio.editor.tilemap.TilemapPaintController;
+import org.llw.studio.ecs.EntityId;
 
 import org.llw.render.graphics.OffscreenTarget;
 
@@ -192,13 +194,14 @@ public final class SceneViewInput {
 
         float mouseY = ImGui.getMousePosY() - viewportY;
 
-        GizmoContext context = new GizmoContext(camera, target.getCamera(), viewWidth, viewHeight);
+        GizmoContext context = new GizmoContext(camera, target.getCamera(), viewWidth, viewHeight, assets);
 
 
 
         tilemapPaint.updateActiveTilemap(scene);
 
         if (!playing) {
+            // --- Edit mode: tile tools before gizmo hover so paint strokes are not interrupted ---
 
             if (toolState.mode() == SceneToolMode.TILE_PAINT || toolState.mode() == SceneToolMode.TILE_ERASE) {
                 if (tilemapPaint.handle(scene, context, mouseX, mouseY)) {
@@ -251,7 +254,7 @@ public final class SceneViewInput {
 
         }
 
-
+        // --- Play-in-scene: selection only; no transform gizmo edits on the play clone ---
 
         if (ImGui.isMouseClicked(ImGuiMouseButton.Left)) {
 
@@ -289,12 +292,30 @@ public final class SceneViewInput {
 
         );
 
-        if (!picked.isNone()) {
-
-            selection.select(picked);
-
+        assets.clearSelection();
+        boolean ctrl = ImGui.getIO().getKeyCtrl();
+        boolean shift = ImGui.getIO().getKeyShift();
+        if (picked.isNone()) {
+            if (!ctrl && !shift) {
+                selection.clear();
+            }
+            return;
         }
-
+        if (shift && !ctrl) {
+            EntityId anchor = selection.rangeAnchor();
+            if (anchor.isNone()) {
+                anchor = selection.selected();
+            }
+            if (!anchor.isNone()) {
+                selection.selectRange(HierarchyEntityOrder.collect(scene), anchor, picked);
+            } else {
+                selection.select(picked);
+            }
+        } else if (ctrl) {
+            selection.toggleSelect(picked, true);
+        } else {
+            selection.select(picked);
+        }
     }
 
 }

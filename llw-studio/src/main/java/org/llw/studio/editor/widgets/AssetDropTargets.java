@@ -43,6 +43,7 @@ public final class AssetDropTargets {
         if (!ImGui.beginDragDropTarget()) {
             return;
         }
+        // Entity drop: save selection as prefab in this folder.
         String entityPayload = ImGui.acceptDragDropPayload(
                 SelectionService.PAYLOAD_ENTITY,
                 ImGuiDragDropFlags.AcceptNoDrawDefaultRect,
@@ -55,6 +56,7 @@ public final class AssetDropTargets {
                 notifyChanged(selection, onAssetsChanged);
             }
         }
+        // Asset drop: move file into folder (no-op when already parented here or dropping folder onto itself).
         String assetGuid = ImGui.acceptDragDropPayload(
                 AssetDatabase.PAYLOAD_ASSET_GUID,
                 ImGuiDragDropFlags.AcceptNoDrawDefaultRect,
@@ -83,6 +85,7 @@ public final class AssetDropTargets {
         if (onAssetsChanged != null) {
             onAssetsChanged.run();
         }
+        // Clear scene selection after asset-tree mutation so inspector does not show stale entity.
         if (selection != null) {
             selection.clear();
         }

@@ -6,7 +6,10 @@ import org.llw.studio.assets.StudioAsset;
 import org.llw.studio.ecs.EntityId;
 import org.llw.studio.ecs.components.ActiveComponent;
 import org.llw.studio.ecs.components.HierarchyComponent;
+import org.llw.studio.ecs.components.Light2DComponent;
 import org.llw.studio.ecs.components.NameComponent;
+import org.llw.studio.ecs.components.SceneLightingComponent;
+import org.llw.studio.ecs.components.StaticLightmapContributor;
 import org.llw.studio.ecs.components.Animation2DComponent;
 import org.llw.studio.ecs.components.ParticleEmitterComponent;
 import org.llw.studio.ecs.components.SpriteRendererComponent;
@@ -127,6 +130,7 @@ public final class PlayModeRunner {
         PlayPhysicsBridge.setActive(physicsWorld);
         PlayPhysicsBridge.setHostApi(runtime.hostApi());
         playScene.world().scheduler().add(org.llw.studio.ecs.SystemGroup.LOGIC, new PlayInputSystem());
+        playScene.world().scheduler().add(org.llw.studio.ecs.SystemGroup.LOGIC, new TransformSystem());
         playScene.world().scheduler().add(org.llw.studio.ecs.SystemGroup.LOGIC, new UiInputSystem(playScene));
         playScene.world().scheduler().add(org.llw.studio.ecs.SystemGroup.LOGIC, scriptSystem);
         animationSystem = assets == null ? null : new AnimationSystem(assets);
@@ -141,7 +145,6 @@ public final class PlayModeRunner {
             playScene.world().scheduler().add(org.llw.studio.ecs.SystemGroup.LOGIC, particleSimulationSystem);
             PlayParticleBridge.setActive(particleSimulationSystem);
         }
-        playScene.world().scheduler().add(org.llw.studio.ecs.SystemGroup.LOGIC, new TransformSystem());
         playScene.world().scheduler().add(org.llw.studio.ecs.SystemGroup.LOGIC, physicsSystem);
         PlayClock.reset();
         PlayInputBridge.configure(windowHandle, true);
@@ -299,6 +302,19 @@ public final class PlayModeRunner {
             ScriptComponent srcScript = source.world().getComponent(id, ScriptComponent.class);
             if (srcScript != null) {
                 object.addComponent(ScriptComponent.class, srcScript.copy());
+            }
+            Light2DComponent srcLight = source.world().getComponent(id, Light2DComponent.class);
+            if (srcLight != null) {
+                object.addComponent(Light2DComponent.class, srcLight.copy());
+            }
+            SceneLightingComponent srcSceneLighting = source.world().getComponent(id, SceneLightingComponent.class);
+            if (srcSceneLighting != null) {
+                object.addComponent(SceneLightingComponent.class, srcSceneLighting.copy());
+            }
+            StaticLightmapContributor srcLightmapContributor =
+                    source.world().getComponent(id, StaticLightmapContributor.class);
+            if (srcLightmapContributor != null) {
+                object.addComponent(StaticLightmapContributor.class, srcLightmapContributor.copy());
             }
             var srcCamera = source.world().getComponent(id, org.llw.studio.ecs.components.Camera2DComponent.class);
             if (srcCamera != null) {

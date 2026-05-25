@@ -178,6 +178,7 @@ public final class EditorStyle {
     int remaining = maxChars - ellipsis.length();
     int left = remaining / 2;
     int right = remaining - left;
+    // Keep prefix and suffix so GUIDs/filenames stay recognizable in narrow asset rows.
     return text.substring(0, left) + ellipsis + text.substring(text.length() - right);
   }
 }

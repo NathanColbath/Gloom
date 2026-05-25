@@ -5,7 +5,7 @@ import org.llw.math.matrix.Matrix3x2;
 import org.llw.render.graphics.DrawState;
 import org.llw.render.graphics.Font;
 import org.llw.render.graphics.Renderable;
-import org.llw.render.gl.OpenGlBackend;
+import org.llw.render.backend.RenderBackend;
 
 /**
  * Text {@link Renderable} that lays out glyphs from a {@link Font} atlas at the local origin.
@@ -92,7 +92,7 @@ public final class Text extends AbstractTransformable implements Renderable {
      * @param state per-draw blend mode, shader, and optional parent transform
      */
     @Override
-    public void render(OpenGlBackend backend, DrawState state) {
+    public void render(RenderBackend backend, DrawState state) {
         if (font == null || content.isEmpty()) {
             return;
         }

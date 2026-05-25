@@ -7,6 +7,7 @@ import org.llw.render.graphics.OffscreenTarget;
 import org.llw.render.graphics.Texture2d;
 import org.llw.render.gl.OpenGlBackend;
 import org.llw.studio.assets.AssetDatabase;
+import org.llw.studio.assets.AssetType;
 import org.llw.studio.assets.StudioAsset;
 import org.llw.studio.editor.EditorSession;
 import org.llw.studio.editor.StudioContext;
@@ -94,6 +95,7 @@ public final class ShaderGraphPanel implements EditorPanel, AutoCloseable {
             if (!draw) {
                 return;
             }
+            syncFromEditor();
             if (!graphState.hasOpenAsset()) {
                 ImGui.textDisabled("Create or open a .shadergraph.json asset from the Project panel.");
                 return;
@@ -129,9 +131,20 @@ public final class ShaderGraphPanel implements EditorPanel, AutoCloseable {
         }
     }
 
+    private void syncFromEditor() {
+        StudioAsset selected = assets.selected();
+        if (selected == null || selected.type() != AssetType.SHADER_GRAPH || selected.isFolder()) {
+            return;
+        }
+        if (!selected.guid().equals(graphState.activeAssetGuid())) {
+            openAsset(selected.guid(), selected.path());
+        }
+    }
+
     private void renderPreview() {
         ImGui.text("Preview");
         long now = System.currentTimeMillis();
+        // Debounce compiles while typing; still refresh periodically if edits stall mid-keystroke.
         if (now - graphState.lastEditMillis() >= PREVIEW_DEBOUNCE_MS
                 || now - lastPreviewCompileMs > 500) {
             previewService.ensureCompiled(graphState);

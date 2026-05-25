@@ -71,6 +71,7 @@ public final class StudioLauncher {
             backend.clear();
 
             imgui.beginFrame(window);
+            // Launcher and editor share one GLFW loop; only one path draws UI per frame.
             if (showLauncher && !runtime.isProjectLoaded()) {
                 runtime.pollAsyncUi();
                 launcher.render();

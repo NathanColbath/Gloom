@@ -28,6 +28,10 @@ public enum AssetType {
     SHADER_GRAPH,
     /** Particle system ({@code .particle.json}). */
     PARTICLE_SYSTEM,
+    /** Render material ({@code .material.json}). */
+    MATERIAL,
+    /** Baked scene lightmap image. */
+    LIGHTMAP,
     /** Unrecognized file type. */
     UNKNOWN
 }

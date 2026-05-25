@@ -2,7 +2,9 @@ package org.llw.render.graphics;
 
 import org.llw.render.core.Color;
 import org.llw.render.core.IntSize;
-import org.llw.render.gl.OpenGlBackend;
+import org.llw.render.backend.BackendInitOptions;
+import org.llw.render.backend.RenderBackend;
+import org.llw.render.backend.RenderBackendFactory;
 import org.llw.render.window.Window;
 import org.llw.util.log.FrameDiagnostics;
 import org.llw.util.log.Log;
@@ -40,9 +42,8 @@ public final class GraphicsContext extends AbstractRenderTarget {
      * @param window native window that owns the default framebuffer
      */
     public GraphicsContext(Window window) {
-        super(new OpenGlBackend());
+        super(RenderBackendFactory.create(window, BackendInitOptions.opengl(window.settings().vsync())));
         this.window = window;
-        backend.initialize(window);
         camera.setSize(window.settings().width(), window.settings().height());
         camera.setCenter(window.settings().width() / 2f, window.settings().height() / 2f);
         log.info("GraphicsContext created for window {}x{}", window.settings().width(), window.settings().height());
@@ -69,7 +70,7 @@ public final class GraphicsContext extends AbstractRenderTarget {
      *
      * @return the initialized {@link OpenGlBackend}
      */
-    public OpenGlBackend backend() {
+    public RenderBackend backend() {
         return backend;
     }
 

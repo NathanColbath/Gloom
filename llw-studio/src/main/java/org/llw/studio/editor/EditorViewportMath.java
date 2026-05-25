@@ -42,6 +42,7 @@ public final class EditorViewportMath {
      * @return grid spacing in world units
      */
     public static float chooseGridStep(float zoom) {
+        // Snap to 1/2/5/10 decades so major lines stay near 64px without jitter while panning/zooming.
         float step = GRID_TARGET_PIXELS * worldUnitsPerPixel(zoom);
         float magnitude = (float) Math.pow(10, Math.floor(Math.log10(Math.max(step, 1e-6f))));
         float normalized = step / magnitude;
@@ -118,6 +119,7 @@ public final class EditorViewportMath {
      * @return snapped world X
      */
     public static float snapWorldX(EditorCamera camera, int viewWidth, float worldX) {
+        // Round-trip through screen space so grid/gizmo lines land on integer pixels at any zoom.
         float left = worldLeft(camera, viewWidth);
         float sizeX = worldWidth(camera, viewWidth);
         float screenX = (worldX - left) / sizeX * viewWidth;

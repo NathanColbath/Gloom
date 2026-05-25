@@ -20,6 +20,8 @@ const sourceFile = ts.createSourceFile(
 
 const EXCLUDED = new Set(["entity", "transform", "enabled"]);
 const fields = [];
+let hasDrawGizmos = false;
+let hasDrawGizmosSelected = false;
 
 const VECTOR2_TYPE_NAMES = new Set(["Vec2", "Vector2", "Vector2f"]);
 
@@ -196,6 +198,15 @@ function isInspectorField(member) {
 
 function visitClass(node) {
   for (const member of node.members) {
+    if (ts.isMethodDeclaration(member) && member.name && ts.isIdentifier(member.name)) {
+      const name = member.name.text;
+      if (name === "onDrawGizmos") {
+        hasDrawGizmos = true;
+      }
+      if (name === "onDrawGizmosSelected") {
+        hasDrawGizmosSelected = true;
+      }
+    }
     if (!isInspectorField(member)) {
       continue;
     }
@@ -223,6 +234,6 @@ function visit(node) {
 
 visit(sourceFile);
 
-const schema = { fields };
+const schema = { fields, hasDrawGizmos, hasDrawGizmosSelected };
 fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 fs.writeFileSync(outputPath, JSON.stringify(schema, null, 2));

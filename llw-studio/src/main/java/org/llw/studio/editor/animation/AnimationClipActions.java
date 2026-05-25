@@ -85,7 +85,7 @@ public final class AnimationClipActions {
         float time = 0f;
         for (StudioAsset slice : slices) {
             track.spriteKeyframes.add(new SpriteKeyframe(time, slice.guid()));
-            time += step;
+            time += step; // One key per slice in sheet order at frameRate spacing.
         }
         clip.length = time > 0f ? time - step : 0f;
         track.sortKeyframes();

@@ -15,12 +15,27 @@ public final class ScriptSchema {
 
     /** Declared inspector fields for the script. */
     public final List<ScriptFieldSchema> fields;
+    /** Whether the script class declares {@code onDrawGizmos}. */
+    public final boolean hasDrawGizmos;
+    /** Whether the script class declares {@code onDrawGizmosSelected}. */
+    public final boolean hasDrawGizmosSelected;
 
     /**
      * @param fields field definitions; {@code null} yields an empty list
      */
     public ScriptSchema(List<ScriptFieldSchema> fields) {
+        this(fields, false, false);
+    }
+
+    /**
+     * @param fields                 field definitions; {@code null} yields an empty list
+     * @param hasDrawGizmos          true when {@code onDrawGizmos} is present
+     * @param hasDrawGizmosSelected  true when {@code onDrawGizmosSelected} is present
+     */
+    public ScriptSchema(List<ScriptFieldSchema> fields, boolean hasDrawGizmos, boolean hasDrawGizmosSelected) {
         this.fields = fields == null ? List.of() : List.copyOf(fields);
+        this.hasDrawGizmos = hasDrawGizmos;
+        this.hasDrawGizmosSelected = hasDrawGizmosSelected;
     }
 
     /**
@@ -46,7 +61,9 @@ public final class ScriptSchema {
         for (JsonNode fieldNode : fieldsNode) {
             fields.add(ScriptFieldSchema.fromJson(fieldNode));
         }
-        return new ScriptSchema(fields);
+        boolean hasDrawGizmos = root.path("hasDrawGizmos").asBoolean(false);
+        boolean hasDrawGizmosSelected = root.path("hasDrawGizmosSelected").asBoolean(false);
+        return new ScriptSchema(fields, hasDrawGizmos, hasDrawGizmosSelected);
     }
 
     /**
@@ -76,6 +93,8 @@ public final class ScriptSchema {
                 node.set("default", field.defaultValue.deepCopy());
             }
         }
+        root.put("hasDrawGizmos", hasDrawGizmos);
+        root.put("hasDrawGizmosSelected", hasDrawGizmosSelected);
         return root;
     }
 }

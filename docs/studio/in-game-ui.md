@@ -14,7 +14,16 @@ UICanvas (UI Canvas)
 
 1. Create an empty object; **Add Component → UI Canvas**.
 2. Add child objects with widget components.
-3. Position children with **Transform 2D** (pixel offsets from canvas).
+3. Position children with **Transform 2D** (offsets from canvas; pixels in Screen Space, world units in World Space).
+
+## Render modes (UI Canvas)
+
+| Mode | Use |
+|------|-----|
+| **Screen Space** | HUD / menus fixed to the viewport. Canvas Transform is a screen-pixel offset. |
+| **World Space** | UI tied to a moving object (health bar, nameplate). Follows hierarchy; child offsets are world units. |
+
+Use **View → UI** to lay out widgets in reference resolution without scene camera clutter.
 
 ::: studio-screenshot{file="45-ui-hierarchy.png"}
 Hierarchy with UICanvas parent and widget children.

@@ -128,6 +128,7 @@ public final class AppMenuBar {
     String projectName = actions.projectName();
     if (!projectName.isBlank()) {
       float textWidth = ImGui.calcTextSize(projectName).x;
+      // Right-align project label in menu bar without a dedicated child window.
       float right = ImGui.getWindowContentRegionMaxX() - textWidth - 12f;
       if (right > ImGui.getCursorPosX()) {
         ImGui.sameLine(right);

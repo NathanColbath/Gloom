@@ -31,7 +31,7 @@ public final class TilemapPaintCommand implements EditorCommand {
         this.entity = entity;
         this.layerIndex = layerIndex;
         this.before = copyMap(before);
-        this.after = copyMap(after);
+        this.after = copyMap(after); // Defensive copy so later scene edits cannot mutate stored snapshots.
     }
 
     @Override
@@ -50,6 +50,7 @@ public final class TilemapPaintCommand implements EditorCommand {
             return;
         }
         TilemapLayer layer = tilemap.layerAt(layerIndex);
+        // Full-layer replace keeps undo simple; paint controller coalesces drag strokes into one command.
         layer.cells.clear();
         for (Map.Entry<Long, TilemapCell> entry : cells.entrySet()) {
             TilemapCell cell = entry.getValue();

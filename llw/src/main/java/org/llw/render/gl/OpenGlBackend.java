@@ -9,6 +9,9 @@ import org.llw.render.graphics.PrimitiveType;
 import org.llw.render.graphics.ShaderProgram;
 import org.llw.render.graphics.Texture2d;
 import org.llw.render.graphics.Vertex;
+import org.llw.render.backend.BackendInitOptions;
+import org.llw.render.backend.RenderBackend;
+import org.llw.render.backend.RendererType;
 import org.llw.render.window.Window;
 import org.llw.util.log.EnvironmentLog;
 import org.llw.util.log.Log;
@@ -20,6 +23,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
+import java.util.function.Consumer;
+
 /**
  * Central OpenGL rendering facade for 2D batched sprites, immediate shapes, and text.
  *
@@ -28,25 +33,43 @@ import org.lwjgl.opengl.GL30;
  * matrix set via {@link #setViewProjection(Matrix3x2)} is combined with per-draw model
  * matrices before geometry reaches the GPU.
  */
-public final class OpenGlBackend {
+public final class OpenGlBackend implements RenderBackend {
     private static final Logger log = Log.get(Loggers.GL);
 
     private final ShaderLibrary shaderLibrary = new ShaderLibrary();
     private final GlStateTracker stateTracker = new GlStateTracker();
     private SpriteBatch spriteBatch;
+    private LitSpriteBatch litSpriteBatch;
     private ShapeRenderer shapeRenderer;
     private TextRenderer textRenderer;
     private final Matrix3x2 viewProjection = new Matrix3x2().identity();
+    private final Matrix3x2 scratchMvp = new Matrix3x2();
     private Color clearColor = Color.BLACK;
     private Texture2d lastBatchTexture;
+    private Texture2d lastLitBatchTexture;
+    private long currentLitUniformKey = LitUniformKeyState.INVALID;
+    private Consumer<ShaderProgram> pendingLitUniformHook;
     private float shaderTimeSeconds;
     private boolean initialized;
+
+    private static final class LitUniformKeyState {
+        static final long INVALID = -1L;
+    }
 
     /**
      * Makes the GLFW context current, configures vsync, creates OpenGL capabilities, loads
      * default shaders, and allocates internal renderers.
      *
      * @param window GLFW window whose context is activated; must not be {@code null}
+     */
+    @Override
+    public void initialize(Window window, BackendInitOptions options) {
+        initialize(window);
+    }
+
+    /**
+     * Makes the GLFW context current, configures vsync, creates OpenGL capabilities, loads
+     * default shaders, and allocates internal renderers.
      */
     public void initialize(Window window) {
         GLFW.glfwMakeContextCurrent(window.handle());
@@ -60,6 +83,7 @@ public final class OpenGlBackend {
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         shaderLibrary.loadDefaults();
         spriteBatch = new SpriteBatch();
+        litSpriteBatch = new LitSpriteBatch();
         shapeRenderer = new ShapeRenderer();
         textRenderer = new TextRenderer(this);
         initialized = true;
@@ -80,8 +104,14 @@ public final class OpenGlBackend {
      *
      * @return library containing default sprite, shape, and text programs
      */
+    @Override
     public ShaderLibrary shaderLibrary() {
         return shaderLibrary;
+    }
+
+    @Override
+    public RendererType rendererType() {
+        return RendererType.OPENGL;
     }
 
     /**
@@ -132,8 +162,12 @@ public final class OpenGlBackend {
      * Ends a frame by flushing any active sprite batch and clearing batch texture state.
      */
     public void endFrame() {
+        flushLitSprites(pendingLitUniformHook);
+        pendingLitUniformHook = null;
+        currentLitUniformKey = LitUniformKeyState.INVALID;
         flushSprites();
         lastBatchTexture = null;
+        lastLitBatchTexture = null;
     }
 
     /**
@@ -174,9 +208,65 @@ public final class OpenGlBackend {
      * Submits any quads accumulated in the active sprite batch to the GPU.
      */
     public void flushSprites() {
+        flushLitSprites(null);
         if (spriteBatch != null && spriteBatch.isActive()) {
             spriteBatch.setShaderTimeSeconds(shaderTimeSeconds);
             spriteBatch.flush(stateTracker);
+        }
+    }
+
+    /**
+     * Enqueues a quad for the lit sprite batch (per-vertex world position).
+     */
+    public void drawLitTexturedQuad(
+            Matrix3x2 model,
+            float x0, float y0, float x1, float y1,
+            float u0, float v0, float u1, float v1,
+            Color color,
+            Texture2d texture,
+            ShaderProgram shader,
+            BlendMode blendMode
+    ) {
+        drawLitTexturedQuad(
+                model, x0, y0, x1, y1, u0, v0, u1, v1, color, texture, shader, blendMode,
+                LitUniformKeyState.INVALID, null
+        );
+    }
+
+    /**
+     * Enqueues a lit quad; flushes the lit batch when {@code uniformBatchKey} changes.
+     */
+    public void drawLitTexturedQuad(
+            Matrix3x2 model,
+            float x0, float y0, float x1, float y1,
+            float u0, float v0, float u1, float v1,
+            Color color,
+            Texture2d texture,
+            ShaderProgram shader,
+            BlendMode blendMode,
+            long uniformBatchKey,
+            Consumer<ShaderProgram> uniformHook
+    ) {
+        if (uniformBatchKey != LitUniformKeyState.INVALID
+                && litSpriteBatch.isActive()
+                && uniformBatchKey != currentLitUniformKey) {
+            flushLitSprites(pendingLitUniformHook);
+        }
+        pendingLitUniformHook = uniformHook;
+        if (uniformBatchKey != LitUniformKeyState.INVALID) {
+            currentLitUniformKey = uniformBatchKey;
+        }
+        ShaderProgram activeShader = shader != null ? shader : shaderLibrary.litSpriteShader();
+        ensureLitSpriteBatch(activeShader, blendMode, texture);
+        litSpriteBatch.drawQuad(model, x0, y0, x1, y1, u0, v0, u1, v1, color, texture);
+    }
+
+    /**
+     * Flushes the lit sprite batch, optionally applying per-frame lighting uniforms.
+     */
+    public void flushLitSprites(Consumer<ShaderProgram> uniformHook) {
+        if (litSpriteBatch != null && litSpriteBatch.isActive()) {
+            litSpriteBatch.flush(stateTracker, uniformHook);
         }
     }
 
@@ -235,11 +325,11 @@ public final class OpenGlBackend {
      * @return a new matrix containing view-projection × model
      */
     public Matrix3x2 combineMvp(Matrix3x2 model) {
-        Matrix3x2 mvp = viewProjection.copy();
+        scratchMvp.set(viewProjection);
         if (model != null) {
-            mvp.multiply(model);
+            scratchMvp.multiply(model);
         }
-        return mvp;
+        return scratchMvp;
     }
 
     /**
@@ -251,14 +341,39 @@ public final class OpenGlBackend {
         if (!initialized) {
             return;
         }
-        spriteBatch.dispose();
+        if (spriteBatch != null) {
+            spriteBatch.dispose();
+        }
         shapeRenderer.dispose();
         shaderLibrary.dispose();
         initialized = false;
         log.info("OpenGL backend disposed");
     }
 
+    private void ensureLitSpriteBatch(ShaderProgram shader, BlendMode blendMode, Texture2d texture) {
+        boolean textureChanged = texture != null
+                && lastLitBatchTexture != null
+                && lastLitBatchTexture.id() != texture.id();
+        boolean needsRestart = !litSpriteBatch.isActive()
+                || litSpriteBatch.currentShader() != shader
+                || litSpriteBatch.currentBlend() != blendMode
+                || textureChanged;
+
+        if (needsRestart) {
+            if (litSpriteBatch.isActive()) {
+                flushLitSprites(pendingLitUniformHook);
+            } else {
+                flushSprites();
+            }
+            litSpriteBatch.begin(shader, blendMode, viewProjection);
+            lastLitBatchTexture = texture;
+        }
+    }
+
     private void ensureSpriteBatch(ShaderProgram shader, BlendMode blendMode, Texture2d texture) {
+        flushLitSprites(pendingLitUniformHook);
+        pendingLitUniformHook = null;
+        currentLitUniformKey = LitUniformKeyState.INVALID;
         boolean textureChanged = texture != null
                 && lastBatchTexture != null
                 && lastBatchTexture.id() != texture.id();

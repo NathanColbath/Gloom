@@ -67,12 +67,20 @@ public final class Rigidbody2DBinding {
 
     @HostAccess.Export
     public double getVelocityX() {
+        Body body = body();
+        if (body != null) {
+            return PhysicsCoordinates.box2dVectorToStudio(body.getLinearVelocity()).x;
+        }
         Rigidbody2DComponent rb = component();
         return rb == null ? 0d : rb.linearVelocityX;
     }
 
     @HostAccess.Export
     public double getVelocityY() {
+        Body body = body();
+        if (body != null) {
+            return PhysicsCoordinates.box2dVectorToStudio(body.getLinearVelocity()).y;
+        }
         Rigidbody2DComponent rb = component();
         return rb == null ? 0d : rb.linearVelocityY;
     }

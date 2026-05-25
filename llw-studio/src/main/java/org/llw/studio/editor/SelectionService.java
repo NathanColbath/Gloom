@@ -3,6 +3,7 @@ package org.llw.studio.editor;
 import org.llw.studio.ecs.EntityId;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -15,6 +16,7 @@ public final class SelectionService {
 
     private final LinkedHashSet<EntityId> selected = new LinkedHashSet<>();
     private EntityId primary = EntityId.none();
+    private EntityId rangeAnchor = EntityId.none();
 
     /** @return primary selected entity, or {@link EntityId#none()} */
     public EntityId selected() {
@@ -39,9 +41,51 @@ public final class SelectionService {
         if (entity != null && !entity.isNone()) {
             selected.add(entity);
             primary = entity;
+            rangeAnchor = entity;
         } else {
             primary = EntityId.none();
+            rangeAnchor = EntityId.none();
         }
+    }
+
+    /**
+     * Selects every entity from {@code anchor} through {@code target} in {@code orderedEntities} (inclusive).
+     */
+    public void selectRange(List<EntityId> orderedEntities, EntityId anchor, EntityId target) {
+        if (EditorDragDrop.shouldSuppressSelectionChange()) {
+            return;
+        }
+        if (orderedEntities == null || orderedEntities.isEmpty() || anchor == null || target == null) {
+            return;
+        }
+        if (anchor.isNone() || target.isNone()) {
+            return;
+        }
+        int from = orderedEntities.indexOf(anchor);
+        int to = orderedEntities.indexOf(target);
+        if (from < 0 || to < 0) {
+            select(target);
+            return;
+        }
+        if (from > to) {
+            int swap = from;
+            from = to;
+            to = swap;
+        }
+        selected.clear();
+        for (int i = from; i <= to; i++) {
+            EntityId id = orderedEntities.get(i);
+            if (!id.isNone()) {
+                selected.add(id);
+            }
+        }
+        primary = target;
+        rangeAnchor = anchor;
+    }
+
+    /** @return anchor entity for the next Shift+click range */
+    public EntityId rangeAnchor() {
+        return rangeAnchor;
     }
 
     /**
@@ -63,12 +107,14 @@ public final class SelectionService {
         }
         if (selected.contains(entity)) {
             selected.remove(entity);
+            // LinkedHashSet iteration order keeps a stable primary when toggling off the current one.
             if (primary.equals(entity)) {
                 primary = selected.isEmpty() ? EntityId.none() : selected.iterator().next();
             }
         } else {
             selected.add(entity);
             primary = entity;
+            rangeAnchor = entity;
         }
     }
 
@@ -79,6 +125,7 @@ public final class SelectionService {
         }
         selected.clear();
         primary = EntityId.none();
+        rangeAnchor = EntityId.none();
     }
 
     /**

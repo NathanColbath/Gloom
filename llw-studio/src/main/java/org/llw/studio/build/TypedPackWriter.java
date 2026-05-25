@@ -52,6 +52,7 @@ public final class TypedPackWriter {
         Files.createDirectories(stagingDir);
         Path assetsRoot = StudioProjectLayout.assetsRoot(projectRoot);
 
+        // One .llwp per category; game.manifest.json lists only non-empty packs for the player loader.
         for (BuildPackCategory category : BuildPackCategory.values()) {
             List<StudioAsset> categoryAssets = assetSet.assets(category);
             if (categoryAssets.isEmpty()) {
@@ -60,6 +61,7 @@ public final class TypedPackWriter {
             Map<String, AssetPackManifest.PackEntry> entries = new LinkedHashMap<>();
             for (StudioAsset asset : categoryAssets) {
                 switch (category) {
+                    // Metadata/scripts/shaders need compile or staging; other categories are raw file copies.
                     case METADATA -> addMetadataEntry(projectRoot, assetsRoot, stagingDir, asset, entries);
                     case SCRIPTS -> addScriptEntry(projectRoot, asset, entries);
                     case SHADERS -> addShaderEntry(asset, stagingDir, entries);
@@ -94,6 +96,7 @@ public final class TypedPackWriter {
             StudioAsset asset,
             Map<String, AssetPackManifest.PackEntry> entries
     ) {
+        // Prefer fresh bundle from compile step; fall back to cache when compile was skipped earlier.
         Path bundled = ScriptCompileService.bundledPath(projectRoot, asset.guid());
         if (!Files.isRegularFile(bundled)) {
             bundled = StudioProjectLayout.resolveScriptCachePath(projectRoot, asset.guid());
@@ -128,7 +131,7 @@ public final class TypedPackWriter {
         }
         ShaderGraphCompileResult compiled = ShaderGraphCompiler.compileFull(document);
         if (!compiled.success()) {
-            return;
+            return; // Skip broken graphs; build already logged script/shader errors separately.
         }
         Path staged = stagingDir.resolve("shaders").resolve(asset.guid() + ".frag.glsl");
         Files.createDirectories(staged.getParent());
@@ -149,6 +152,7 @@ public final class TypedPackWriter {
             Map<String, AssetPackManifest.PackEntry> entries
     ) throws IOException {
         MetaFile.MetaData meta;
+        // Child sprites may lack on-disk .meta; synthesize importer JSON from the asset index row.
         if (asset.type() == AssetType.SPRITE) {
             meta = new MetaFile.MetaData();
             meta.guid = asset.guid();

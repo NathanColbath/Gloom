@@ -6,7 +6,7 @@ import org.llw.render.graphics.PrimitiveType;
 import org.llw.render.graphics.Renderable;
 import org.llw.render.graphics.Texture2d;
 import org.llw.render.graphics.Vertex;
-import org.llw.render.gl.OpenGlBackend;
+import org.llw.render.backend.RenderBackend;
 
 /**
  * Custom {@link Renderable} backed by an arbitrary {@link Vertex} array and primitive type.
@@ -86,7 +86,7 @@ public final class VertexGeometry extends AbstractTransformable implements Rende
      * @param state per-draw blend mode, shader, optional texture override, and parent transform
      */
     @Override
-    public void render(OpenGlBackend backend, DrawState state) {
+    public void render(RenderBackend backend, DrawState state) {
         if (vertices.length == 0) {
             return;
         }

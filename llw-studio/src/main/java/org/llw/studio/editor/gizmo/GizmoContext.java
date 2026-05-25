@@ -8,6 +8,7 @@ import org.llw.render.core.IntSize;
 
 import org.llw.render.graphics.Camera2d;
 
+import org.llw.studio.assets.AssetDatabase;
 import org.llw.studio.editor.EditorCamera;
 
 
@@ -38,6 +39,16 @@ public final class GizmoContext {
 
     private final int viewHeight;
 
+    private final AssetDatabase assets;
+
+
+
+    public GizmoContext(EditorCamera editorCamera, Camera2d camera, int viewWidth, int viewHeight) {
+
+        this(editorCamera, camera, viewWidth, viewHeight, null);
+
+    }
+
 
 
     /**
@@ -50,9 +61,11 @@ public final class GizmoContext {
 
      * @param viewHeight   viewport height in screen pixels
 
+     * @param assets       project assets for component gizmo hit tests, or null
+
      */
 
-    public GizmoContext(EditorCamera editorCamera, Camera2d camera, int viewWidth, int viewHeight) {
+    public GizmoContext(EditorCamera editorCamera, Camera2d camera, int viewWidth, int viewHeight, AssetDatabase assets) {
 
         this.editorCamera = editorCamera;
 
@@ -61,6 +74,18 @@ public final class GizmoContext {
         this.viewWidth = viewWidth;
 
         this.viewHeight = viewHeight;
+
+        this.assets = assets;
+
+    }
+
+
+
+    /** @return project assets when provided to the constructor */
+
+    public AssetDatabase assets() {
+
+        return assets;
 
     }
 

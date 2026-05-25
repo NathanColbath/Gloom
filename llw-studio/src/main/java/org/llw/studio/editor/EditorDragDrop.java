@@ -31,6 +31,7 @@ public final class EditorDragDrop {
      * @param currentSelection {@link SelectionService#selected()} at frame start
      */
     public static void beginFrame(EntityId currentSelection) {
+        // Entity drag payloads can start mid-frame; treat as hierarchy drag so inspector stays pinned.
         if (isEntityPayloadActive()) {
             hierarchyDragThisFrame = true;
             dragOccurredThisGesture = true;
@@ -43,6 +44,7 @@ public final class EditorDragDrop {
         if (ImGui.isMouseDragging(ImGuiMouseButton.Left, SELECTION_DRAG_THRESHOLD)) {
             dragOccurredThisGesture = true;
         }
+        // ImGui may emit a spurious click when drag ends; suppress selection for two frames.
         if (hierarchyDragLastFrame && !hierarchyDragThisFrame) {
             suppressHierarchyClickFrames = 2;
         }
@@ -59,6 +61,7 @@ public final class EditorDragDrop {
         if (suppressHierarchyClickFrames > 0) {
             suppressHierarchyClickFrames--;
         }
+        // Apply deferred hierarchy picks only after release so drags never swap the inspector mid-gesture.
         if (!ImGui.isMouseDown(ImGuiMouseButton.Left)) {
             if (!pendingHierarchySelect.isNone() && !dragOccurredThisGesture) {
                 selection.select(pendingHierarchySelect);
@@ -90,6 +93,7 @@ public final class EditorDragDrop {
         if (selectionAtPointerDown.isNone()) {
             return false;
         }
+        // Defer only when clicking a different row than the one selected at pointer-down.
         return !clicked.equals(selectionAtPointerDown);
     }
 
@@ -105,6 +109,7 @@ public final class EditorDragDrop {
      * @return entity the inspector should display
      */
     public static EntityId inspectorEntity(EntityId currentSelection) {
+        // During hierarchy drag, keep entity-reference drop targets on the pre-gesture selection.
         if (isHierarchyDragGesture()) {
             if (!selectionAtPointerDown.isNone()) {
                 return selectionAtPointerDown;
@@ -133,7 +138,7 @@ public final class EditorDragDrop {
     }
 
     /**
-     * @return true when hierarchy/project clicks should not alter the current selection or inspector
+     * @return true when hierarchy/scene entity clicks should not alter selection
      */
     public static boolean shouldSuppressSelectionChange() {
         if (isActive()) {
@@ -155,5 +160,12 @@ public final class EditorDragDrop {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Narrower guard for project-browser asset selection (not blocked by hierarchy post-drag suppression).
+     */
+    public static boolean shouldSuppressAssetSelectionChange() {
+        return isActive();
     }
 }

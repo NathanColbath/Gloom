@@ -27,6 +27,7 @@ public final class ImGuiContext {
     public ImGuiContext(Window window) {
         ImGui.createContext();
         ImGuiIO io = ImGui.getIO();
+        // Docking flag must be set before backends init; layout ini is written on shutdown.
         io.addConfigFlags(ImGuiConfigFlags.DockingEnable);
         iniPath = globalIniPath();
         try {

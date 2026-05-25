@@ -54,6 +54,7 @@ public final class ProjectPanel implements EditorPanel {
   private final AssetEditorActions assetActions;
   private final ShaderGraphPanel shaderGraphPanel;
   private final ParticlePanel particlePanel;
+  private final AnimationPanel animationPanel;
   private boolean gridMode = true;
   private String currentFolderGuid;
   private StudioAsset pendingDeleteAsset;
@@ -71,7 +72,8 @@ public final class ProjectPanel implements EditorPanel {
       EditorMenuActions menuActions,
       AssetEditorActions assetActions,
       ShaderGraphPanel shaderGraphPanel,
-      ParticlePanel particlePanel
+      ParticlePanel particlePanel,
+      AnimationPanel animationPanel
   ) {
     this.window = window;
     this.assets = assets;
@@ -82,6 +84,7 @@ public final class ProjectPanel implements EditorPanel {
     this.assetActions = assetActions;
     this.shaderGraphPanel = shaderGraphPanel;
     this.particlePanel = particlePanel;
+    this.animationPanel = animationPanel;
   }
 
   @Override
@@ -143,6 +146,7 @@ public final class ProjectPanel implements EditorPanel {
 
   private void handleExternalFileDrop(StudioContext context) {
     if (context != null && context.isPlaying()) {
+      // Drain OS drops during play so paths do not queue and import on stop.
       window.takeDroppedPaths();
       return;
     }
@@ -156,6 +160,7 @@ public final class ProjectPanel implements EditorPanel {
   }
 
   private void renderTree(StudioContext context) {
+    // Folder drop targets are collected during row render, then applied once after the tree pass.
     AssetBrowserFolderDropState.beginFrame();
     if (currentFolderGuid == null) {
       return;
@@ -240,6 +245,7 @@ public final class ProjectPanel implements EditorPanel {
     if (folder == null) {
       return;
     }
+    // Full-panel invisible button captures drops on empty browser space, not just row hit targets.
     float width = Math.max(ImGui.getContentRegionAvailX(), 1f);
     float height = Math.max(ImGui.getContentRegionAvailY(), 1f);
     ImGui.invisibleButton("##project_entity_drop", width, height);
@@ -268,12 +274,38 @@ public final class ProjectPanel implements EditorPanel {
   }
 
   private void selectAsset(StudioAsset asset) {
-    if (EditorDragDrop.shouldSuppressSelectionChange()) {
+    if (EditorDragDrop.shouldSuppressAssetSelectionChange()) {
       return;
     }
     assets.select(asset.guid());
     assets.showInfo(asset.guid());
+    // Asset selection and entity selection are mutually exclusive in the inspector.
     selection.clear();
+    openSpecializedPanelIfNeeded(asset);
+  }
+
+  private void openSpecializedPanelIfNeeded(StudioAsset asset) {
+    if (asset == null || asset.isFolder()) {
+      return;
+    }
+    switch (asset.type()) {
+      case SHADER_GRAPH -> {
+        if (shaderGraphPanel != null) {
+          shaderGraphPanel.openAsset(asset.guid(), asset.path());
+        }
+      }
+      case PARTICLE_SYSTEM -> {
+        if (particlePanel != null) {
+          particlePanel.openAsset(asset.guid(), asset.path());
+        }
+      }
+      case ANIMATION, ANIMATION_CLIP -> {
+        if (animationPanel != null) {
+          animationPanel.openFromAsset(asset);
+        }
+      }
+      default -> {}
+    }
   }
 
   private AssetBrowserItemInteractions.Context browserInteractions(StudioContext context, String folderGuid) {
@@ -298,6 +330,11 @@ public final class ProjectPanel implements EditorPanel {
             asset -> {
               if (particlePanel != null) {
                 particlePanel.openAsset(asset.guid(), asset.path());
+              }
+            },
+            asset -> {
+              if (animationPanel != null) {
+                animationPanel.openFromAsset(asset);
               }
             },
             this::onAssetsChanged

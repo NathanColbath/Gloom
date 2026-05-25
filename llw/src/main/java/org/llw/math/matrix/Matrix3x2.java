@@ -12,7 +12,11 @@ import org.lwjgl.opengl.GL20;
  * <p>Coordinates follow a top-left origin: +X right, +Y down.
  */
 public final class Matrix3x2 {
+    private static final ThreadLocal<FloatBuffer> UPLOAD_BUFFER =
+            ThreadLocal.withInitial(() -> BufferUtils.createFloatBuffer(16));
+
     private final float[] m = new float[16];
+    private final float[] multiplyScratch = new float[16];
 
     /** Creates a new matrix initialized to the identity transform. */
     public Matrix3x2() {
@@ -98,9 +102,8 @@ public final class Matrix3x2 {
      * @return this matrix for chaining
      */
     public Matrix3x2 multiply(Matrix3x2 other) {
-        float[] result = new float[16];
-        multiplyInto(other.m, result);
-        System.arraycopy(result, 0, m, 0, 16);
+        multiplyInto(other.m, multiplyScratch);
+        System.arraycopy(multiplyScratch, 0, m, 0, 16);
         return this;
     }
 
@@ -157,8 +160,10 @@ public final class Matrix3x2 {
 
     /** Uploads this matrix to an OpenGL {@code mat4} uniform. */
     public void upload(int location) {
-        FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
-        buffer.put(m).flip();
+        FloatBuffer buffer = UPLOAD_BUFFER.get();
+        buffer.clear();
+        buffer.put(m);
+        buffer.flip();
         GL20.glUniformMatrix4fv(location, false, buffer);
     }
 

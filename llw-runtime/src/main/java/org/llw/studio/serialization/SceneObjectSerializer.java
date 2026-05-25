@@ -12,7 +12,10 @@ import org.llw.studio.ecs.components.CircleCollider2DComponent;
 import org.llw.studio.ecs.components.EdgeCollider2DComponent;
 import org.llw.studio.ecs.components.HierarchyComponent;
 import org.llw.studio.ecs.components.NameComponent;
+import org.llw.studio.ecs.components.Light2DComponent;
 import org.llw.studio.ecs.components.ParticleEmitterComponent;
+import org.llw.studio.ecs.components.SceneLightingComponent;
+import org.llw.studio.ecs.components.StaticLightmapContributor;
 import org.llw.studio.ecs.components.Rigidbody2DComponent;
 import org.llw.studio.ecs.components.SpriteRendererComponent;
 import org.llw.studio.ecs.components.TilemapCell;
@@ -83,6 +86,9 @@ public final class SceneObjectSerializer {
         node.put("active", active == null || active.selfActive);
         writeTransform(node, scene.world().getComponent(entity, Transform2DComponent.class));
         writeSprite(node, scene.world().getComponent(entity, SpriteRendererComponent.class));
+        writeLight2D(node, scene.world().getComponent(entity, Light2DComponent.class));
+        writeSceneLighting(node, scene.world().getComponent(entity, SceneLightingComponent.class));
+        writeStaticLightmapContributor(node, scene.world().getComponent(entity, StaticLightmapContributor.class));
         writeTilemap(node, scene.world().getComponent(entity, TilemapComponent.class));
         writeAnimation2D(node, scene.world().getComponent(entity, Animation2DComponent.class));
         writeParticleEmitter(node, scene.world().getComponent(entity, ParticleEmitterComponent.class));
@@ -149,6 +155,7 @@ public final class SceneObjectSerializer {
             JsonNode s = objectNode.path("spriteRenderer");
             sprite.spriteGuid = s.path("spriteGuid").asText("");
             sprite.textureGuid = s.path("textureGuid").asText("");
+            sprite.materialGuid = s.path("materialGuid").asText("");
             sprite.shaderGraphGuid = s.path("shaderGraphGuid").asText("");
             sprite.sortingOrder = s.path("sortingOrder").asInt();
             sprite.r = (float) s.path("r").asDouble(1.0);
@@ -156,6 +163,42 @@ public final class SceneObjectSerializer {
             sprite.b = (float) s.path("b").asDouble(1.0);
             sprite.a = (float) s.path("a").asDouble(1.0);
             object.addComponent(SpriteRendererComponent.class, sprite);
+        }
+        if (objectNode.has("light2D")) {
+            Light2DComponent light = new Light2DComponent();
+            JsonNode l = objectNode.path("light2D");
+            light.type = l.path("type").asText("POINT");
+            light.r = (float) l.path("r").asDouble(1.0);
+            light.g = (float) l.path("g").asDouble(1.0);
+            light.b = (float) l.path("b").asDouble(1.0);
+            light.intensity = (float) l.path("intensity").asDouble(1.0);
+            light.range = (float) l.path("range").asDouble(200.0);
+            light.innerAngle = (float) l.path("innerAngle").asDouble(30.0);
+            light.outerAngle = (float) l.path("outerAngle").asDouble(45.0);
+            light.falloff = (float) l.path("falloff").asDouble(1.0);
+            light.includeInBake = l.path("includeInBake").asBoolean(true);
+            light.castShadows = l.path("castShadows").asBoolean(false);
+            object.addComponent(Light2DComponent.class, light);
+        }
+        if (objectNode.has("sceneLighting")) {
+            SceneLightingComponent lighting = new SceneLightingComponent();
+            JsonNode sl = objectNode.path("sceneLighting");
+            lighting.ambientR = (float) sl.path("ambientR").asDouble(0.15);
+            lighting.ambientG = (float) sl.path("ambientG").asDouble(0.15);
+            lighting.ambientB = (float) sl.path("ambientB").asDouble(0.18);
+            lighting.ambientIntensity = (float) sl.path("ambientIntensity").asDouble(1.0);
+            lighting.bakedLightmapGuid = sl.path("bakedLightmapGuid").asText("");
+            lighting.lightmapEnabled = sl.path("lightmapEnabled").asBoolean(false);
+            lighting.lightmapMinX = (float) sl.path("lightmapMinX").asDouble(0.0);
+            lighting.lightmapMinY = (float) sl.path("lightmapMinY").asDouble(0.0);
+            lighting.lightmapMaxX = (float) sl.path("lightmapMaxX").asDouble(1024.0);
+            lighting.lightmapMaxY = (float) sl.path("lightmapMaxY").asDouble(1024.0);
+            object.addComponent(SceneLightingComponent.class, lighting);
+        }
+        if (objectNode.has("staticLightmapContributor")) {
+            StaticLightmapContributor contributor = new StaticLightmapContributor();
+            contributor.enabled = objectNode.path("staticLightmapContributor").path("enabled").asBoolean(true);
+            object.addComponent(StaticLightmapContributor.class, contributor);
         }
         if (objectNode.has("tilemap")) {
             object.addComponent(TilemapComponent.class, readTilemap(objectNode.path("tilemap")));
@@ -299,6 +342,48 @@ public final class SceneObjectSerializer {
         a.put("loop", anim.loop);
     }
 
+    public static void writeLight2D(ObjectNode node, Light2DComponent light) {
+        if (light == null) {
+            return;
+        }
+        ObjectNode l = node.putObject("light2D");
+        l.put("type", light.type == null ? "POINT" : light.type);
+        l.put("r", light.r);
+        l.put("g", light.g);
+        l.put("b", light.b);
+        l.put("intensity", light.intensity);
+        l.put("range", light.range);
+        l.put("innerAngle", light.innerAngle);
+        l.put("outerAngle", light.outerAngle);
+        l.put("falloff", light.falloff);
+        l.put("includeInBake", light.includeInBake);
+        l.put("castShadows", light.castShadows);
+    }
+
+    public static void writeSceneLighting(ObjectNode node, SceneLightingComponent lighting) {
+        if (lighting == null) {
+            return;
+        }
+        ObjectNode sl = node.putObject("sceneLighting");
+        sl.put("ambientR", lighting.ambientR);
+        sl.put("ambientG", lighting.ambientG);
+        sl.put("ambientB", lighting.ambientB);
+        sl.put("ambientIntensity", lighting.ambientIntensity);
+        sl.put("bakedLightmapGuid", lighting.bakedLightmapGuid == null ? "" : lighting.bakedLightmapGuid);
+        sl.put("lightmapEnabled", lighting.lightmapEnabled);
+        sl.put("lightmapMinX", lighting.lightmapMinX);
+        sl.put("lightmapMinY", lighting.lightmapMinY);
+        sl.put("lightmapMaxX", lighting.lightmapMaxX);
+        sl.put("lightmapMaxY", lighting.lightmapMaxY);
+    }
+
+    public static void writeStaticLightmapContributor(ObjectNode node, StaticLightmapContributor contributor) {
+        if (contributor == null) {
+            return;
+        }
+        node.putObject("staticLightmapContributor").put("enabled", contributor.enabled);
+    }
+
     public static void writeParticleEmitter(ObjectNode node, ParticleEmitterComponent emitter) {
         if (emitter == null) {
             return;
@@ -321,6 +406,9 @@ public final class SceneObjectSerializer {
             s.put("textureGuid", sprite.textureGuid);
         }
         s.put("sortingOrder", sprite.sortingOrder);
+        if (sprite.materialGuid != null && !sprite.materialGuid.isBlank()) {
+            s.put("materialGuid", sprite.materialGuid);
+        }
         if (sprite.shaderGraphGuid != null && !sprite.shaderGraphGuid.isBlank()) {
             s.put("shaderGraphGuid", sprite.shaderGraphGuid);
         }
@@ -660,12 +748,24 @@ public final class SceneObjectSerializer {
         ObjectNode c = node.putObject("uiCanvas");
         c.put("sortingOrder", canvas.sortingOrder);
         c.put("enabled", canvas.enabled);
+        if (canvas.renderMode != null) {
+            c.put("renderMode", canvas.renderMode.id());
+        }
+        c.put("referenceWidth", canvas.referenceWidth);
+        c.put("referenceHeight", canvas.referenceHeight);
     }
 
     public static UICanvasComponent readUiCanvas(JsonNode node) {
         UICanvasComponent canvas = new UICanvasComponent();
         canvas.sortingOrder = node.path("sortingOrder").asInt();
         canvas.enabled = node.path("enabled").asBoolean(true);
+        canvas.renderMode = org.llw.studio.ui.UiCanvasRenderMode.fromId(node.path("renderMode").asText(null));
+        if (node.has("referenceWidth")) {
+            canvas.referenceWidth = Math.max(1, node.path("referenceWidth").asInt(1920));
+        }
+        if (node.has("referenceHeight")) {
+            canvas.referenceHeight = Math.max(1, node.path("referenceHeight").asInt(1080));
+        }
         return canvas;
     }
 

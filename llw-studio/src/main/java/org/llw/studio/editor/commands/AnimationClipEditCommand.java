@@ -14,7 +14,7 @@ public final class AnimationClipEditCommand implements EditorCommand {
     public AnimationClipEditCommand(AnimationClip target, AnimationClip before, AnimationClip after) {
         this.target = target;
         this.before = before.copy();
-        this.after = after.copy();
+        this.after = after.copy(); // Isolate undo stacks from the shared editor working clip.
     }
 
     @Override
@@ -33,6 +33,7 @@ public final class AnimationClipEditCommand implements EditorCommand {
         target.frameRate = source.frameRate;
         target.loop = source.loop;
         target.tracks.clear();
+        // Keyframe edits can resort tracks or extend clip length — restore the full clip snapshot.
         for (AnimationTrack track : source.tracks) {
             target.tracks.add(track.copy());
         }

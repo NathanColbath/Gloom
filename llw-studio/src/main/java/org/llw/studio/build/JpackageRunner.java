@@ -54,7 +54,7 @@ public final class JpackageRunner {
             return null;
         }
         String product = settings.productName();
-        deleteQuietly(outputRoot.resolve(product));
+        deleteQuietly(outputRoot.resolve(product)); // jpackage refuses to overwrite a partial app-image folder.
         List<String> command = new java.util.ArrayList<>(List.of(
                 jpackage,
                 "--type", "app-image",
@@ -117,6 +117,7 @@ public final class JpackageRunner {
                     .map(String::trim)
                     .anyMatch(COMMUNITY_POLYGLOT_IMPL::equals);
             if (!hasCommunity) {
+                // Packaged exe needs community PolyglotImpl; enterprise-only JARs fail at script startup.
                 throw new IOException(
                         "player JAR does not include the community Graal polyglot provider; "
                                 + "rebuild the engine with gradlew :llw-player:fatJar"

@@ -2,18 +2,18 @@ package org.llw.render.graphics;
 
 import org.llw.render.core.Color;
 import org.llw.render.core.IntSize;
-import org.llw.render.gl.OpenGlBackend;
+import org.llw.render.backend.RenderBackend;
 
 /**
  * Shared {@link RenderTarget} implementation that queues draws and flushes through
- * {@link org.llw.render.gl.OpenGlBackend}.
+ * {@link RenderBackend}.
  */
 abstract class AbstractRenderTarget implements RenderTarget {
-    protected final OpenGlBackend backend;
+    protected final RenderBackend backend;
     protected final org.llw.render.gl.DrawQueue drawQueue = new org.llw.render.gl.DrawQueue();
     protected final Camera2d camera = new Camera2d();
 
-    protected AbstractRenderTarget(OpenGlBackend backend) {
+    protected AbstractRenderTarget(RenderBackend backend) {
         this.backend = backend;
     }
 

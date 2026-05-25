@@ -99,6 +99,13 @@ public final class PlayCameraBridge {
     }
 
     /**
+     * @return mirrored play camera used for UI layout and script camera queries
+     */
+    public static Camera2d mirrorCamera() {
+        return camera;
+    }
+
+    /**
      * @param target render camera to update from the mirrored play state
      */
     public static void applyTo(Camera2d target) {
