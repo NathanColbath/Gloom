@@ -107,8 +107,8 @@ class EditorStyleTest {
     @ParameterizedTest
     @CsvSource({
             "1,          1, a",
-            "2,          2, ab",
-            "3,          3, abc",
+            "2,          2, aa",
+            "3,          3, aaa",
     })
     void middleTruncate_shortStrings(int length, int maxChars, String expected) {
         String input = "a".repeat(length);

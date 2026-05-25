@@ -18,7 +18,7 @@ public final class AnimationReferenceField {
         PropertyRow.begin(label);
         String display = guid == null || guid.isBlank() ? "None" : assets.displayName(guid);
         float maxWidth = ImGui.getContentRegionAvailX() - 52f;
-        String truncated = EditorStyle.truncate(display, Math.max(20f, maxWidth));
+        String truncated = EditorStyle.middleTruncate(display, Math.max(20f, maxWidth));
         ImGui.textUnformatted(truncated);
         if (!display.equals(truncated) && ImGui.isItemHovered()) {
             ImGui.setTooltip(display);
