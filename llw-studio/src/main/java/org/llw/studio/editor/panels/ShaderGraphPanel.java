@@ -11,6 +11,7 @@ import org.llw.studio.assets.AssetType;
 import org.llw.studio.assets.StudioAsset;
 import org.llw.studio.editor.EditorSession;
 import org.llw.studio.editor.StudioContext;
+import org.llw.studio.editor.theme.EditorColors;
 import org.llw.studio.shadergraph.assets.ShaderGraphSerializer;
 import org.llw.studio.shadergraph.editor.ShaderGraphCanvas;
 import org.llw.studio.shadergraph.editor.ShaderGraphEditorState;
@@ -151,7 +152,8 @@ public final class ShaderGraphPanel implements EditorPanel, AutoCloseable {
             lastPreviewCompileMs = now;
         }
         if (!graphState.lastCompileError().isBlank()) {
-            ImGui.textColored(1f, 0.35f, 0.35f, 1f, graphState.lastCompileError());
+            ImGui.textColored(EditorColors.DANGER[0], EditorColors.DANGER[1], EditorColors.DANGER[2], EditorColors.DANGER[3],
+                    graphState.lastCompileError());
         }
         float availX = ImGui.getContentRegionAvailX();
         float availY = Math.max(120f, ImGui.getContentRegionAvailY() * 0.45f);

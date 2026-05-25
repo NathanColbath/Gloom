@@ -42,17 +42,11 @@ public final class AppMenuBar {
       }
       ImGui.separator();
       boolean buildingPlayer = actions.isBuildingPlayer();
-      if (buildingPlayer) {
-        ImGui.beginDisabled();
-      }
-      if (ImGui.menuItem("Build Settings...") && !buildingPlayer) {
+      if (ImGui.menuItem("Build Settings...", "", false, !buildingPlayer)) {
         actions.buildSettings();
       }
-      if (ImGui.menuItem("Build Player") && !buildingPlayer) {
+      if (ImGui.menuItem("Build Player", "", false, !buildingPlayer)) {
         actions.buildPlayer();
-      }
-      if (buildingPlayer) {
-        ImGui.endDisabled();
       }
       ImGui.separator();
       if (ImGui.menuItem("Exit")) {
@@ -61,23 +55,11 @@ public final class AppMenuBar {
       ImGui.endMenu();
     }
     if (ImGui.beginMenu("Edit")) {
-      if (!actions.canUndo()) {
-        ImGui.beginDisabled();
-      }
-      if (ImGui.menuItem("Undo")) {
+      if (ImGui.menuItem("Undo", "Ctrl+Z", false, actions.canUndo())) {
         actions.undo();
       }
-      if (!actions.canUndo()) {
-        ImGui.endDisabled();
-      }
-      if (!actions.canRedo()) {
-        ImGui.beginDisabled();
-      }
-      if (ImGui.menuItem("Redo")) {
+      if (ImGui.menuItem("Redo", "Ctrl+Shift+Z", false, actions.canRedo())) {
         actions.redo();
-      }
-      if (!actions.canRedo()) {
-        ImGui.endDisabled();
       }
       ImGui.endMenu();
     }

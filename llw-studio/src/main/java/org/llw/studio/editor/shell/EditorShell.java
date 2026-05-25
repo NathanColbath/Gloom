@@ -217,6 +217,8 @@ public final class EditorShell {
       panel.render(context);
     }
     EditorDragDrop.endFrame(selection);
+
+    EditorShortcuts.handleUndoRedo(context, menuActions);
     StudioMemory.endFrame();
   }
 

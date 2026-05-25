@@ -31,6 +31,8 @@ import org.llw.studio.editor.SceneViewInput;
 import org.llw.studio.editor.SelectionService;
 
 import org.llw.studio.editor.StudioContext;
+import org.llw.studio.editor.theme.EditorColors;
+import org.llw.studio.editor.theme.ThemeColors;
 
 import org.llw.studio.editor.commands.UndoStack;
 
@@ -285,7 +287,7 @@ public final class SceneViewPanel implements EditorPanel {
 
       float labelY = ImGui.getCursorScreenPosY() - height + 8f;
 
-      ImGui.getWindowDrawList().addText(labelX, labelY, 0xFF78DC78, "Playing");
+      ImGui.getWindowDrawList().addText(labelX, labelY, ThemeColors.toU32(EditorColors.PLAY_ACTIVE), "Playing");
 
     }
 

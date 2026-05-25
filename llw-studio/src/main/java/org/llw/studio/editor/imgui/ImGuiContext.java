@@ -7,6 +7,7 @@ import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import org.llw.render.window.Window;
 import org.llw.studio.editor.theme.EditorFonts;
+import org.llw.studio.editor.theme.GloomTheme;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,6 +19,7 @@ public final class ImGuiContext {
     private final ImGuiImplGlfw implGlfw;
     private final ImGuiImplGl3 implGl3;
     private final Path iniPath;
+    private boolean themeAppliedOnFirstFrame;
 
     /**
      * Creates the ImGui context, loads editor fonts, and initializes GLFW/GL3 backends.
@@ -65,6 +67,11 @@ public final class ImGuiContext {
     public void beginFrame(Window window) {
         implGlfw.newFrame();
         ImGui.newFrame();
+        // Re-apply once after backends' first newFrame in case ini/style was reset.
+        if (!themeAppliedOnFirstFrame) {
+            GloomTheme.apply();
+            themeAppliedOnFirstFrame = true;
+        }
     }
 
     /**

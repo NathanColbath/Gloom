@@ -11,6 +11,8 @@ import org.llw.studio.animation.SpriteKeyframe;
 import org.llw.studio.assets.AssetDatabase;
 import org.llw.studio.assets.AssetType;
 import org.llw.studio.assets.StudioAsset;
+import org.llw.studio.editor.theme.EditorColors;
+import org.llw.studio.editor.theme.ThemeColors;
 
 /**
  * Sprite keyframe dopesheet for the animation panel.
@@ -18,9 +20,6 @@ import org.llw.studio.assets.StudioAsset;
 public final class AnimationTimelineView {
     private static final float ROW_HEIGHT = 24f;
     private static final float RULER_HEIGHT = 28f;
-    private static final int GRID_COLOR = 0xFF2A2A2A;
-    private static final int DROP_LINE_COLOR = 0xFF4FC3F7;
-    private static final int DROP_DIAMOND_COLOR = 0x994FC3F7;
 
     private AnimationTimelineView() {
     }
@@ -114,7 +113,7 @@ public final class AnimationTimelineView {
                 topY,
                 originX + sheetViewportW,
                 topY + RULER_HEIGHT,
-                0xFF1E1E1E
+                u32(EditorColors.TIMELINE_RULER)
         );
         float length = Math.max(0.01f, clip.length);
         float majorStep = rulerLabelStep(length, state.pixelsPerSecond(), sheetViewportW);
@@ -129,14 +128,18 @@ public final class AnimationTimelineView {
             }
             boolean major = isMultipleOf(t, majorStep);
             float tickH = major ? 8f : 4f;
-            ImGui.getWindowDrawList().addLine(x, y - tickH, x, y + tickH, major ? 0xFF888888 : 0xFF444444, 1f);
+            ImGui.getWindowDrawList().addLine(
+                    x, y - tickH, x, y + tickH,
+                    major ? u32(EditorColors.TIMELINE_RULER_TICK) : u32(EditorColors.TIMELINE_GRID_MINOR),
+                    1f
+            );
             if (major) {
-                ImGui.getWindowDrawList().addText(x + 3f, topY + 2f, 0xFFBBBBBB, formatTimeLabel(t));
+                ImGui.getWindowDrawList().addText(x + 3f, topY + 2f, u32(EditorColors.TIMELINE_RULER_TEXT), formatTimeLabel(t));
             }
         }
         drawDropPreviewOnRuler(state, clip, originX, y);
         float playX = originX + AnimationTimelineMath.timeToX(state.currentTime(), state.pixelsPerSecond(), 0f);
-        ImGui.getWindowDrawList().addLine(playX, topY, playX, topY + RULER_HEIGHT, 0xFFFFFFFF, 2f);
+        ImGui.getWindowDrawList().addLine(playX, topY, playX, topY + RULER_HEIGHT, u32(EditorColors.TIMELINE_PLAYHEAD), 2f);
         ImGui.setCursorScreenPos(originX, topY);
         ImGui.invisibleButton("ruler_scrub", sheetViewportW, RULER_HEIGHT);
         if (ImGui.isItemActive() || (ImGui.isItemHovered() && ImGui.isMouseClicked(ImGuiMouseButton.Left))) {
@@ -167,7 +170,7 @@ public final class AnimationTimelineView {
                 rowY,
                 originX + sheetViewportW,
                 rowY + ROW_HEIGHT,
-                0xFF181818
+                u32(EditorColors.TIMELINE_SHEET)
         );
         drawRowGrid(originX, rowY, sheetViewportW, state, clip);
         renderSpriteLane(state, clip, originX, rowY, sheetViewportW, assets, withUndo);
@@ -201,16 +204,16 @@ public final class AnimationTimelineView {
                     y0,
                     x,
                     y1,
-                    isMultipleOf(t, majorStep) ? GRID_COLOR : 0xFF222222,
+                    isMultipleOf(t, majorStep) ? u32(EditorColors.TIMELINE_GRID) : u32(EditorColors.TIMELINE_GRID_MINOR),
                     1f
             );
         }
-        ImGui.getWindowDrawList().addLine(originX, y1, originX + sheetW, y1, GRID_COLOR, 1f);
+        ImGui.getWindowDrawList().addLine(originX, y1, originX + sheetW, y1, u32(EditorColors.TIMELINE_GRID), 1f);
     }
 
     private static void drawPlayhead(AnimationEditorState state, AnimationClip clip, float originX, float topY, float height) {
         float playX = originX + AnimationTimelineMath.timeToX(state.currentTime(), state.pixelsPerSecond(), 0f);
-        ImGui.getWindowDrawList().addLine(playX, topY, playX, topY + height, 0xCCFFFFFF, 1.5f);
+        ImGui.getWindowDrawList().addLine(playX, topY, playX, topY + height, u32(EditorColors.TIMELINE_PLAYHEAD), 1.5f);
     }
 
     private static void drawDropPreview(
@@ -224,10 +227,11 @@ public final class AnimationTimelineView {
             return;
         }
         float x = originX + AnimationTimelineMath.timeToX(state.dropPreviewTime(), state.pixelsPerSecond(), 0f);
-        ImGui.getWindowDrawList().addLine(x, topY, x, topY + height, DROP_LINE_COLOR, 2f);
+        int drop = u32(EditorColors.TIMELINE_DROP);
+        ImGui.getWindowDrawList().addLine(x, topY, x, topY + height, drop, 2f);
         int frame = Math.round(state.dropPreviewTime() * clip.frameRate);
         String label = String.format("%.2fs  f%d", state.dropPreviewTime(), frame);
-        ImGui.getWindowDrawList().addText(x + 6f, topY + 2f, DROP_LINE_COLOR, label);
+        ImGui.getWindowDrawList().addText(x + 6f, topY + 2f, drop, label);
     }
 
     private static void drawDropPreviewOnRuler(AnimationEditorState state, AnimationClip clip, float originX, float y) {
@@ -235,7 +239,7 @@ public final class AnimationTimelineView {
             return;
         }
         float x = originX + AnimationTimelineMath.timeToX(state.dropPreviewTime(), state.pixelsPerSecond(), 0f);
-        ImGui.getWindowDrawList().addLine(x, y - 12f, x, y + 12f, DROP_LINE_COLOR, 2f);
+        ImGui.getWindowDrawList().addLine(x, y - 12f, x, y + 12f, u32(EditorColors.TIMELINE_DROP), 2f);
     }
 
     private static void renderSpriteLane(
@@ -258,7 +262,7 @@ public final class AnimationTimelineView {
             float x = originX + AnimationTimelineMath.timeToX(key.time(), state.pixelsPerSecond(), 0f);
             boolean selected = AnimationTrackPaths.SPRITE.equals(state.selectedTrackPath())
                     && keyIndex == state.selectedKeyframeIndex();
-            drawDiamond(x, centerY, selected ? 0xFFFFD54F : 0xFFE0E0E0);
+            drawDiamond(x, centerY, selected ? u32(EditorColors.TIMELINE_KEYFRAME_SELECTED) : u32(EditorColors.TIMELINE_KEYFRAME));
             ImGui.setCursorScreenPos(x - hitSize * 0.5f, centerY - hitSize * 0.5f);
             ImGui.pushID("kf_" + keyIndex);
             if (ImGui.invisibleButton("##kf", hitSize, hitSize)) {
@@ -283,7 +287,7 @@ public final class AnimationTimelineView {
             drawDiamond(
                     originX + AnimationTimelineMath.timeToX(time, state.pixelsPerSecond(), 0f),
                     centerY,
-                    DROP_DIAMOND_COLOR
+                    u32(EditorColors.TIMELINE_DROP)
             );
             String payload = ImGui.acceptDragDropPayload(AssetDatabase.PAYLOAD_ASSET_GUID, String.class);
             if (payload != null) {
@@ -378,5 +382,9 @@ public final class AnimationTimelineView {
 
     private static void drawDiamond(float x, float y, int color) {
         ImGui.getWindowDrawList().addQuadFilled(x, y - 5f, x + 5f, y, x, y + 5f, x - 5f, y, color);
+    }
+
+    private static int u32(float[] rgba) {
+        return ThemeColors.toU32(rgba);
     }
 }

@@ -11,6 +11,7 @@ import org.llw.studio.assets.StudioAsset;
 import org.llw.studio.editor.EditorSession;
 import org.llw.studio.editor.SelectionService;
 import org.llw.studio.editor.StudioContext;
+import org.llw.studio.editor.theme.EditorColors;
 import org.llw.studio.ecs.EntityId;
 import org.llw.studio.ecs.components.ParticleEmitterComponent;
 import org.llw.studio.editor.particles.ParticleEditorState;
@@ -105,7 +106,8 @@ public final class ParticlePanel implements EditorPanel, AutoCloseable {
                 ImGui.textWrapped(
                         "Select a particle asset in the Project panel, double-click it, or click Edit on a Particle Emitter.");
                 if (!lastSaveMessage.isBlank()) {
-                    ImGui.textColored(1f, 0.35f, 0.35f, 1f, lastSaveMessage);
+                    ImGui.textColored(EditorColors.DANGER[0], EditorColors.DANGER[1], EditorColors.DANGER[2],
+                            EditorColors.DANGER[3], lastSaveMessage);
                 }
                 return;
             }

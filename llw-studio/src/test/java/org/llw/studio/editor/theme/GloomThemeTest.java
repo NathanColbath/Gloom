@@ -31,6 +31,8 @@ class GloomThemeTest {
         assertArrayLengthAndRange(EditorColors.PANEL_BG);
         assertArrayLengthAndRange(EditorColors.PANEL_HEADER);
         assertArrayLengthAndRange(EditorColors.INSPECTOR_OBJECT_HEADER_BG);
+        assertArrayLengthAndRange(EditorColors.INSPECTOR_COMPONENT_BG);
+        assertArrayLengthAndRange(EditorColors.INSPECTOR_COMPONENT_BORDER);
         assertArrayLengthAndRange(EditorColors.COMPONENT_HEADER_BG);
         assertArrayLengthAndRange(EditorColors.COMPONENT_HEADER_HOVER);
         assertArrayLengthAndRange(EditorColors.BORDER);
@@ -67,15 +69,28 @@ class GloomThemeTest {
         assertArrayLengthAndRange(EditorColors.NAV_HIGHLIGHT);
         assertArrayLengthAndRange(EditorColors.NAV_DIM_BG);
         assertArrayLengthAndRange(EditorColors.MODAL_DIM_BG);
+        assertArrayLengthAndRange(EditorColors.TIMELINE_GRID);
+        assertArrayLengthAndRange(EditorColors.TIMELINE_PLAYHEAD);
+        assertArrayLengthAndRange(EditorColors.TIMELINE_KEYFRAME_SELECTED);
+        assertArrayLengthAndRange(EditorColors.SHADER_NODE_BG);
+        assertArrayLengthAndRange(EditorColors.SHADER_LINK);
     }
 
     @Test
     void editorColors_accentDiffersFromSelection() {
-        // Accent (warm amber) should be visually distinct from selection (cool blue)
-        assertNotEquals(
-            EditorColors.ACCENT[0], EditorColors.SELECTION_BG[0],
-            "Accent red channel should differ from selection red channel"
-        );
+        // Muted blue-gray accent vs gray selection fill — distinct roles
+        assertTrue(EditorColors.ACCENT[2] > EditorColors.SELECTION_BG[2],
+            "Accent should read cooler (higher blue) than selection");
+        assertTrue(EditorColors.SELECTION_BG[3] < 1f,
+            "Selection should use partial alpha for row fills");
+    }
+
+    @Test
+    void applyModernGrayTheme_isAliasForApply() throws Exception {
+        var apply = GloomTheme.class.getDeclaredMethod("apply");
+        var modern = GloomTheme.class.getDeclaredMethod("applyModernGrayTheme");
+        assertNotEquals(apply, modern);
+        assertEquals(apply.getReturnType(), modern.getReturnType());
     }
 
     @Test

@@ -7,6 +7,7 @@ import org.llw.studio.assets.AnimationStateDefinition;
 import org.llw.studio.assets.AssetDatabase;
 import org.llw.studio.assets.AssetType;
 import org.llw.studio.assets.StudioAsset;
+import org.llw.studio.editor.theme.EditorColors;
 import org.llw.studio.editor.widgets.PropertyRow;
 
 import java.io.IOException;
@@ -43,7 +44,8 @@ public final class AnimationSetInspectorEditor {
             try {
                 assets.saveAnimationSet(asset.path(), set);
             } catch (IOException ex) {
-                ImGui.textColored(1f, 0.4f, 0.4f, 1f, ex.getMessage());
+                ImGui.textColored(EditorColors.DANGER[0], EditorColors.DANGER[1], EditorColors.DANGER[2],
+                        EditorColors.DANGER[3], ex.getMessage());
             }
         }
         PropertyRow.readOnlyValue("States", String.valueOf(set.states.size()));

@@ -1,11 +1,10 @@
 package org.llw.studio.editor.commands;
 
-import org.llw.studio.ecs.EntityId;
-import org.llw.studio.ecs.components.Transform2DComponent;
-import org.llw.studio.scene.Scene;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
+
+import org.llw.studio.ecs.EntityId;
+import org.llw.studio.scene.Scene;
 
 /**
  * Undo/redo stack of {@link EditorCommand} instances for the edit scene.

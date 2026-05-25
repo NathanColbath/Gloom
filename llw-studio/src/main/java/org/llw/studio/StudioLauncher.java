@@ -46,7 +46,7 @@ public final class StudioLauncher {
         ResourceManager resources = new ResourceManager(backend, audio);
 
         ImGuiContext imgui = new ImGuiContext(window);
-        GloomTheme.apply();
+        GloomTheme.applyModernGrayTheme();
 
         StudioEditorRuntime runtime = new StudioEditorRuntime(window, backend, resources, imgui, bootstrapRoot);
         Path sampleProject = Paths.get("studio-project").toAbsolutePath().normalize();

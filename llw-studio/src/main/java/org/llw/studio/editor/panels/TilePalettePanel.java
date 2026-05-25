@@ -9,6 +9,7 @@ import org.llw.studio.assets.StudioAsset;
 import org.llw.studio.editor.EditorSession;
 import org.llw.studio.editor.SelectionService;
 import org.llw.studio.editor.StudioContext;
+import org.llw.studio.editor.theme.EditorColors;
 import org.llw.studio.editor.theme.EditorStyle;
 import org.llw.studio.editor.widgets.SpriteSlicePreview;
 import org.llw.studio.ecs.components.TilemapComponent;
@@ -105,7 +106,8 @@ public final class TilePalettePanel implements EditorPanel {
                 }
                 boolean active = spriteAsset.guid().equals(session.tilemapEdit().activeSpriteGuid);
                 if (active) {
-                    ImGui.pushStyleColor(imgui.flag.ImGuiCol.Button, 0.3f, 0.5f, 0.8f, 1f);
+                    ImGui.pushStyleColor(imgui.flag.ImGuiCol.Button, EditorColors.SELECTION_BG[0], EditorColors.SELECTION_BG[1],
+                            EditorColors.SELECTION_BG[2], EditorColors.SELECTION_BG[3]);
                 }
                 ImGui.pushID(spriteAsset.guid());
                 if (ImGui.button("##tile", THUMB_SIZE, THUMB_SIZE)) {

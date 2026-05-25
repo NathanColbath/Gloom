@@ -7,6 +7,8 @@ import org.llw.studio.animation.AnimationTrack;
 import org.llw.studio.animation.AnimationTrackType;
 import org.llw.studio.animation.FloatKeyframe;
 import org.llw.studio.animation.SpriteKeyframe;
+import org.llw.studio.editor.theme.EditorColors;
+import org.llw.studio.editor.theme.ThemeColors;
 
 /**
  * Single timeline track row with keyframe diamonds.
@@ -52,7 +54,8 @@ public final class AnimationTrackRow {
     }
 
     private static void drawDiamond(float x, float y, boolean selected) {
-        int color = selected ? 0xFF4FC3F7 : 0xFFE0E0E0;
+        int color = selected ? ThemeColors.toU32(EditorColors.TIMELINE_KEYFRAME_SELECTED)
+                : ThemeColors.toU32(EditorColors.TIMELINE_KEYFRAME);
         ImGui.getWindowDrawList().addQuadFilled(x, y - 5f, x + 5f, y, x, y + 5f, x - 5f, y, color);
     }
 

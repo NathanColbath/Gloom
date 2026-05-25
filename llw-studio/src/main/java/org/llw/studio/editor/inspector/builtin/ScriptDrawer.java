@@ -14,6 +14,7 @@ import org.llw.studio.editor.components.InspectorContext;
 import org.llw.studio.editor.theme.EditorColors;
 import org.llw.studio.editor.theme.EditorIcons;
 import org.llw.studio.editor.widgets.ComponentFoldout;
+import org.llw.studio.editor.widgets.InspectorChrome;
 import org.llw.studio.editor.widgets.fields.AssetReferenceField;
 import org.llw.studio.editor.widgets.fields.BoolField;
 import org.llw.studio.editor.widgets.fields.EntityReferenceField;
@@ -59,6 +60,7 @@ public final class ScriptDrawer implements ComponentDrawer<ScriptComponent> {
             if (state.removeClicked()) {
                 container.removeAttachment(attachment.slotId);
                 context.markDirty();
+                ComponentFoldout.endComponent();
                 continue;
             }
             if (state.open()) {
@@ -66,8 +68,12 @@ public final class ScriptDrawer implements ComponentDrawer<ScriptComponent> {
                 drawAttachment(container, attachment, context, playing, selected);
                 ComponentFoldout.endBody();
             }
+            ComponentFoldout.endComponent();
         }
 
+        if (!playing) {
+            InspectorChrome.sectionGap();
+        }
         if (!playing && ImGui.button("Add Script", -1f, 0f)) {
             container.addAttachment();
             context.markDirty();

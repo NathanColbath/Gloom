@@ -26,8 +26,8 @@ public final class EditorStyle {
         EditorColors.ACCENT[3]);
     ImGui.pushStyleColor(ImGuiCol.ButtonHovered, EditorColors.ACCENT_HOVER[0], EditorColors.ACCENT_HOVER[1],
         EditorColors.ACCENT_HOVER[2], EditorColors.ACCENT_HOVER[3]);
-    ImGui.pushStyleColor(ImGuiCol.ButtonActive, EditorColors.ACCENT[0], EditorColors.ACCENT[1],
-        EditorColors.ACCENT[2], EditorColors.ACCENT[3]);
+    ImGui.pushStyleColor(ImGuiCol.ButtonActive, EditorColors.ACCENT_ACTIVE[0], EditorColors.ACCENT_ACTIVE[1],
+        EditorColors.ACCENT_ACTIVE[2], EditorColors.ACCENT_ACTIVE[3]);
   }
 
   public static void popAccent() {
@@ -79,9 +79,8 @@ public final class EditorStyle {
     ImGui.pushStyleColor(ImGuiCol.HeaderHovered, EditorColors.COMPONENT_HEADER_HOVER[0],
         EditorColors.COMPONENT_HEADER_HOVER[1], EditorColors.COMPONENT_HEADER_HOVER[2],
         EditorColors.COMPONENT_HEADER_HOVER[3]);
-    ImGui.pushStyleColor(ImGuiCol.HeaderActive, EditorColors.COMPONENT_HEADER_HOVER[0],
-        EditorColors.COMPONENT_HEADER_HOVER[1], EditorColors.COMPONENT_HEADER_HOVER[2],
-        EditorColors.COMPONENT_HEADER_HOVER[3]);
+    ImGui.pushStyleColor(ImGuiCol.HeaderActive, EditorColors.SELECTION_BG[0], EditorColors.SELECTION_BG[1],
+        EditorColors.SELECTION_BG[2], EditorColors.SELECTION_BG[3]);
   }
 
   public static void popComponentHeader() {

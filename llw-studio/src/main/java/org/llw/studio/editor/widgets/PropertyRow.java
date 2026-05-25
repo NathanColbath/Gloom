@@ -32,7 +32,6 @@ public final class PropertyRow {
 
   public static void end() {
     ImGui.popID();
-    ImGui.spacing();
   }
 
   /**

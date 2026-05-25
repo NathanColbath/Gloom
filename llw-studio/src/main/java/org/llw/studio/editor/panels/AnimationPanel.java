@@ -12,6 +12,7 @@ import org.llw.studio.assets.StudioAsset;
 import org.llw.studio.editor.EditorSession;
 import org.llw.studio.editor.SelectionService;
 import org.llw.studio.editor.StudioContext;
+import org.llw.studio.editor.theme.EditorColors;
 import org.llw.studio.editor.animation.AnimationClipActions;
 import org.llw.studio.editor.animation.AnimationEditorState;
 import org.llw.studio.editor.animation.AnimationPreviewViewport;
@@ -156,7 +157,8 @@ public final class AnimationPanel implements EditorPanel {
             drawToolbar(context, clip, withUndo);
             if (!lastSaveMessage.isBlank()) {
                 ImGui.sameLine(0f, 12f);
-                ImGui.textColored(0.4f, 0.85f, 0.5f, 1f, lastSaveMessage);
+                ImGui.textColored(EditorColors.PLAY_ACTIVE[0], EditorColors.PLAY_ACTIVE[1], EditorColors.PLAY_ACTIVE[2],
+                        EditorColors.PLAY_ACTIVE[3], lastSaveMessage);
             }
             ImGui.separator();
             AnimationTransportBar.render(animationState);

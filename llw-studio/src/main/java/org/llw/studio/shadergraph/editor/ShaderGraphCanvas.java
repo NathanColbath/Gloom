@@ -13,6 +13,8 @@ import org.llw.studio.shadergraph.model.ShaderGraphPinCatalog.PinDef;
 import org.llw.studio.shadergraph.model.ShaderGraphPinRef;
 import org.llw.studio.shadergraph.model.ShaderNodeType;
 import org.llw.studio.shadergraph.model.ShaderPinType;
+import org.llw.studio.editor.theme.EditorColors;
+import org.llw.studio.editor.theme.ThemeColors;
 
 import java.util.Iterator;
 import java.util.List;
@@ -99,7 +101,8 @@ public final class ShaderGraphCanvas {
         float w = ImGui.getContentRegionAvailX();
         float h = ImGui.getContentRegionAvailY();
         int grid = Math.max(8, (int) (32 * zoom));
-        int color = 0x20FFFFFF;
+        int color = u32(EditorColors.SHADER_GRID);
+        int axis = u32(EditorColors.SHADER_GRID_AXIS);
         float startX = ImGui.getWindowPosX();
         float startY = ImGui.getWindowPosY();
         for (int x = 0; x < w; x += grid) {
@@ -108,8 +111,8 @@ public final class ShaderGraphCanvas {
         for (int y = 0; y < h; y += grid) {
             drawList.addLine(startX, startY + y, startX + w, startY + y, color);
         }
-        drawList.addLine(originX, startY, originX, startY + h, 0x50FFFFFF);
-        drawList.addLine(startX, originY, startX + w, originY, 0x50FFFFFF);
+        drawList.addLine(originX, startY, originX, startY + h, axis);
+        drawList.addLine(startX, originY, startX + w, originY, axis);
     }
 
     private void drawLinks(ShaderGraphDocument document, imgui.ImDrawList drawList, float originX, float originY) {
@@ -123,14 +126,14 @@ public final class ShaderGraphCanvas {
             }
             ImVec2 fromPos = pinScreenPos(fromNode, link.from.pinId, false, originX, originY);
             ImVec2 toPos = pinScreenPos(toNode, link.to.pinId, true, originX, originY);
-            int color = i == selectedLinkIndex ? 0xFFFFCC44 : 0xFF88CCFF;
+            int color = i == selectedLinkIndex ? u32(EditorColors.SHADER_LINK_SELECTED) : u32(EditorColors.SHADER_LINK);
             drawBezier(drawList, fromPos, toPos, color);
         }
         if (isLinkDragActive()) {
             ShaderGraphNode fromNode = document.nodeById(linkFromNodeId);
             if (fromNode != null) {
                 ImVec2 fromPos = pinScreenPos(fromNode, linkFromPinId, false, originX, originY);
-                drawBezier(drawList, fromPos, ImGui.getMousePos(), 0xFFAAEEFF);
+                drawBezier(drawList, fromPos, ImGui.getMousePos(), u32(EditorColors.SHADER_LINK_PREVIEW));
             }
         }
     }
@@ -147,10 +150,12 @@ public final class ShaderGraphCanvas {
             boolean compileError = state.lastCompileError() != null
                     && !state.lastCompileError().isBlank()
                     && node.id.equals(state.previewRootNodeId());
-            int headerColor = compileError ? 0xFF4444AA : (selected ? 0xFF3A6EA5 : 0xFF2A2A35);
-            drawList.addRectFilled(x, y, x + w, y + h, 0xFF1E1E24, 6f);
+            int headerColor = compileError
+                    ? u32(EditorColors.SHADER_NODE_HEADER_ERROR)
+                    : (selected ? u32(EditorColors.SHADER_NODE_HEADER_SELECTED) : u32(EditorColors.SHADER_NODE_HEADER));
+            drawList.addRectFilled(x, y, x + w, y + h, u32(EditorColors.SHADER_NODE_BG), 6f);
             drawList.addRectFilled(x, y, x + w, y + HEADER_HEIGHT * zoom, headerColor, 6f);
-            drawList.addText(x + 6f, y + 4f, 0xFFFFFFFF, node.type.name());
+            drawList.addText(x + 6f, y + 4f, u32(EditorColors.SHADER_NODE_TEXT), node.type.name());
 
             // Node drag converts screen delta back to graph space; skip while link drag is active.
             if (selected && ImGui.isMouseDragging(ImGuiMouseButton.Left) && ImGui.isMouseDown(ImGuiMouseButton.Left)
@@ -260,7 +265,7 @@ public final class ShaderGraphCanvas {
         float cx = input ? nodeX + 10f : nodeX + nodeW - 10f;
         int pinColor = pinColor(pin.type());
         drawList.addCircleFilled(cx, pinY + 6f, PIN_RADIUS * zoom, pinColor);
-        drawList.addText(input ? cx + 10f : nodeX + 8f, pinY, 0xFFCCCCCC, pin.label());
+        drawList.addText(input ? cx + 10f : nodeX + 8f, pinY, u32(EditorColors.SHADER_PIN_TEXT), pin.label());
     }
 
     private void beginLinkDrag(String fromNode, String fromPin) {
@@ -417,11 +422,15 @@ public final class ShaderGraphCanvas {
 
     private static int pinColor(ShaderPinType type) {
         return switch (type) {
-            case FLOAT -> 0xFF88FF88;
-            case VEC2 -> 0xFF88CCFF;
-            case VEC3 -> 0xFFFFCC88;
-            case VEC4 -> 0xFFFF88CC;
+            case FLOAT -> u32(EditorColors.SHADER_PIN_FLOAT);
+            case VEC2 -> u32(EditorColors.SHADER_PIN_VEC2);
+            case VEC3 -> u32(EditorColors.SHADER_PIN_VEC3);
+            case VEC4 -> u32(EditorColors.SHADER_PIN_VEC4);
         };
+    }
+
+    private static int u32(float[] rgba) {
+        return ThemeColors.toU32(rgba);
     }
 
     private void renderAddNodePopup(ShaderGraphEditorState state) {

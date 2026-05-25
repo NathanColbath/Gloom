@@ -138,7 +138,8 @@ public final class ProjectPanel implements EditorPanel {
     renderDeleteConfirmModal();
     renderCreateFolderDialog();
     if (createFolderError != null) {
-      ImGui.textColored(1f, 0.35f, 0.35f, 1f, createFolderError);
+      ImGui.textColored(EditorColors.DANGER[0], EditorColors.DANGER[1], EditorColors.DANGER[2], EditorColors.DANGER[3],
+          createFolderError);
       createFolderError = null;
     }
     ImGui.end();
@@ -364,29 +365,18 @@ public final class ProjectPanel implements EditorPanel {
   private void renderPanelContextMenu(StudioContext context) {
     if (ImGui.beginPopupContextWindow("project_panel_ctx", 1)) {
       boolean blocked = context != null && context.isPlaying();
-      if (blocked) {
-        ImGui.beginDisabled();
-      }
-      if (!assetActions.clipboard().canPaste()) {
-        ImGui.beginDisabled();
-      }
-      if (ImGui.menuItem("Paste")) {
+      boolean canPaste = assetActions.clipboard().canPaste();
+      if (ImGui.menuItem("Paste", "", false, !blocked && canPaste)) {
         String folderGuid = currentFolderGuid == null ? assets.rootGuid() : currentFolderGuid;
         assetActions.pasteIntoFolder(folderGuid);
       }
-      if (!assetActions.clipboard().canPaste()) {
-        ImGui.endDisabled();
-      }
-      if (blocked) {
-        ImGui.endDisabled();
-      }
-      if (ImGui.menuItem("Create Folder")) {
+      if (ImGui.menuItem("Create Folder", "", false, !blocked)) {
         openCreateFolderDialog(currentFolderGuid == null ? assets.rootGuid() : currentFolderGuid);
       }
-      if (ImGui.menuItem("Create Script")) {
+      if (ImGui.menuItem("Create Script", "", false, !blocked)) {
         createScriptInCurrentFolder();
       }
-      if (ImGui.menuItem("Create Shader Graph")) {
+      if (ImGui.menuItem("Create Shader Graph", "", false, !blocked)) {
         Path folder = null;
         if (currentFolderGuid != null) {
           StudioAsset folderAsset = assets.get(currentFolderGuid);

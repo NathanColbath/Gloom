@@ -6,6 +6,7 @@ import org.llw.studio.assets.AssetDatabase;
 import org.llw.studio.assets.AssetType;
 import org.llw.studio.assets.StudioAsset;
 import org.llw.studio.editor.EditorSession;
+import org.llw.studio.editor.theme.EditorColors;
 import org.llw.studio.editor.widgets.fields.ColorField;
 import org.llw.studio.editor.widgets.fields.FloatField;
 import org.llw.studio.editor.widgets.fields.ShaderGraphReferenceField;
@@ -130,7 +131,8 @@ public final class MaterialInspectorEditor {
                     session.materialProgramCache().invalidate(asset.guid()); // Viewport must recompile after shader/property save.
                 }
             } catch (IOException ex) {
-                ImGui.textColored(1f, 0.4f, 0.4f, 1f, ex.getMessage());
+                ImGui.textColored(EditorColors.DANGER[0], EditorColors.DANGER[1], EditorColors.DANGER[2],
+                        EditorColors.DANGER[3], ex.getMessage());
             }
         }
     }

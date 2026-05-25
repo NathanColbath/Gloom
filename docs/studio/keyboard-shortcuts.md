@@ -7,8 +7,8 @@ Studio is still growing its shortcut map. Below is what is implemented today ver
 | Action | Shortcut | Notes |
 |--------|----------|-------|
 | Save scene | *(menu only)* | **File → Save Scene**; Ctrl+S planned |
-| Undo | *(menu only)* | **Edit → Undo** |
-| Redo | *(menu only)* | **Edit → Redo** |
+| Undo | Ctrl+Z | **Edit → Undo**; skipped while typing in a text field |
+| Redo | Ctrl+Shift+Z, Ctrl+Y | **Edit → Redo** |
 
 ## Play mode
 
@@ -41,7 +41,7 @@ Studio is still growing its shortcut map. Below is what is implemented today ver
 ## Tips
 
 - Focus **Game** view before testing WASD or mouse in scripts.
-- Use **Edit → Undo** after gizmo drags in Scene view.
+- Use **Ctrl+Z** or **Edit → Undo** after gizmo drags in Scene view.
 
 ## Related
 

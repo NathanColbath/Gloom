@@ -30,43 +30,33 @@ public final class AssetContextMenu {
         }
         boolean blocked = context != null && context.isPlaying();
         boolean isRoot = assetActions.isRootAsset(asset);
+        boolean editable = !blocked && !isRoot;
+        boolean canPaste = assetActions.clipboard().canPaste();
 
-        if (blocked) {
-            ImGui.beginDisabled();
-        }
         if (!isRoot) {
-            if (ImGui.menuItem("Copy")) {
+            if (ImGui.menuItem("Copy", "", false, editable)) {
                 assetActions.copy(asset);
             }
-            if (ImGui.menuItem("Cut")) {
+            if (ImGui.menuItem("Cut", "", false, editable)) {
                 assetActions.cut(asset);
             }
-            if (!assetActions.clipboard().canPaste()) {
-                ImGui.beginDisabled();
-            }
-            if (ImGui.menuItem("Paste")) {
+            if (ImGui.menuItem("Paste", "", false, editable && canPaste)) {
                 assetActions.pasteIntoFolder(pasteFolderGuid);
             }
-            if (!assetActions.clipboard().canPaste()) {
-                ImGui.endDisabled();
-            }
-            if (ImGui.menuItem("Duplicate")) {
+            if (ImGui.menuItem("Duplicate", "", false, editable)) {
                 assetActions.duplicate(asset);
             }
-            if (ImGui.menuItem("Delete")) {
+            if (ImGui.menuItem("Delete", "", false, editable)) {
                 onRequestDeleteConfirm.run();
             }
             ImGui.separator();
         }
-        if (blocked) {
-            ImGui.endDisabled();
-        }
 
         if (asset.isFolder()) {
-            if (onCreateFolder != null && ImGui.menuItem("Create Folder")) {
+            if (onCreateFolder != null && ImGui.menuItem("Create Folder", "", false, !blocked)) {
                 onCreateFolder.accept(asset);
             }
-            if (onCreateScript != null && ImGui.menuItem("Create Script")) {
+            if (onCreateScript != null && ImGui.menuItem("Create Script", "", false, !blocked)) {
                 onCreateScript.accept(asset);
             }
         }

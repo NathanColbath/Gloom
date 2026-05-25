@@ -17,6 +17,7 @@ import org.llw.studio.editor.components.InspectorContext;
 import org.llw.studio.editor.theme.EditorIcons;
 import org.llw.studio.editor.widgets.ComponentFoldout;
 import org.llw.studio.editor.widgets.EmptyState;
+import org.llw.studio.editor.widgets.InspectorChrome;
 import org.llw.studio.editor.widgets.InspectorObjectHeader;
 import org.llw.studio.ecs.EntityId;
 import org.llw.studio.ecs.components.ActiveComponent;
@@ -112,7 +113,10 @@ public final class InspectorPanel implements EditorPanel {
 
     float scrollHeight = ImGui.getContentRegionAvailY() - ADD_COMPONENT_FOOTER_HEIGHT;
     ImGui.beginChild("##inspector_scroll", 0f, scrollHeight, false);
+    InspectorChrome.beginScrollRegion();
+    ComponentFoldout.resetCardSpacing();
     renderObjectInspector(object, context);
+    InspectorChrome.endScrollRegion();
     ImGui.endChild();
 
     if (ImGui.button("Add Component", -1f, 0f) && !context.isPlaying()) {
@@ -154,6 +158,7 @@ public final class InspectorPanel implements EditorPanel {
         drawDrawer(transformInfo, transform);
         ComponentFoldout.endBody();
       }
+      ComponentFoldout.endComponent();
     }
 
     for (ComponentTypeInfo info : catalog.all()) {
@@ -176,6 +181,7 @@ public final class InspectorPanel implements EditorPanel {
       ComponentFoldout.State state = ComponentFoldout.header(key, info.menuName(), EditorIcons.COMPONENT, true, !context.isPlaying());
       if (state.removeClicked()) {
         object.removeComponent(info.type());
+        ComponentFoldout.endComponent();
         continue;
       }
       if (state.open()) {
@@ -183,6 +189,7 @@ public final class InspectorPanel implements EditorPanel {
         drawDrawer(info, component);
         ComponentFoldout.endBody();
       }
+      ComponentFoldout.endComponent();
     }
   }
 

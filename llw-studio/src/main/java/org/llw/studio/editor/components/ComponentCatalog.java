@@ -9,6 +9,9 @@ import org.llw.studio.editor.inspector.builtin.ParticleEmitterDrawer;
 import org.llw.studio.editor.inspector.builtin.AudioSourceDrawer;
 
 import org.llw.studio.editor.inspector.builtin.Camera2DDrawer;
+import org.llw.studio.editor.inspector.builtin.Light2DDrawer;
+import org.llw.studio.editor.inspector.builtin.SceneLightingDrawer;
+import org.llw.studio.editor.inspector.builtin.StaticLightmapContributorDrawer;
 
 import org.llw.studio.editor.inspector.builtin.BoxCollider2DDrawer;
 import org.llw.studio.editor.inspector.builtin.CircleCollider2DDrawer;
@@ -31,6 +34,9 @@ import org.llw.studio.ecs.components.Animation2DComponent;
 import org.llw.studio.ecs.components.ParticleEmitterComponent;
 
 import org.llw.studio.ecs.components.Camera2DComponent;
+import org.llw.studio.ecs.components.Light2DComponent;
+import org.llw.studio.ecs.components.SceneLightingComponent;
+import org.llw.studio.ecs.components.StaticLightmapContributor;
 
 import org.llw.studio.ecs.components.SpriteRendererComponent;
 import org.llw.studio.ecs.components.TilemapComponent;
@@ -119,6 +125,16 @@ public final class ComponentCatalog {
                 Camera2DComponent.class, "Camera 2D", "Rendering", true, false,
 
                 Camera2DComponent::new, new Camera2DDrawer()));
+
+        register(new ComponentTypeInfo(
+                Light2DComponent.class, "Light 2D", "Lighting", true, false,
+                Light2DComponent::new, new Light2DDrawer()));
+        register(new ComponentTypeInfo(
+                SceneLightingComponent.class, "Scene Lighting", "Lighting", true, false,
+                SceneLightingComponent::new, new SceneLightingDrawer()));
+        register(new ComponentTypeInfo(
+                StaticLightmapContributor.class, "Static Lightmap Contributor", "Lighting", true, false,
+                StaticLightmapContributor::new, new StaticLightmapContributorDrawer()));
 
         register(new ComponentTypeInfo(
 

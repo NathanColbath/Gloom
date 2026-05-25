@@ -73,6 +73,20 @@ Backlog: shared viewport resize helper (see [codebase health report](codebase-he
 
 See [codebase-health-report.md](codebase-health-report.md).
 
+## ImGui theme
+
+Palette and layout tokens live in `org.llw.studio.editor.theme`:
+
+| Class | Role |
+|-------|------|
+| `EditorColors` | RGBA tokens (single source of truth for colors) |
+| `EditorMetrics` | Rounding, padding, indent spacing |
+| `GloomTheme` | Applies `ImGuiCol` + style once at startup (`StudioLauncher` → `applyModernGrayTheme()`) |
+| `EditorStyle` | Scoped `pushStyleColor` helpers for panels/widgets |
+| `ThemeColors` | `rgba()` / `toU32()` for draw lists |
+
+Change editor colors in `EditorColors` only; avoid hardcoded `0xFF…` ARGB in panel draw code.
+
 ## Code documentation
 
 Comment tiers and package checklist: [code-documentation.md](code-documentation.md).
