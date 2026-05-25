@@ -370,6 +370,7 @@ public final class EditorMenuActionsHandler implements EditorMenuActions {
             return;
         }
         panelVisibility.resetAllOpen();
+        // ImGui persists dock splits in ini; delete so buildDefault runs on next frame.
         try {
             Files.deleteIfExists(shell.imguiIniPath());
         } catch (IOException ignored) {

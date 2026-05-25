@@ -37,6 +37,7 @@ public final class AssetBrowserItemInteractions {
             Consumer<Path> onOpenScript,
             Consumer<StudioAsset> onOpenShaderGraph,
             Consumer<StudioAsset> onOpenParticleSystem,
+            Consumer<StudioAsset> onOpenAnimation,
             Runnable onAssetsChanged
     ) {
         public Context(
@@ -65,6 +66,7 @@ public final class AssetBrowserItemInteractions {
                     onEnterFolder,
                     onOpenScene,
                     onOpenScript,
+                    null,
                     null,
                     null,
                     null
@@ -99,6 +101,7 @@ public final class AssetBrowserItemInteractions {
             );
         }
         dragAsset(asset);
+        // Double-click opens or navigates by asset type (folder enter, scene/script editors, etc.).
         if (ImGui.isItemHovered() && ImGui.isMouseDoubleClicked(0)) {
             if (asset.isFolder()) {
                 if (context.onEnterFolder() != null) {
@@ -120,8 +123,13 @@ public final class AssetBrowserItemInteractions {
                 if (context.onOpenParticleSystem() != null) {
                     context.onOpenParticleSystem().accept(asset);
                 }
+            } else if (asset.type() == AssetType.ANIMATION || asset.type() == AssetType.ANIMATION_CLIP) {
+                if (context.onOpenAnimation() != null) {
+                    context.onOpenAnimation().accept(asset);
+                }
             }
         }
+        // Grid cells defer folder drop targets to AssetBrowserFolderDropState (see AssetGrid).
         if (acceptFolderDrops && asset.isFolder()) {
             AssetDropTargets.acceptFolderDrops(
                     context.studioContext(),

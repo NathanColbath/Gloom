@@ -44,6 +44,7 @@ public final class AssetGridCell {
         float startY = ImGui.getCursorScreenPosY();
         float bodyHeight = inner - LABEL_HEIGHT;
 
+        // Thumbnail/icon and label drawn on draw list first; invisible button provides hit target on top.
         float iconX = startX + (inner - ICON_SIZE) * 0.5f;
         float iconY = startY + Math.max(0f, (bodyHeight - ICON_SIZE) * 0.5f);
         drawThumbnailOrIconDrawList(asset, iconKind, iconX, iconY, ICON_SIZE, assets, previews, icons);
@@ -63,12 +64,14 @@ public final class AssetGridCell {
         AssetBrowserItemInteractions.attach(asset, interactions, false);
 
         if (asset.isFolder() && interactions != null) {
+            // Register screen rect for deferred drop target (see AssetBrowserFolderDropState).
             AssetBrowserFolderDropState.register(asset.path(), startX, startY, startX + inner, startY + inner);
         }
 
         if (expandable) {
             ImGui.pushID("chev##" + asset.guid());
             renderChevronOverlay(icons, expanded, startX, startY, inner);
+            // Chevron click toggles nest expand without selecting the asset.
             if (clicked && isChevronClick(startX, startY, inner)) {
                 onToggleExpand.run();
                 ImGui.popID();

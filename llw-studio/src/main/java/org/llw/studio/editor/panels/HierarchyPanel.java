@@ -68,6 +68,7 @@ public final class HierarchyPanel implements EditorPanel {
     tree.setFilter(searchBuffer.get());
     float treeHeight = ImGui.getContentRegionAvailY() - (selection.count() > 1 ? FOOTER_HEIGHT : 0f);
     ImGui.beginChild("##hierarchy_tree", 0f, treeHeight, false);
+    // Mark hierarchy as drag source so inspector stays on pre-drag entity for drop targets.
     if (EditorDragDrop.isActive()) {
       EditorDragDrop.markHierarchyDragFrame();
     }
@@ -91,6 +92,7 @@ public final class HierarchyPanel implements EditorPanel {
     if (ImGui.beginDragDropTarget()) {
       String guid = ImGui.acceptDragDropPayload(AssetDatabase.PAYLOAD_ASSET_GUID, String.class);
       if (guid != null) {
+        // Drop on tree background instantiates at origin; row-specific drops pass cursor world coords elsewhere.
         PrefabEditorActions.tryInstantiatePrefab(
                 context, assets, selection, guid, null, 0f, 0f, false, false);
       }

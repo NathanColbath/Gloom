@@ -6,7 +6,7 @@ import org.llw.math.geometry.RectF;
 import org.llw.render.graphics.DrawState;
 import org.llw.render.graphics.Renderable;
 import org.llw.render.graphics.Texture2d;
-import org.llw.render.gl.OpenGlBackend;
+import org.llw.render.backend.RenderBackend;
 
 /**
  * Textured quad {@link Renderable} with optional tint and normalized texture coordinates.
@@ -98,7 +98,7 @@ public final class Sprite extends AbstractTransformable implements Renderable {
      * @param state per-draw blend mode, shader, optional texture override, and parent transform
      */
     @Override
-    public void render(OpenGlBackend backend, DrawState state) {
+    public void render(RenderBackend backend, DrawState state) {
         if (texture == null) {
             return;
         }

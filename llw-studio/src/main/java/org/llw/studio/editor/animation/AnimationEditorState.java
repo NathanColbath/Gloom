@@ -179,11 +179,11 @@ public final class AnimationEditorState {
     }
 
     public boolean shouldAdvancePanelPreview() {
-        return previewInPanel && clip != null;
+        return previewInPanel && clip != null; // Panel preview advances transport without touching scene entities.
     }
 
     public boolean shouldApplyScenePreview() {
-        return previewInScene && clip != null && !previewTargetEntity.isNone();
+        return previewInScene && clip != null && !previewTargetEntity.isNone(); // Scene preview writes sampled pose to edit entity.
     }
 
     public void stopPreview() {
@@ -198,7 +198,7 @@ public final class AnimationEditorState {
         currentTime += delta * speed;
         if (currentTime > clip.length) {
             if (loop && clip.length > 0f) {
-                currentTime %= clip.length;
+                currentTime %= clip.length; // Loop wraps playhead; non-loop stops at clip end.
             } else {
                 currentTime = clip.length;
                 playing = false;

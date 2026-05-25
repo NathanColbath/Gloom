@@ -43,9 +43,9 @@ Re-exports: `Vector2f`, `Vec2`, `Mathf`, `Math`, `Color`, `Rect2`, `Keys`.
 ## Components on entities
 
 ```typescript
-const sprite = this.entity.getComponent("SpriteRenderer");
-const rb = this.entity.getComponent("Rigidbody2D");
-const script = this.entity.getComponent(MyOtherScript);
+const sprite = this.entity.requireComponent("SpriteRenderer");
+const rb = this.entity.requireComponent("Rigidbody2D");
+const script = this.entity.getComponent(MyOtherScript); // optional: null if missing
 ```
 
 ## Sub-guides

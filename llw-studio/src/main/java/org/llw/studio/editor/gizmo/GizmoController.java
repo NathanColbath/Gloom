@@ -97,6 +97,7 @@ public final class GizmoController {
         }
         dragEntity = entity;
         activeHit = hit;
+        // Snapshot taken at press; undo command created only on release if transform changed.
         dragStartSnapshot = TransformSnapshot.from(transform);
         dragging = true;
         activeTool(toolState).beginDrag(context, scene, entity, hit, screenX, screenY);
@@ -108,7 +109,7 @@ public final class GizmoController {
         if (!dragging || dragEntity.isNone()) {
             return;
         }
-        new TransformSystem().onUpdate(scene.world(), 0f);
+        org.llw.studio.editor.render.EditorWorldTransforms.ensureUpdated(scene);
         activeTool(toolState).updateDrag(context, scene, dragEntity, activeHit, screenX, screenY);
     }
 
@@ -144,7 +145,7 @@ public final class GizmoController {
         if (entity.isNone() || !scene.world().isAlive(entity)) {
             return;
         }
-        new TransformSystem().onUpdate(scene.world(), 0f);
+        org.llw.studio.editor.render.EditorWorldTransforms.ensureUpdated(scene);
         activeTool(toolState).draw(context, target, scene, entity, hoverHit);
     }
 

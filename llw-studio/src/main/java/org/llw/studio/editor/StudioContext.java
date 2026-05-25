@@ -108,6 +108,7 @@ public final class StudioContext {
      * @return {@link #playScene()} while playing, otherwise {@link #editScene()}
      */
     public Scene activeScene() {
+        // Play clone is authoritative while running; edit scene stays untouched for stop/revert.
         return playing && playScene != null ? playScene : editScene;
     }
 

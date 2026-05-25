@@ -50,6 +50,7 @@ final class PanelVisibilityIni {
             List<String> lines = Files.isRegularFile(iniPath)
                     ? new ArrayList<>(Files.readAllLines(iniPath, StandardCharsets.UTF_8))
                     : new ArrayList<>();
+            // Strip and re-append only [StudioPanels] so ImGui window geometry sections stay intact.
             removeSection(lines);
             appendSection(lines, states);
             Files.write(iniPath, lines, StandardCharsets.UTF_8);

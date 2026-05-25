@@ -21,7 +21,9 @@ public final class SpriteRendererComponent implements Cloneable {
     public float a = 1f;
     /** Draw order among sprites (higher draws on top). */
     public int sortingOrder;
-    /** Optional shader graph asset GUID; empty uses the default sprite shader. */
+    /** Material asset GUID; preferred over {@link #shaderGraphGuid}. */
+    public String materialGuid = "";
+    /** @deprecated use {@link #materialGuid}; kept for scene migration */
     public String shaderGraphGuid = "";
 
     /**
@@ -36,6 +38,7 @@ public final class SpriteRendererComponent implements Cloneable {
         copy.b = b;
         copy.a = a;
         copy.sortingOrder = sortingOrder;
+        copy.materialGuid = materialGuid;
         copy.shaderGraphGuid = shaderGraphGuid;
         return copy;
     }

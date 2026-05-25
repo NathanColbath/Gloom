@@ -50,6 +50,7 @@ public final class PlayerStaging {
 
     private static Path resolvePlayerJar(Path projectRoot, List<String> log) throws IOException {
         List<String> attempts = new ArrayList<>();
+        // Dev checkout fatJar first; shipped studio falls back to classpath:/player/llw-player.jar.
         Path engineRoot = locateEngineRoot(projectRoot);
         if (engineRoot != null) {
             attempts.add(engineRoot.resolve("llw-player/build/libs/llw-player-all.jar").toString());
@@ -102,6 +103,7 @@ public final class PlayerStaging {
             starts.add(codeSource);
         }
         for (Path start : starts) {
+            // Walk parents to find monorepo root (settings.gradle.kts + llw-player module).
             Path found = walkUpForEngineRoot(start);
             if (found != null) {
                 return found;

@@ -37,6 +37,7 @@ import type {
   SpriteRendererComponent,
   Tilemap2DComponent,
   Animation2DComponent,
+  ParticleEmitterComponent,
 } from "./components";
 
 export type Vector2 = Vector2f;
@@ -74,6 +75,18 @@ export declare class Script {
   onTriggerStay?(other: Collider2D): void;
   onTriggerExit2D?(other: Collider2D): void;
   onTriggerExit?(other: Collider2D): void;
+  /** Edit-mode scene view overlay (all instances). */
+  onDrawGizmos?(): void;
+  /** Edit-mode scene view overlay when this entity is selected. */
+  onDrawGizmosSelected?(): void;
+}
+
+/** Edit-mode drawing helpers (scene view only). */
+export declare namespace Gizmos {
+  function setColor(r: number, g: number, b: number, a: number): void;
+  function drawLine(a: Vector2, b: Vector2): void;
+  function drawWireCircle(center: Vector2, radius: number): void;
+  function drawWireRect(center: Vector2, width: number, height: number): void;
 }
 
 export type ScriptConstructor<T extends Script = Script> = abstract new (
@@ -98,6 +111,7 @@ export interface Entity {
   getComponent(type: "SpriteRenderer"): SpriteRendererComponent | null;
   getComponent(type: "Tilemap2D"): Tilemap2DComponent | null;
   getComponent(type: "Animation2D"): Animation2DComponent | null;
+  getComponent(type: "ParticleEmitter"): ParticleEmitterComponent | null;
   getComponent(type: "AudioSource"): AudioSourceComponent | null;
   getComponent(type: "Script"): ScriptComponentRef | null;
   getComponent(type: "Rigidbody2D"): Rigidbody2DComponent | null;
@@ -110,6 +124,23 @@ export interface Entity {
   getComponent(type: "UITextField"): UITextFieldComponent | null;
   getComponent<T extends Script>(scriptClass: ScriptConstructor<T>): T | null;
   getComponent<T extends Component = Component>(type: ComponentType): T | null;
+  requireComponent(type: "Camera2D"): Camera2DComponent;
+  requireComponent(type: "SpriteRenderer"): SpriteRendererComponent;
+  requireComponent(type: "Tilemap2D"): Tilemap2DComponent;
+  requireComponent(type: "Animation2D"): Animation2DComponent;
+  requireComponent(type: "ParticleEmitter"): ParticleEmitterComponent;
+  requireComponent(type: "AudioSource"): AudioSourceComponent;
+  requireComponent(type: "Script"): ScriptComponentRef;
+  requireComponent(type: "Rigidbody2D"): Rigidbody2DComponent;
+  requireComponent(type: "BoxCollider2D"): BoxCollider2DComponent;
+  requireComponent(type: "CircleCollider2D"): CircleCollider2DComponent;
+  requireComponent(type: "EdgeCollider2D"): EdgeCollider2DComponent;
+  requireComponent(type: "UILabel"): UILabelComponent;
+  requireComponent(type: "UIButton"): UIButtonComponent;
+  requireComponent(type: "UIToggle"): UIToggleComponent;
+  requireComponent(type: "UITextField"): UITextFieldComponent;
+  requireComponent<T extends Script>(scriptClass: ScriptConstructor<T>): T;
+  requireComponent<T extends Component = Component>(type: ComponentType): T;
   addComponent(type: ComponentType): void;
   removeComponent(type: ComponentType): void;
   destroy(): void;

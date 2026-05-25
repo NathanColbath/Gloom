@@ -3,7 +3,7 @@ package org.llw.render.graphics;
 import org.llw.render.core.Color;
 import org.llw.render.core.IntSize;
 import org.llw.render.gl.FramebufferObject;
-import org.llw.render.gl.OpenGlBackend;
+import org.llw.render.backend.RenderBackend;
 
 /**
  * Off-screen {@link RenderTarget} that renders into an OpenGL framebuffer.
@@ -30,7 +30,7 @@ public final class OffscreenTarget extends AbstractRenderTarget {
      * @param backend OpenGL backend that must already be initialized
      * @param size pixel width and height of the color attachment
      */
-    public OffscreenTarget(OpenGlBackend backend, IntSize size) {
+    public OffscreenTarget(RenderBackend backend, IntSize size) {
         super(backend);
         this.framebuffer = new FramebufferObject(size);
         camera.setSize(size.width(), size.height());

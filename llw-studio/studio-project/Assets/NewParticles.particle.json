@@ -84,7 +84,7 @@
       "drag" : 0.1
     },
     "renderer" : {
-      "spriteGuid" : "f1ff308f-e53b-4c00-b77d-1c48c9ddff4d",
+      "spriteGuid" : "",
       "blendMode" : "ADDITIVE",
       "sortingOrder" : 0,
       "shaderGraphGuid" : ""

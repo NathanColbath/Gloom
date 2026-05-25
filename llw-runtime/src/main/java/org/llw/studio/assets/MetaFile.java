@@ -334,6 +334,18 @@ public final class MetaFile {
 
         }
 
+        if (name.endsWith(".material.json")) {
+
+            return AssetType.MATERIAL;
+
+        }
+
+        if (name.endsWith(".lightmap.png") || name.endsWith(".lightmap.json")) {
+
+            return AssetType.LIGHTMAP;
+
+        }
+
         if (name.endsWith(".java") || name.endsWith(".js") || name.endsWith(".ts")) {
 
             return AssetType.SCRIPT;

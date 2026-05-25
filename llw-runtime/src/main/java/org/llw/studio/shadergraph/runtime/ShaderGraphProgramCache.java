@@ -7,6 +7,7 @@ import org.llw.studio.assets.StudioAsset;
 import org.llw.studio.shadergraph.assets.ShaderGraphSerializer;
 import org.llw.studio.shadergraph.compiler.ShaderGraphCompileResult;
 import org.llw.studio.shadergraph.compiler.ShaderGraphCompiler;
+import org.llw.render.gl.DefaultShaders;
 import org.llw.studio.shadergraph.compiler.ShaderGraphTemplates;
 import org.llw.studio.shadergraph.model.ShaderGraphDocument;
 import org.llw.util.log.Log;
@@ -85,6 +86,40 @@ public final class ShaderGraphProgramCache {
         if (asset != null) {
             invalidate(asset.guid());
         }
+    }
+
+    /**
+     * Compiles a shader graph with the lit sprite vertex shader for material workflows.
+     */
+    public ShaderProgram programLit(String assetGuid) {
+        if (assetGuid == null || assetGuid.isBlank()) {
+            return null;
+        }
+        StudioAsset asset = assets.get(assetGuid);
+        if (asset == null) {
+            return null;
+        }
+        int revision = assets.shaderGraphRevision(assetGuid);
+        String cacheKey = NAME_PREFIX + "lit_" + assetGuid;
+        Entry entry = cache.get(cacheKey);
+        if (entry != null && entry.revision == revision && entry.program != null) {
+            return entry.program;
+        }
+        ShaderGraphDocument document = assets.loadShaderGraph(asset.path());
+        if (document == null) {
+            return null;
+        }
+        ShaderGraphCompileResult compiled = ShaderGraphCompiler.compileFull(document);
+        if (!compiled.success()) {
+            return null;
+        }
+        ShaderProgram program = shaderLibrary.reloadFromSources(
+                cacheKey,
+                DefaultShaders.LIT_SPRITE_VERTEX,
+                compiled.fragmentSource()
+        );
+        cache.put(cacheKey, new Entry(revision, program));
+        return program;
     }
 
     private record Entry(int revision, ShaderProgram program) {

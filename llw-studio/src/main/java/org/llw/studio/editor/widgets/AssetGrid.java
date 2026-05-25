@@ -127,6 +127,7 @@ public final class AssetGrid {
     if (icons == null) {
       return;
     }
+    // Collect folder rects during layout; submit drop targets after columns() to avoid overlap bugs.
     AssetBrowserFolderDropState.beginFrame();
     float panelWidth = ImGui.getContentRegionAvailX();
     float cell = AssetGridCell.CELL_SIZE;
@@ -162,6 +163,7 @@ public final class AssetGrid {
     }
     ImGui.columns(1);
     if (interactions != null) {
+      // Deferred pass: invisible buttons at registered folder screen rects.
       AssetBrowserFolderDropState.submitTargets(
               context,
               selection,

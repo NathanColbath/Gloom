@@ -1,7 +1,11 @@
-/** Screen-space UI canvas root (viewport pixels, Y-down). */
+/** UI canvas root (screen-space HUD or world-space overlay). */
 export interface UICanvasComponent {
   sortingOrder: number;
   enabled: boolean;
+  /** "screenSpace" (default) or "worldSpace" */
+  renderMode: string;
+  referenceWidth: number;
+  referenceHeight: number;
 }
 
 /** UI text label (string is writable from scripts). */

@@ -44,6 +44,7 @@ public final class ScriptDrawer implements ComponentDrawer<ScriptComponent> {
         AssetDatabase assets = context.assets();
         StudioContext studioContext = context.studioContext();
         boolean playing = studioContext != null && studioContext.isPlaying();
+        // Inspector mutations during play would not persist to the edit scene on stop.
         var selected = context.selection() == null
                 ? org.llw.studio.ecs.EntityId.none()
                 : context.selection().selected();
@@ -171,6 +172,7 @@ public final class ScriptDrawer implements ComponentDrawer<ScriptComponent> {
             drawPlayField(attachment, context, scriptSystem, activeScene, entity, field, entityDrop);
             return;
         }
+        // Edit mode writes attachment JSON; play mode reads/writes live Graal script fields.
         drawEditField(attachment, context, activeScene, field, entityDrop);
     }
 
@@ -284,6 +286,7 @@ public final class ScriptDrawer implements ComponentDrawer<ScriptComponent> {
     }
 
     private static String effectivePlayFieldType(String schemaType, Value raw) {
+        // Runtime value type may differ from schema (e.g. entity fields become host objects).
         if (raw == null || raw.isNull()) {
             return schemaType;
         }
@@ -342,7 +345,7 @@ public final class ScriptDrawer implements ComponentDrawer<ScriptComponent> {
                 attachment.fields.get(field.name), context.assets());
         if (Objects.equals(current.prefabGuid(), next.prefabGuid())
                 && current.sceneId() == next.sceneId()) {
-            return;
+            return; // Skip redundant play write when inspector value is unchanged.
         }
         applyEntityFieldValue(attachment, context, field.name, next);
         if (next.hasPrefab()) {
@@ -400,6 +403,7 @@ public final class ScriptDrawer implements ComponentDrawer<ScriptComponent> {
         float x = vector2FromInstance(raw, "x");
         float y = vector2FromInstance(raw, "y");
         if (raw == null || raw.isNull()) {
+            // Play instance not initialized yet — show serialized edit-scene defaults.
             JsonNode stored = attachment.fields.getOrDefault(field.name, field.copyDefault());
             x = vector2Component(stored, "x", field.copyDefault());
             y = vector2Component(stored, "y", field.copyDefault());

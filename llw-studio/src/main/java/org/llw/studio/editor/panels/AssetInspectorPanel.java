@@ -140,6 +140,7 @@ public final class AssetInspectorPanel {
 
 
 
+            // Type-specific editors share one foldout; only the matching branch draws controls.
             if (asset.type() == AssetType.TEXTURE) {
 
                 var texture = previews.preview(asset.guid());

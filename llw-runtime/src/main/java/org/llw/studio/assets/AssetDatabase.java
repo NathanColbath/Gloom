@@ -6,6 +6,8 @@ import org.llw.resources.AssetRef;
 import org.llw.resources.ResourceManager;
 import org.llw.studio.animation.AnimationClip;
 import org.llw.studio.animation.AnimationClipSerializer;
+import org.llw.studio.materials.assets.MaterialSerializer;
+import org.llw.studio.materials.model.MaterialDocument;
 import org.llw.studio.particles.ParticleSystemSerializer;
 import org.llw.studio.particles.model.ParticleSystemDocument;
 import org.llw.studio.shadergraph.assets.ShaderGraphSerializer;
@@ -52,6 +54,7 @@ public final class AssetDatabase {
     private final Map<String, TextureImportSettings> textureImportSettingsByGuid = new HashMap<>();
     private final Map<String, Integer> shaderGraphRevision = new HashMap<>();
     private final Map<String, Integer> particleRevision = new HashMap<>();
+    private final Map<String, Integer> materialRevision = new HashMap<>();
     private String selectedGuid;
     private String infoGuid;
 
@@ -320,6 +323,9 @@ public final class AssetDatabase {
         if (type == AssetType.PARTICLE_SYSTEM) {
             particleRevision.put(meta.guid, (int) modified.toEpochMilli());
         }
+        if (type == AssetType.MATERIAL) {
+            materialRevision.put(meta.guid, (int) modified.toEpochMilli());
+        }
         return new StudioAsset(meta.guid, path, type, name, modified);
     }
 
@@ -375,6 +381,77 @@ public final class AssetDatabase {
         if (guid != null && !guid.isBlank()) {
             particleRevision.merge(guid, 1, Integer::sum);
         }
+    }
+
+    /**
+     * @param path absolute or assets-relative path to a material file
+     * @return loaded document, or null on failure
+     */
+    public MaterialDocument loadMaterial(Path path) {
+        if (path == null) {
+            return null;
+        }
+        try {
+            if (Files.isRegularFile(path)) {
+                return MaterialSerializer.load(path);
+            }
+        } catch (IOException ignored) {
+        }
+        return null;
+    }
+
+    /**
+     * @param guid material asset GUID
+     * @return loaded document from disk or packed raw bytes
+     */
+    public MaterialDocument loadMaterial(String guid) {
+        if (guid == null || guid.isBlank()) {
+            return null;
+        }
+        StudioAsset asset = get(guid);
+        if (asset != null && asset.type() == AssetType.MATERIAL) {
+            MaterialDocument fromDisk = loadMaterial(asset.path());
+            if (fromDisk != null) {
+                return fromDisk;
+            }
+        }
+        if (resources != null && resources.isRegistered(guid)) {
+            try (AssetRef<byte[]> ref = resources.acquireRaw(guid)) {
+                return MaterialSerializer.load(ref.get());
+            } catch (IOException ignored) {
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param guid material asset GUID
+     * @return revision token for material program cache
+     */
+    public int materialRevision(String guid) {
+        return materialRevision.getOrDefault(guid, 0);
+    }
+
+    /** Invalidates cached programs for a material asset. */
+    public void bumpMaterialRevision(String guid) {
+        if (guid != null && !guid.isBlank()) {
+            materialRevision.merge(guid, 1, Integer::sum);
+        }
+    }
+
+    /**
+     * Persists a material document and bumps its revision for program cache invalidation.
+     *
+     * @param path     material file path
+     * @param document document to write
+     */
+    public void saveMaterial(Path path, MaterialDocument document) throws IOException {
+        MaterialSerializer.save(path, document);
+        StudioAsset asset = findByPath(path);
+        if (asset != null) {
+            bumpMaterialRevision(asset.guid());
+        }
+        refresh();
     }
 
     /**

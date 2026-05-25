@@ -4,6 +4,7 @@ import org.llw.render.core.Color;
 import org.llw.math.matrix.Matrix3x2;
 import org.llw.render.graphics.BlendMode;
 import org.llw.render.graphics.Font;
+import org.llw.render.backend.RenderBackend;
 import org.llw.render.graphics.ShaderProgram;
 
 /**
@@ -13,14 +14,14 @@ import org.llw.render.graphics.ShaderProgram;
  * Missing glyphs are skipped without advancing the cursor beyond their advance width.
  */
 public final class TextRenderer {
-    private final OpenGlBackend backend;
+    private final RenderBackend backend;
 
     /**
      * Creates a text renderer that submits glyph quads through the given backend.
      *
      * @param backend OpenGL backend used for {@link OpenGlBackend#drawTexturedQuad} calls
      */
-    public TextRenderer(OpenGlBackend backend) {
+    public TextRenderer(RenderBackend backend) {
         this.backend = backend;
     }
 
@@ -78,6 +79,5 @@ public final class TextRenderer {
             );
             cursorX += glyph.advance();
         }
-        backend.flushSprites();
     }
 }

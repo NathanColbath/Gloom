@@ -22,6 +22,14 @@ public final class EditorRenderLayers {
 
     public static final int CAMERA_GIZMO = 5_000;
 
+    /** Component-specific overlays (lights, particles, colliders). */
+
+    public static final int COMPONENT_GIZMO = 6_000;
+
+    /** Script {@code onDrawGizmos} overlays. */
+
+    public static final int SCRIPT_GIZMO = 7_000;
+
     /** Selection outline around picked entities. */
 
     public static final int SELECTION = 10_000;

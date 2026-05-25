@@ -24,6 +24,7 @@ public final class Camera2d {
     private final RectF viewport = new RectF(0f, 0f, 1f, 1f);
     private final Matrix3x2 viewMatrix = new Matrix3x2();
     private final Matrix3x2 inverseViewMatrix = new Matrix3x2();
+    private final Matrix3x2 cachedViewProjection = new Matrix3x2();
     private boolean dirty = true;
 
     /**
@@ -175,11 +176,7 @@ public final class Camera2d {
         if (dirty) {
             updateMatrices();
         }
-        float left = center.x - size.x / 2f;
-        float right = center.x + size.x / 2f;
-        float top = center.y - size.y / 2f;
-        float bottom = center.y + size.y / 2f;
-        return Matrix3x2.ortho(left, right, top, bottom);
+        return cachedViewProjection;
     }
 
     /**
@@ -220,7 +217,8 @@ public final class Camera2d {
         float right = center.x + size.x / 2f;
         float top = center.y - size.y / 2f;
         float bottom = center.y + size.y / 2f;
-        viewMatrix.set(Matrix3x2.ortho(left, right, top, bottom));
+        cachedViewProjection.set(Matrix3x2.ortho(left, right, top, bottom));
+        viewMatrix.set(cachedViewProjection);
         dirty = false;
     }
 }

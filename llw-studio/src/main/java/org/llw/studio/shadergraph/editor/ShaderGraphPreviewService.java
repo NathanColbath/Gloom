@@ -30,6 +30,7 @@ public final class ShaderGraphPreviewService {
     }
 
     public void ensureCompiled(ShaderGraphEditorState state) {
+        // Recompile only when graph revision or preview root node changes.
         if (state.revision() == compiledRevision && compiledNodeId.equals(state.previewRootNodeId())) {
             return;
         }
@@ -37,6 +38,7 @@ public final class ShaderGraphPreviewService {
         ShaderGraphDocument document = state.document();
         String root = state.previewRootNodeId();
         ShaderGraphCompileResult result;
+        // Full graph when no root or root is FragmentOutput; otherwise compile subgraph to selected node.
         if (root == null || root.isBlank()) {
             result = ShaderGraphCompiler.compileFull(document);
         } else if (state.document().nodeById(root) != null
@@ -76,6 +78,7 @@ public final class ShaderGraphPreviewService {
             return;
         }
         target.clear(new Color(40, 40, 44, 255));
+        // Centered quad scaled to preview panel; shader samples bound preview texture.
         float quadW = width * 0.85f;
         float quadH = height * 0.85f;
         float x = (width - quadW) * 0.5f;
@@ -86,6 +89,7 @@ public final class ShaderGraphPreviewService {
         sprite.setTint(Color.WHITE);
         Matrix3x2 transform = new Matrix3x2().identity();
         transform.translate(x, y);
+        // Scale sprite to panel quad while preserving texture aspect via separate width/height scale.
         transform.scale(quadW / texture.size().width(), quadH / texture.size().height());
 
         DrawState drawState = DrawState.DEFAULT.withShader(previewProgram).withTransform(transform);

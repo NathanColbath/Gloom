@@ -121,6 +121,7 @@ public final class TilePalettePanel implements EditorPanel {
                 if (active) {
                     ImGui.popStyleColor();
                 }
+                // Manual wrap: ImGui has no grid layout; advance column when next tile would overflow.
                 float cursorX = ImGui.getItemRectMaxX();
                 float nextX = cursorX + THUMB_SIZE + ImGui.getStyle().getItemSpacingX();
                 if (nextX + THUMB_SIZE > ImGui.getWindowPosX() + ImGui.getWindowContentRegionMaxX()) {

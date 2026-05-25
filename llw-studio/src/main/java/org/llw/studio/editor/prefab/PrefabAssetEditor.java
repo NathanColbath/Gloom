@@ -72,7 +72,7 @@ public final class PrefabAssetEditor {
      */
     public void render(StudioContext context, AssetDatabase assets, StudioAsset asset) {
         if (asset == null || context == null || context.isPlaying()) {
-            return;
+            return; // Prefab JSON editing is edit-mode only; play scene owns runtime instances.
         }
         ensureLoaded(asset);
         if (document == null) {
@@ -81,7 +81,7 @@ public final class PrefabAssetEditor {
         }
 
         inspectorContext.setStudioContext(context);
-        inspectorContext.setInspectionScene(scratch.scene());
+        inspectorContext.setInspectionScene(scratch.scene()); // Scratch scene lets component drawers reuse scene inspector paths.
 
         ImGui.separator();
         if (ImGui.button("Save Prefab", -1f, 0f)) {
@@ -104,7 +104,7 @@ public final class PrefabAssetEditor {
         }
 
         if (inspectorContext.consumeDirty()) {
-            syncScratchToDocument();
+            syncScratchToDocument(); // Deferred JSON sync — write document only when a drawer marks dirty.
             dirty = true;
         }
     }
@@ -113,6 +113,7 @@ public final class PrefabAssetEditor {
         EntityId entity = object.entity();
         if (!entity.equals(lastRenderedEntity)) {
             lastRenderedEntity = entity;
+            // Reset ImString buffers when switching prefab object so names do not bleed across rows.
             NameComponent identity = object.getComponent(NameComponent.class);
             nameBuffer.set(identity == null ? "GameObject" : identity.name());
             tagBuffer.set(identity == null ? "" : identity.tag());

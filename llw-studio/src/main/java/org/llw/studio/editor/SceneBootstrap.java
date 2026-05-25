@@ -26,6 +26,7 @@ public final class SceneBootstrap {
             context.setEditScene(SceneSerializer.load(scenePath));
             return;
         }
+        // First-run template: wire optional starter assets only when files already exist on disk.
         Files.createDirectories(scenePath.getParent());
         Scene scene = context.editScene();
         SceneSerializer.ensureMainCamera(scene);

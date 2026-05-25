@@ -97,7 +97,8 @@ public record DrawState(
     /**
      * Builds a 64-bit key used to sort queued draws before {@link RenderTarget#flush()}.
      *
-     * <p>Ordering prioritizes layer, then submission order, shader, texture, and blend mode.
+     * <p>Ordering prioritizes layer, then shader, texture, blend, and finally submission order
+     * for stable draws within the same batch group.
      *
      * @param submissionOrder zero-based enqueue index within the current frame
      * @return composite sort key for stable batched rendering
@@ -106,9 +107,9 @@ public record DrawState(
         int shaderId = shader == null ? 0 : shader.programId();
         int textureId = texture == null ? 0 : texture.id();
         return ((long) layer << 56)
-                | ((long) submissionOrder << 40)
-                | ((long) shaderId << 24)
-                | ((long) textureId << 8)
-                | blendMode.ordinal();
+                | ((long) shaderId << 40)
+                | ((long) textureId << 24)
+                | ((long) blendMode.ordinal() << 16)
+                | (submissionOrder & 0xFFFF);
     }
 }

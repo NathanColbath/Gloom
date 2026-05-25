@@ -34,7 +34,7 @@ public final class ParticlePreviewService {
             return;
         }
         target.clear(Color.BLACK);
-        ParticleDrawPass.drawPreviewEmitter(preview, target, assets, shaderGraphs);
+        ParticleDrawPass.drawPreviewEmitter(preview, target, assets, shaderGraphs); // Isolated emitter, not scene ParticleWorld sim.
         target.flush();
     }
 }

@@ -1,0 +1,92 @@
+{
+  "version" : 1,
+  "previewTextureGuid" : "1b440e48-10bc-48cd-b4fd-4f5a5dc26f5c",
+  "nodes" : [ {
+    "id" : "tex",
+    "type" : "TextureSample",
+    "x" : -1.2609639,
+    "y" : 137.17401,
+    "params" : { }
+  }, {
+    "id" : "out",
+    "type" : "FragmentOutput",
+    "x" : 551.1303,
+    "y" : 148.04349,
+    "params" : { }
+  }, {
+    "id" : "add_90402e",
+    "type" : "Add",
+    "x" : 224.95645,
+    "y" : 52.086952,
+    "params" : { }
+  }, {
+    "id" : "color_dd2c5c",
+    "type" : "Color",
+    "x" : 46.783062,
+    "y" : 20.086948,
+    "params" : {
+      "r" : 1.0,
+      "g" : 0.0,
+      "b" : 0.0,
+      "a" : 0.0
+    }
+  }, {
+    "id" : "time_27f300",
+    "type" : "Time",
+    "x" : 294.69577,
+    "y" : -74.95654,
+    "params" : { }
+  }, {
+    "id" : "multiply_75f3f1",
+    "type" : "Multiply",
+    "x" : 417.60855,
+    "y" : 15.86956,
+    "params" : { }
+  } ],
+  "links" : [ {
+    "from" : {
+      "node" : "tex",
+      "pin" : "rgba"
+    },
+    "to" : {
+      "node" : "add_90402e",
+      "pin" : "b"
+    }
+  }, {
+    "from" : {
+      "node" : "color_dd2c5c",
+      "pin" : "rgba"
+    },
+    "to" : {
+      "node" : "add_90402e",
+      "pin" : "a"
+    }
+  }, {
+    "from" : {
+      "node" : "time_27f300",
+      "pin" : "value"
+    },
+    "to" : {
+      "node" : "multiply_75f3f1",
+      "pin" : "a"
+    }
+  }, {
+    "from" : {
+      "node" : "add_90402e",
+      "pin" : "rgba"
+    },
+    "to" : {
+      "node" : "multiply_75f3f1",
+      "pin" : "b"
+    }
+  }, {
+    "from" : {
+      "node" : "multiply_75f3f1",
+      "pin" : "rgba"
+    },
+    "to" : {
+      "node" : "out",
+      "pin" : "color"
+    }
+  } ]
+}

@@ -449,7 +449,8 @@
         "indexFromBottom" : false
       },
       "filter" : "point",
-      "wrap" : "clamp"
+      "wrap" : "clamp",
+      "artFacing" : "right"
     }
   }
 }

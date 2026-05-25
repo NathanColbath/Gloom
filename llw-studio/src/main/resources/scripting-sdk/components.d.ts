@@ -12,6 +12,7 @@ export type ComponentType =
   | "SpriteRenderer"
   | "Tilemap2D"
   | "Animation2D"
+  | "ParticleEmitter"
   | "Camera2D"
   | "AudioSource"
   | "Script"
@@ -28,6 +29,7 @@ export type Component =
   | SpriteRendererComponent
   | Tilemap2DComponent
   | Animation2DComponent
+  | ParticleEmitterComponent
   | Camera2DComponent
   | AudioSourceComponent
   | ScriptComponentRef
@@ -72,6 +74,14 @@ export interface Animation2DComponent {
   readonly normalizedTime: number;
 }
 
+export interface ParticleEmitterComponent {
+  particleSystemGuid: string;
+  readonly playing: boolean;
+  play(): void;
+  stop(): void;
+  burst(count: number): void;
+}
+
 export interface Camera2DComponent {
   mainCamera: boolean;
   orthographicSize: number;
@@ -114,6 +124,7 @@ export interface Rigidbody2DComponent {
   velocityX: number;
   velocityY: number;
   freezeRotation: boolean;
+  setVelocity(x: number, y: number): void;
   addForce(x: number, y: number): void;
   movePosition(x: number, y: number): void;
 }

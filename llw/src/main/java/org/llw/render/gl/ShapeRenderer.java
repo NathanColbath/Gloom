@@ -20,15 +20,21 @@ import org.lwjgl.opengl.GL30;
  * through the supplied {@link GlStateTracker}.
  */
 public final class ShapeRenderer {
+    private static final int MAX_VERTICES = 16_384;
+
     private final int vao;
     private final int vbo;
+    private final FloatBuffer vertexBuffer;
 
     /**
      * Allocates a VAO and VBO configured for position, texcoord, and color attributes.
      */
     public ShapeRenderer() {
+        vertexBuffer = BufferUtils.createFloatBuffer(MAX_VERTICES * 8);
         vao = GL30.glGenVertexArrays();
         vbo = GL15.glGenBuffers();
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, (long) MAX_VERTICES * 8 * Float.BYTES, GL15.GL_DYNAMIC_DRAW);
         GL30.glBindVertexArray(vao);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
         int stride = 8 * Float.BYTES;
@@ -62,17 +68,20 @@ public final class ShapeRenderer {
         stateTracker.useProgram(shader);
         stateTracker.applyBlendMode(blendMode);
 
-        FloatBuffer buffer = BufferUtils.createFloatBuffer(vertices.length * 8);
+        if (vertices.length > MAX_VERTICES) {
+            throw new IllegalArgumentException("ShapeRenderer vertex count exceeds capacity: " + vertices.length);
+        }
+        vertexBuffer.clear();
         for (Vertex vertex : vertices) {
-            buffer.put(vertex.position.x).put(vertex.position.y)
+            vertexBuffer.put(vertex.position.x).put(vertex.position.y)
                     .put(vertex.texCoord.x).put(vertex.texCoord.y)
                     .put(vertex.color.rNorm()).put(vertex.color.gNorm())
                     .put(vertex.color.bNorm()).put(vertex.color.aNorm());
         }
-        buffer.flip();
+        vertexBuffer.flip();
 
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STREAM_DRAW);
+        GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, vertexBuffer);
         mvp.upload(shader.mvpLocation());
         if (shader.useTextureLocation() >= 0) {
             GL20.glUniform1i(shader.useTextureLocation(), 0);

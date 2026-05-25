@@ -43,7 +43,7 @@ import org.llw.studio.project.ProjectDiscovery;
 import org.llw.studio.project.RecentProjectsStore;
 import org.llw.studio.project.StudioProjectLayout;
 import org.llw.studio.scripting.js.ScriptCompileService;
-import org.llw.studio.scripting.js.ScriptFileWatcher;
+import org.llw.studio.editor.scripting.ScriptFileWatcher;
 import org.llw.studio.scripting.js.ScriptSceneIndex;
 import org.llw.studio.scripting.setup.ScriptProjectGenerator;
 import org.llw.studio.editor.SceneBootstrap;
@@ -167,7 +167,9 @@ public final class StudioEditorRuntime {
         menuActions.bindParticlePanel(particlePanel);
         panels.register(new HierarchyPanel(selection, assets));
         panels.register(new InspectorPanel(selection, undoStack, assets, previews, componentCatalog, editorSession));
-        panels.register(new AnimationPanel(selection, assets, editorSession, undoStack, panelVisibility));
+        AnimationPanel animationPanel = new AnimationPanel(selection, assets, editorSession, undoStack, panelVisibility);
+        editorSession.setAnimationPanel(animationPanel);
+        panels.register(animationPanel);
         panels.register(new TilePalettePanel(assets, previews, selection, editorSession, panelVisibility));
         panels.register(shaderGraphPanel);
         panels.register(particlePanel);
@@ -183,7 +185,8 @@ public final class StudioEditorRuntime {
                 menuActions,
                 assetActions,
                 shaderGraphPanel,
-                particlePanel
+                particlePanel,
+                animationPanel
         ));
 
         shell = new EditorShell(
@@ -260,6 +263,7 @@ public final class StudioEditorRuntime {
      * @throws IOException when scene bootstrap or discovery fails
      */
     public void loadProject(Path projectRoot) throws IOException {
+        // Tear down play + watchers before rebinding assets so GUIDs and selection stay consistent.
         if (projectLoaded) {
             shell.stopPlayMode();
             closeScriptWatcher();
@@ -310,6 +314,7 @@ public final class StudioEditorRuntime {
                 () -> ScriptSceneIndex.collectGuids(context.editScene())
         );
         scriptWatcher.start();
+        // Saves made during play are recompiled after stopPlayMode clears isPlaying.
         shell.setOnExitPlayMode(scriptWatcher::flushDeferredRecompiles);
     }
 

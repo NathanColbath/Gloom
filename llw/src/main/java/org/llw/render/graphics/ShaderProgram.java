@@ -1,5 +1,6 @@
 package org.llw.render.graphics;
 
+import org.llw.render.backend.GpuProgram;
 import org.llw.render.resources.ResourceLoader;
 import org.llw.util.log.Log;
 import org.llw.util.log.Loggers;
@@ -13,7 +14,7 @@ import org.lwjgl.opengl.GL20;
  * {@code uTexture} and {@code uUseTexture}. Call {@link #destroy()} when the program is
  * no longer used.
  */
-public final class ShaderProgram {
+public final class ShaderProgram implements GpuProgram {
     private static final Logger log = Log.get(Loggers.GL);
 
     private final int programId;

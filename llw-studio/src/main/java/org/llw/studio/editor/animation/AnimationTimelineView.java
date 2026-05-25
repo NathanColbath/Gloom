@@ -35,12 +35,12 @@ public final class AnimationTimelineView {
             return;
         }
         state.clearDropPreview();
-        state.setScrollX(0f);
+        state.setScrollX(0f); // Fit-to-width mode; horizontal scroll disabled in v1 dopesheet.
         clip.ensureDefaultTracks();
         float sheetViewportW = Math.max(120f, ImGui.getContentRegionAvailX());
         float availH = ImGui.getContentRegionAvailY();
         float length = Math.max(0.01f, clip.length);
-        float fitPps = Math.max(20f, (sheetViewportW - 32f) / length);
+        float fitPps = Math.max(20f, (sheetViewportW - 32f) / length); // Scale timeline so full clip fits the viewport.
         state.setPixelsPerSecond(fitPps);
 
         renderRulerRow(state, clip, sheetViewportW);
@@ -252,22 +252,31 @@ public final class AnimationTimelineView {
             return;
         }
         float centerY = rowY + ROW_HEIGHT * 0.5f;
+        float hitSize = 14f;
         int keyIndex = 0;
         for (SpriteKeyframe key : track.spriteKeyframes) {
             float x = originX + AnimationTimelineMath.timeToX(key.time(), state.pixelsPerSecond(), 0f);
             boolean selected = AnimationTrackPaths.SPRITE.equals(state.selectedTrackPath())
                     && keyIndex == state.selectedKeyframeIndex();
             drawDiamond(x, centerY, selected ? 0xFFFFD54F : 0xFFE0E0E0);
-            if (ImGui.isMouseClicked(ImGuiMouseButton.Left)
-                    && Math.abs(ImGui.getMousePosX() - x) < 8f
-                    && Math.abs(ImGui.getMousePosY() - centerY) < 8f) {
+            ImGui.setCursorScreenPos(x - hitSize * 0.5f, centerY - hitSize * 0.5f);
+            ImGui.pushID("kf_" + keyIndex);
+            if (ImGui.invisibleButton("##kf", hitSize, hitSize)) {
                 state.setSelectedKeyframe(AnimationTrackPaths.SPRITE, keyIndex);
                 state.setCurrentTime(key.time());
+                state.setPlaying(false);
             }
+            ImGui.popID();
             keyIndex++;
         }
         ImGui.setCursorScreenPos(originX, rowY);
         ImGui.invisibleButton("lane_sprite", sheetW, ROW_HEIGHT);
+        if (ImGui.isItemClicked(ImGuiMouseButton.Left) && !ImGui.isMouseDoubleClicked(ImGuiMouseButton.Left)) {
+            float time = timeAtMouse(state, clip, originX);
+            state.setCurrentTime(time);
+            state.setPlaying(false);
+            state.setSelectedKeyframe("", -1);
+        }
         if (ImGui.beginDragDropTarget()) {
             float time = timeAtMouse(state, clip, originX);
             state.setDropPreviewTime(time);
@@ -346,7 +355,7 @@ public final class AnimationTimelineView {
         float snapped = clip.snapTime(time);
         for (int i = 0; i < track.spriteKeyframes.size(); i++) {
             if (Math.abs(track.spriteKeyframes.get(i).time() - snapped) < 0.001f) {
-                track.spriteKeyframes.set(i, new SpriteKeyframe(snapped, spriteGuid));
+                track.spriteKeyframes.set(i, new SpriteKeyframe(snapped, spriteGuid)); // Merge keys at same snapped time.
                 return;
             }
         }

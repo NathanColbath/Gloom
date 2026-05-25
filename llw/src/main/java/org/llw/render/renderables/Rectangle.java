@@ -7,7 +7,7 @@ import org.llw.render.graphics.DrawState;
 import org.llw.render.graphics.PrimitiveType;
 import org.llw.render.graphics.Renderable;
 import org.llw.render.graphics.Vertex;
-import org.llw.render.gl.OpenGlBackend;
+import org.llw.render.backend.RenderBackend;
 
 /**
  * Axis-aligned rectangle {@link Renderable} with optional fill and outlined border.
@@ -151,7 +151,7 @@ public final class Rectangle extends AbstractTransformable implements Renderable
      * @param state per-draw blend mode, shader, and optional parent transform
      */
     @Override
-    public void render(OpenGlBackend backend, DrawState state) {
+    public void render(RenderBackend backend, DrawState state) {
         Matrix3x2 model = combineModel(state);
         if (filled) {
             Vertex[] vertices = {

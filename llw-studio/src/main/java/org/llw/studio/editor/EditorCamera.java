@@ -177,7 +177,7 @@ public final class EditorCamera {
      */
 
     public void frameBounds(float minX, float minY, float maxX, float maxY, int viewWidth, int viewHeight) {
-
+        // Fit AABB in view; 0.9 padding keeps handles from sitting on the image edge.
         if (minX > maxX || minY > maxY) {
 
             centerX = 0f;
@@ -198,6 +198,7 @@ public final class EditorCamera {
 
         centerY = (minY + maxY) * 0.5f;
 
+        // Use the tighter axis so the whole bounds rect stays visible (letterbox in world units).
         float zoomX = viewWidth / contentWidth;
 
         float zoomY = viewHeight / contentHeight;

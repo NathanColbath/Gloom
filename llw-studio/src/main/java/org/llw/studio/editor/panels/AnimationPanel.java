@@ -43,6 +43,7 @@ public final class AnimationPanel implements EditorPanel {
     private final CreateStateDialog createStateDialog = new CreateStateDialog();
     private String lastSaveMessage = "";
     private boolean pendingCreateState;
+    private String lastSyncedBrowserGuid = "";
 
     public AnimationPanel(
             SelectionService selection,
@@ -69,6 +70,57 @@ public final class AnimationPanel implements EditorPanel {
         return "Animation";
     }
 
+    /**
+     * Opens/focuses the panel and binds the given animation asset from the project browser.
+     */
+    public void openFromAsset(StudioAsset asset) {
+        if (asset == null) {
+            return;
+        }
+        if (!visibility.isOpen(id())) {
+            visibility.setOpen(id(), true);
+        }
+        visibility.focus(id());
+        assets.select(asset.guid());
+        lastSyncedBrowserGuid = "";
+        syncAssetSelection(asset);
+    }
+
+    /**
+     * Focuses the animation window and binds the clip for an entity's {@link Animation2DComponent}.
+     */
+    public void openFromEntity(StudioContext context, EntityId entity, Animation2DComponent anim) {
+        if (context == null || anim == null) {
+            return;
+        }
+        if (!visibility.isOpen(id())) {
+            visibility.setOpen(id(), true);
+        }
+        visibility.focus(id());
+        lastSyncedBrowserGuid = "";
+        if (!entity.isNone()) {
+            animationState.setPreviewTargetEntity(entity);
+        }
+        if (anim.animationGuid != null && !anim.animationGuid.isBlank()) {
+            animationState.pinAnimation(anim.animationGuid);
+            String stateName = anim.currentState;
+            if (stateName == null || stateName.isBlank()) {
+                stateName = anim.defaultState;
+            }
+            String clipGuid = assets.stateClipGuid(anim.animationGuid, stateName);
+            AnimationClip clip = assets.animationClip(clipGuid);
+            if (clip != null) {
+                animationState.bindClip(clip, clipGuid, anim.animationGuid);
+                animationState.setPreviewStateName(stateName);
+            }
+        } else if (anim.clipGuid != null && !anim.clipGuid.isBlank()) {
+            AnimationClip clip = assets.animationClip(anim.clipGuid);
+            if (clip != null) {
+                animationState.bindClip(clip, anim.clipGuid, "");
+            }
+        }
+    }
+
     @Override
     public void render(StudioContext context) {
         if (!visibility.isOpen(id())) {
@@ -91,6 +143,7 @@ public final class AnimationPanel implements EditorPanel {
                 return;
             }
             clip.ensureDefaultTracks();
+            // Every edit snapshots the clip for undo and persists immediately so timeline scrub survives panel close.
             java.util.function.Consumer<Runnable> withUndo = edit -> {
                 AnimationClip before = clip.copy();
                 edit.run();
@@ -153,37 +206,18 @@ public final class AnimationPanel implements EditorPanel {
 
     private void syncFromEditor(StudioContext context) {
         StudioAsset selected = assets.selected();
-        if (selected != null && selected.type() == AssetType.ANIMATION_CLIP) {
-            AnimationClip clip = assets.animationClip(selected.guid());
-            String parentAnim = selected.parentAnimationGuid();
-            if (clip != null) {
-                animationState.bindClip(clip, selected.guid(), parentAnim == null ? "" : parentAnim);
-                if (parentAnim != null && !parentAnim.isBlank()) {
-                    AnimationSetDefinition set = assets.animationSet(parentAnim);
-                    if (set != null) {
-                        for (AnimationStateDefinition state : set.states) {
-                            if (state.clipGuid().equals(selected.guid())) {
-                                animationState.setPreviewStateName(state.name());
-                                break;
-                            }
-                        }
-                    }
-                }
+        if (selected != null && isAnimationAsset(selected)) {
+            if (!selected.guid().equals(lastSyncedBrowserGuid)) {
+                syncAssetSelection(selected);
+                lastSyncedBrowserGuid = selected.guid();
             }
             return;
         }
-        if (selected != null && selected.type() == AssetType.ANIMATION) {
-            animationState.pinAnimation(selected.guid());
-            AnimationSetDefinition set = assets.animationSet(selected.guid());
-            if (set != null && !set.states.isEmpty()) {
-                String stateName = animationState.previewStateName();
-                if (stateName.isBlank()) {
-                    stateName = set.defaultState;
-                }
-                selectPreviewState(selected.guid(), set, stateName);
-            }
+        if (selected != null) {
             return;
         }
+        lastSyncedBrowserGuid = "";
+        // --- Selected entity with Animation2D (preview target + bound clip) ---
         EntityId entity = selection.selected();
         if (!entity.isNone()) {
             Animation2DComponent anim = context.editScene().world().getComponent(entity, Animation2DComponent.class);
@@ -207,6 +241,43 @@ public final class AnimationPanel implements EditorPanel {
                         animationState.bindClip(clip, anim.clipGuid, "");
                     }
                 }
+            }
+        }
+    }
+
+    private static boolean isAnimationAsset(StudioAsset asset) {
+        return asset.type() == AssetType.ANIMATION || asset.type() == AssetType.ANIMATION_CLIP;
+    }
+
+    private void syncAssetSelection(StudioAsset selected) {
+        if (selected.type() == AssetType.ANIMATION_CLIP) {
+            AnimationClip clip = assets.animationClip(selected.guid());
+            String parentAnim = selected.parentAnimationGuid();
+            if (clip != null) {
+                animationState.bindClip(clip, selected.guid(), parentAnim == null ? "" : parentAnim);
+                if (parentAnim != null && !parentAnim.isBlank()) {
+                    AnimationSetDefinition set = assets.animationSet(parentAnim);
+                    if (set != null) {
+                        for (AnimationStateDefinition state : set.states) {
+                            if (state.clipGuid().equals(selected.guid())) {
+                                animationState.setPreviewStateName(state.name());
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return;
+        }
+        if (selected.type() == AssetType.ANIMATION) {
+            animationState.pinAnimation(selected.guid());
+            AnimationSetDefinition set = assets.animationSet(selected.guid());
+            if (set != null && !set.states.isEmpty()) {
+                String stateName = animationState.previewStateName();
+                if (stateName.isBlank()) {
+                    stateName = set.defaultState;
+                }
+                selectPreviewState(selected.guid(), set, stateName);
             }
         }
     }

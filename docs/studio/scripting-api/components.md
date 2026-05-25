@@ -1,10 +1,12 @@
 # Scripting API — Components
 
-`getComponent` accepts a component type string or a `Script` subclass constructor.
+`getComponent` accepts a component type string or a `Script` subclass constructor. Returns `null` when the component is missing (use for optional lookups).
+
+`requireComponent` uses the same arguments but **throws** when the component is missing. Use it for dependencies your script always needs (no null checks).
 
 ## ComponentType strings
 
-`SpriteRenderer`, `Tilemap2D`, `Animation2D`, `Camera2D`, `AudioSource`, `Script`, `Rigidbody2D`, `BoxCollider2D`, `CircleCollider2D`, `EdgeCollider2D`, `UILabel`, `UIButton`, `UIToggle`, `UITextField`
+`SpriteRenderer`, `Tilemap2D`, `Animation2D`, `ParticleEmitter`, `Camera2D`, `AudioSource`, `Script`, `Rigidbody2D`, `BoxCollider2D`, `CircleCollider2D`, `EdgeCollider2D`, `UILabel`, `UIButton`, `UIToggle`, `UITextField`
 
 ## SpriteRendererComponent
 
@@ -34,6 +36,10 @@
 ## Camera2DComponent
 
 Orthographic camera: `orthographicSize`, `depth`, `mainCamera`, world/screen conversion (`worldToScreen`, `screenToWorld`), viewport mouse position when main.
+
+## ParticleEmitterComponent
+
+`particleSystemGuid`, `playing`, `play()`, `stop()`, `burst(count)`.
 
 ## AudioSourceComponent
 

@@ -3,6 +3,7 @@ package org.llw.render.gl;
 import org.llw.render.graphics.BlendMode;
 import org.llw.render.graphics.ShaderProgram;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 
 /**
@@ -10,6 +11,7 @@ import org.lwjgl.opengl.GL20;
  */
 final class GlStateTracker {
     private int boundProgram = -1;
+    private int boundTextureUnit = -1;
     private int boundTexture = -1;
     private BlendMode blendMode = BlendMode.ALPHA;
 
@@ -21,7 +23,11 @@ final class GlStateTracker {
         }
     }
 
-    void bindTexture(int textureId) {
+    void bindTexture(int unit, int textureId) {
+        if (boundTextureUnit != unit) {
+            GL13.glActiveTexture(GL13.GL_TEXTURE0 + unit);
+            boundTextureUnit = unit;
+        }
         if (boundTexture != textureId) {
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
             boundTexture = textureId;
@@ -52,6 +58,7 @@ final class GlStateTracker {
 
     void reset() {
         boundProgram = -1;
+        boundTextureUnit = -1;
         boundTexture = -1;
         blendMode = null;
     }

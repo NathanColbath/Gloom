@@ -1,8 +1,8 @@
 /**
- * Editor and scene viewport draw passes (grid, sprites, gizmos, selection outlines).
+ * Shippable scene and UI draw passes (sprites, tilemaps, lit materials, in-game UI).
  *
- * <p><strong>Screen</strong> coordinates are top-left origin pixels on the render target.
- * <strong>World</strong> coordinates are Y-down units aligned with {@link org.llw.studio.editor.EditorCamera}.
+ * <p>Editor-only overlays are in llw-studio {@code org.llw.studio.editor.render.passes}.
+ * Play-mode sequencing is centralized in {@link org.llw.studio.render.PlaySceneRenderPasses}.
  *
  * @see org.llw.studio.editor.render
  */

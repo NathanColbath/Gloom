@@ -162,15 +162,16 @@ flowchart LR
     Tex --> Im[ImGui.image in panel]
 ```
 
-**Render order inside the Scene view FBO (`EditorRenderLayers`):**
+**Render order inside the Scene view FBO** — authoritative list in [Editor architecture](editor-architecture.md). Summary (edit mode, via `EditorSceneViewportPipeline`):
 
-1. **Grid** (`GridDrawPass`) — behind everything, editor grid lines
-2. **Scene sprites & tilemaps** — game objects sorted by sorting order
-3. **Selection outline** (`SelectionOutlinePass`) — blue AABB around selected entity
-4. **Gizmo** (`GizmoDrawPass`) — active tool handles (translate, rotate, scale)
-5. **Tilemap grid** (`TilemapGridDrawPass`) — overlay grid when painting tiles
-6. **Physics gizmo** (`PhysicsGizmoDrawPass`) — collider outlines during play
-7. **Camera gizmo** (`CameraGizmoDrawPass`) — camera frustum visualization
+1. **Grid** (`GridDrawPass`)
+2. **Tilemap paint grid** (`TilemapGridDrawPass`, when tile paint active)
+3. **Tilemaps** (`TilemapDrawPass`)
+4. **Sprites** (`SceneRenderPasses` — lit or unlit)
+5. **Particles** (`ParticleDrawPass`)
+6. **Camera / physics / component / script gizmos** (edit mode only)
+7. **Selection outline** (`SelectionOutlinePass`)
+8. **Transform gizmo** (`GizmoDrawPass`)
 
 ### 3.2 How FBO Textures Get to ImGui
 

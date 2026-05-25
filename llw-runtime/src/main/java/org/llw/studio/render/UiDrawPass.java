@@ -8,7 +8,9 @@ import org.llw.render.graphics.Font;
 import org.llw.render.graphics.OffscreenTarget;
 import org.llw.render.renderables.Sprite;
 import org.llw.render.renderables.Text;
+import org.llw.studio.ecs.EntityId;
 import org.llw.studio.ecs.components.UIButtonComponent;
+import org.llw.studio.ecs.components.UICanvasComponent;
 import org.llw.studio.ecs.components.UILabelComponent;
 import org.llw.studio.ecs.components.UITextFieldComponent;
 import org.llw.studio.ecs.components.UIToggleComponent;
@@ -16,6 +18,7 @@ import org.llw.studio.scene.Scene;
 import org.llw.studio.ui.UiDrawItem;
 import org.llw.studio.ui.UiFontCache;
 import org.llw.studio.ui.UiLayout;
+import org.llw.studio.ui.UiLayoutContext;
 import org.llw.studio.ui.UiSprites;
 import org.llw.studio.ui.UiTextMetrics;
 import org.llw.studio.ui.UiWidgetKind;
@@ -41,7 +44,22 @@ public final class UiDrawPass {
      * @param viewHeight game view height in pixels
      */
     public static void draw(Scene scene, OffscreenTarget target, UiFontCache fonts, int viewWidth, int viewHeight) {
-        if (scene == null || target == null || viewWidth < 1 || viewHeight < 1) {
+        draw(scene, target, fonts, UiLayoutContext.forViewport(target.getCamera(), viewWidth, viewHeight));
+    }
+
+    /**
+     * @param scene scene containing UI widgets
+     * @param target offscreen target
+     * @param fonts shared UI font cache
+     * @param ctx layout and projection context
+     */
+    public static void draw(Scene scene, OffscreenTarget target, UiFontCache fonts, UiLayoutContext ctx) {
+        if (scene == null || target == null || ctx == null) {
+            return;
+        }
+        int viewWidth = ctx.viewportWidth;
+        int viewHeight = ctx.viewportHeight;
+        if (viewWidth < 1 || viewHeight < 1) {
             return;
         }
         Camera2d camera = target.getCamera();
@@ -50,13 +68,31 @@ public final class UiDrawPass {
         camera.setCenter(viewWidth * 0.5f, viewHeight * 0.5f);
         camera.setSize(viewWidth, viewHeight);
 
-        List<UiDrawItem> items = UiLayout.collect(scene);
+        List<UiDrawItem> items = UiLayout.collect(scene, ctx);
         try {
             drawItems(target, fonts, items);
         } finally {
             camera.setCenter(previousCenter);
             camera.setSize(previousSize);
         }
+    }
+
+    /**
+     * Draws a single canvas in reference resolution (UI Editor).
+     */
+    public static void drawCanvas(
+            Scene scene,
+            OffscreenTarget target,
+            UiFontCache fonts,
+            EntityId canvasEntity,
+            UICanvasComponent canvas
+    ) {
+        if (scene == null || target == null || canvas == null || canvasEntity == null || canvasEntity.isNone()) {
+            return;
+        }
+        int refW = Math.max(1, canvas.referenceWidth);
+        int refH = Math.max(1, canvas.referenceHeight);
+        draw(scene, target, fonts, UiLayoutContext.forAuthoring(canvasEntity, refW, refH));
     }
 
     private static void drawItems(OffscreenTarget target, UiFontCache fonts, List<UiDrawItem> items) {

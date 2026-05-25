@@ -92,7 +92,7 @@ public final class AssetEditorActions {
             resultGuids.addAll(result.resultGuids());
         }
         if (mode == AssetClipboard.Mode.CUT) {
-            clipboard.clear();
+            clipboard.clear(); // Cut is single-use; second paste must not re-move the same files.
         }
         if (!resultGuids.isEmpty()) {
             assets.refresh();
@@ -213,6 +213,7 @@ public final class AssetEditorActions {
         }
         if (asset.type() == AssetType.ANIMATION_CLIP && asset.parentAnimationGuid() != null) {
             try {
+                // Rename clip file and animation-set state entry together so the controller stays wired.
                 AnimationSetActions.renameState(
                         assets,
                         asset.parentAnimationGuid(),
@@ -298,6 +299,7 @@ public final class AssetEditorActions {
             }
             Path normalized = source.toAbsolutePath().normalize();
             if (normalized.startsWith(assetsRoot.normalize())) {
+                // In-project drop is a copy; external OS paths use the import pipeline with type detection.
                 AssetFileOperations.OperationResult result =
                         AssetFileOperations.copyInto(normalized, targetFolder, projectRoot, assetsRoot);
                 if (result.success()) {

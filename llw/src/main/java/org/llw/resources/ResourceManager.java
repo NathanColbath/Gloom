@@ -7,7 +7,7 @@ import org.llw.render.graphics.Font;
 import org.llw.render.graphics.FontStyle;
 import org.llw.render.graphics.Texture2d;
 import org.llw.render.graphics.system.SystemFonts;
-import org.llw.render.gl.OpenGlBackend;
+import org.llw.render.backend.RenderBackend;
 import org.llw.render.resources.ResourceLoader;
 import org.llw.resources.pack.AssetPackManifest;
 import org.llw.resources.pack.AssetPackReader;
@@ -36,7 +36,7 @@ import java.util.Set;
 public final class ResourceManager implements AutoCloseable {
     private static final Logger log = Log.get(Loggers.RESOURCES);
 
-    private final OpenGlBackend gl;
+    private final RenderBackend gl;
     private final AudioContext audio;
     private final Map<String, AssetHandle> handles = new LinkedHashMap<>();
     private Map<String, Path> systemFontCatalog;
@@ -52,14 +52,14 @@ public final class ResourceManager implements AutoCloseable {
      * @param gl    OpenGL backend (textures/fonts)
      * @param audio initialized audio context (sounds/music)
      */
-    public ResourceManager(OpenGlBackend gl, AudioContext audio) {
+    public ResourceManager(RenderBackend gl, AudioContext audio) {
         this.gl = gl;
         this.audio = audio;
         this.loadContext = new LoadContext(audio);
         log.info("ResourceManager created");
     }
 
-    ResourceManager(OpenGlBackend gl, AudioContext audio, Map<String, Path> systemFontCatalog) {
+    ResourceManager(RenderBackend gl, AudioContext audio, Map<String, Path> systemFontCatalog) {
         this.gl = gl;
         this.audio = audio;
         this.loadContext = new LoadContext(audio);

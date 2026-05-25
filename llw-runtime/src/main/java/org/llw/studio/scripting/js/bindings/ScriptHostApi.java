@@ -277,7 +277,7 @@ public final class ScriptHostApi {
                 (function (binding, host) {
                   const wrap = (entity) => host.wrapEntity(entity);
                   const transform = host.createTransformProxy(binding);
-                  const resolveComponent = (type) => {
+                  const resolveComponent = (type, required) => {
                     if (type == null) {
                       return null;
                     }
@@ -286,9 +286,13 @@ public final class ScriptHostApi {
                       if (!name) {
                         return null;
                       }
-                      return binding.getScriptComponent(name);
+                      return required
+                        ? binding.requireScriptComponent(name)
+                        : binding.getScriptComponent(name);
                     }
-                    return binding.getComponent(String(type));
+                    return required
+                      ? binding.requireComponent(String(type))
+                      : binding.getComponent(String(type));
                   };
                   return {
                     get id() { return binding.getId(); },
@@ -309,7 +313,8 @@ public final class ScriptHostApi {
                       binding.setParent(parent, worldPositionStays !== false);
                     },
                     hasComponent(type) { return binding.hasComponent(String(type)); },
-                    getComponent(type) { return resolveComponent(type); },
+                    getComponent(type) { return resolveComponent(type, false); },
+                    requireComponent(type) { return resolveComponent(type, true); },
                     addComponent(type) { binding.addComponent(String(type)); },
                     removeComponent(type) { binding.removeComponent(String(type)); },
                     destroy() { binding.destroy(); },
@@ -380,7 +385,74 @@ public final class ScriptHostApi {
         if ("UITextField".equals(type) && binding instanceof UITextFieldBinding field) {
             return createUITextFieldProxy(field);
         }
+        if ("Rigidbody2D".equals(type) && binding instanceof Rigidbody2DBinding rigidbody) {
+            return createRigidbody2DProxy(rigidbody);
+        }
+        if ("ParticleEmitter".equals(type) && binding instanceof ParticleEmitterBinding emitter) {
+            return createParticleEmitterProxy(emitter);
+        }
+        if ("AudioSource".equals(type) && binding instanceof AudioSourceBinding audio) {
+            return createAudioSourceProxy(audio);
+        }
         return Value.asValue(binding);
+    }
+
+    private Value createParticleEmitterProxy(ParticleEmitterBinding emitter) {
+        Value javaBinding = Value.asValue(emitter);
+        return context.eval("js", """
+                (function (binding) {
+                  return {
+                    get particleSystemGuid() { return binding.getParticleSystemGuid(); },
+                    set particleSystemGuid(value) { binding.setParticleSystemGuid(value); },
+                    get playing() { return binding.isPlaying(); },
+                    play: () => binding.play(),
+                    stop: () => binding.stop(),
+                    burst: (count) => binding.burst(count),
+                  };
+                })
+                """).execute(javaBinding);
+    }
+
+    private Value createAudioSourceProxy(AudioSourceBinding audio) {
+        Value javaBinding = Value.asValue(audio);
+        return context.eval("js", """
+                (function (binding) {
+                  return {
+                    get clipGuid() { return binding.getClipGuid(); },
+                    set clipGuid(value) { binding.setClipGuid(value); },
+                    get volume() { return binding.getVolume(); },
+                    set volume(value) { binding.setVolume(value); },
+                    get playOnStart() { return binding.getPlayOnStart(); },
+                    set playOnStart(value) { binding.setPlayOnStart(value); },
+                    get playing() { return binding.getPlaying(); },
+                    play: () => binding.play(),
+                    stop: () => binding.stop(),
+                  };
+                })
+                """).execute(javaBinding);
+    }
+
+    private Value createRigidbody2DProxy(Rigidbody2DBinding rigidbody) {
+        Value javaBinding = Value.asValue(rigidbody);
+        return context.eval("js", """
+                (function (binding) {
+                  return {
+                    get bodyType() { return binding.getBodyType(); },
+                    set bodyType(value) { binding.setBodyType(value); },
+                    get mass() { return binding.getMass(); },
+                    set mass(value) { binding.setMass(value); },
+                    get gravityScale() { return binding.getGravityScale(); },
+                    set gravityScale(value) { binding.setGravityScale(value); },
+                    get velocityX() { return binding.getVelocityX(); },
+                    get velocityY() { return binding.getVelocityY(); },
+                    get freezeRotation() { return binding.getFreezeRotation(); },
+                    set freezeRotation(value) { binding.setFreezeRotation(value); },
+                    setVelocity(x, y) { binding.setVelocity(x, y); },
+                    addForce(x, y) { binding.addForce(x, y); },
+                    movePosition(x, y) { binding.movePosition(x, y); },
+                  };
+                })
+                """).execute(javaBinding);
     }
 
     private Value createCamera2DProxy(Camera2DBinding camera2d) {

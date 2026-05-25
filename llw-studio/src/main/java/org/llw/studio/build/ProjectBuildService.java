@@ -43,6 +43,7 @@ public final class ProjectBuildService {
             report(progress, 0.02f, "Validating project...");
             validate(project, settings, outputRoot);
 
+            // Stages: validate → scan scene refs → compile scripts → write packs → stage player → package.
             report(progress, 0.08f, "Scanning scenes for referenced assets...");
             BuildAssetSet assetSet = BuildAssetScanner.scan(project.root(), assets);
             log.addAll(assetSet.scanLog());
@@ -60,7 +61,7 @@ public final class ProjectBuildService {
 
             Path contentDir = outputRoot.resolve("content");
             Path stagingDir = outputRoot.resolve(".build-staging");
-            deleteRecursively(stagingDir);
+            deleteRecursively(stagingDir); // Fresh staging each build; holds compiled shaders/meta sidecars.
             Files.createDirectories(stagingDir);
 
             report(progress, 0.35f, "Writing asset packs...");
@@ -105,7 +106,7 @@ public final class ProjectBuildService {
                 log.add("Executable not found; shortcut was not created.");
             }
 
-            deleteRecursively(stagingDir);
+            deleteRecursively(stagingDir); // Sidecar files are copied into packs; remove temp tree from output.
             report(progress, 1f, "Build complete");
             return BuildResult.success(outputRoot, contentDir, executable, log);
         } catch (Exception ex) {

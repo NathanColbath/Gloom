@@ -102,18 +102,19 @@ public final class TilemapPaintController {
             }
         }
 
-        new TransformSystem().onUpdate(scene.world(), 0f);
+        org.llw.studio.editor.render.EditorWorldTransforms.ensureUpdated(scene);
         WorldTransformComponent world = scene.world().getComponent(entity, WorldTransformComponent.class);
         Transform2DComponent local = scene.world().getComponent(entity, Transform2DComponent.class);
         if (local == null) {
             return false;
         }
+        // Paint origin uses world position/scale so nested tilemaps align with parent transforms.
         float originX = world != null ? world.worldX : local.x;
         float originY = world != null ? world.worldY : local.y;
         float scaleX = world != null ? world.worldScaleX : local.scaleX;
         float scaleY = world != null ? world.worldScaleY : local.scaleY;
 
-        var worldPos = context.screenToWorld(mouseX, mouseY);
+        var worldPos = context.screenToWorld(mouseX, mouseY); // Same screen→world path as picking/gizmos.
         int cellX = TilemapMath.worldToCellX(worldPos.x, originX, tilemap.cellWidth, scaleX);
         int cellY = TilemapMath.worldToCellY(worldPos.y, originY, tilemap.cellHeight, scaleY);
 
@@ -152,7 +153,7 @@ public final class TilemapPaintController {
 
     private void beginStroke(TilemapComponent tilemap, int layerIndex) {
         TilemapLayer layer = tilemap.layerAt(layerIndex);
-        strokeBefore = TilemapPaintCommand.snapshotLayer(layer);
+        strokeBefore = TilemapPaintCommand.snapshotLayer(layer); // One before snapshot for the whole drag stroke.
         strokeTouched.clear();
         strokeActive = true;
     }
@@ -161,7 +162,7 @@ public final class TilemapPaintController {
         TilemapLayer layer = tilemap.layerAt(layerIndex);
         long key = TilemapPaintCommand.key(cellX, cellY);
         if (!strokeTouched.add(key)) {
-            return;
+            return; // Dedupe drag revisits to the same cell within one stroke.
         }
         if (spriteGuid == null || spriteGuid.isBlank()) {
             layer.removeCell(cellX, cellY);
@@ -193,9 +194,9 @@ public final class TilemapPaintController {
         TilemapLayer layer = tilemap.layerAt(layerIndex);
         Map<Long, TilemapCell> after = TilemapPaintCommand.snapshotLayer(layer);
         if (commit && !strokeBefore.equals(after)) {
-            undoStack.execute(new TilemapPaintCommand(scene, entity, layerIndex, strokeBefore, after));
+            undoStack.execute(new TilemapPaintCommand(scene, entity, layerIndex, strokeBefore, after)); // One undo step per stroke.
         } else if (!commit) {
-            TilemapPaintCommand.restoreCells(layer, strokeBefore);
+            TilemapPaintCommand.restoreCells(layer, strokeBefore); // Tool switch cancels in-progress stroke without pushing undo.
         }
         strokeBefore = null;
         strokeTouched.clear();

@@ -6,6 +6,7 @@ import org.llw.studio.assets.AnimationSetDefinition;
 import org.llw.studio.assets.AnimationStateDefinition;
 import org.llw.studio.editor.components.ComponentDrawer;
 import org.llw.studio.editor.components.InspectorContext;
+import org.llw.studio.editor.panels.AnimationPanel;
 import org.llw.studio.editor.widgets.fields.AnimationReferenceField;
 import org.llw.studio.editor.widgets.fields.BoolField;
 import org.llw.studio.editor.widgets.fields.FloatField;
@@ -20,6 +21,10 @@ public final class Animation2DDrawer implements ComponentDrawer<Animation2DCompo
         component.playOnStart = BoolField.draw("Play On Start", component.playOnStart);
         component.speed = FloatField.draw("Speed", component.speed);
         component.loop = BoolField.draw("Loop", component.loop);
+        AnimationPanel panel = context.editorSession().animationPanel();
+        if (panel != null && ImGui.button("Open Animation Window")) {
+            panel.openFromEntity(context.studioContext(), context.selection().selected(), component);
+        }
         context.markDirty();
     }
 

@@ -22,6 +22,7 @@ import org.lwjgl.opengl.GL30;
  * before {@link #drawQuad} and {@link #flush(GlStateTracker)} to submit geometry.
  */
 public final class SpriteBatch {
+    private static final Matrix3x2 IDENTITY_MVP = new Matrix3x2().identity();
     private static final int MAX_QUADS = 10_000;
     private static final int FLOATS_PER_VERTEX = 8;
     private static final int VERTICES_PER_QUAD = 4;
@@ -37,8 +38,10 @@ public final class SpriteBatch {
     private ShaderProgram currentShader;
     private BlendMode currentBlend = BlendMode.ALPHA;
     private Matrix3x2 viewProjection = new Matrix3x2().identity();
+    private final Matrix3x2 scratchMvp = new Matrix3x2();
     private float shaderTimeSeconds;
     private boolean active;
+    private GlStateTracker flushStateTracker;
 
     /**
      * Allocates VAO, VBO, EBO, and precomputed index data for batched quad rendering.
@@ -118,18 +121,22 @@ public final class SpriteBatch {
             throw new IllegalStateException("SpriteBatch.begin must be called before drawQuad");
         }
         if (quadCount >= MAX_QUADS) {
-            throw new IllegalStateException("SpriteBatch capacity exceeded");
+            if (flushStateTracker == null) {
+                throw new IllegalStateException("SpriteBatch capacity exceeded");
+            }
+            flush(flushStateTracker);
+            begin(currentShader, currentBlend, viewProjection);
         }
 
-        Matrix3x2 mvp = viewProjection.copy();
+        scratchMvp.set(viewProjection);
         if (model != null) {
-            mvp.multiply(model);
+            scratchMvp.multiply(model);
         }
 
-        putVertex(mvp, x0, y0, u0, v0, color);
-        putVertex(mvp, x1, y0, u1, v0, color);
-        putVertex(mvp, x1, y1, u1, v1, color);
-        putVertex(mvp, x0, y1, u0, v1, color);
+        putVertex(scratchMvp, x0, y0, u0, v0, color);
+        putVertex(scratchMvp, x1, y0, u1, v0, color);
+        putVertex(scratchMvp, x1, y1, u1, v1, color);
+        putVertex(scratchMvp, x0, y1, u0, v1, color);
         currentTexture = texture;
         quadCount++;
     }
@@ -159,17 +166,16 @@ public final class SpriteBatch {
 
         stateTracker.useProgram(currentShader);
         stateTracker.applyBlendMode(currentBlend);
+        flushStateTracker = stateTracker;
         if (currentTexture != null) {
-            currentTexture.bind(0);
-            stateTracker.bindTexture(currentTexture.id());
+            stateTracker.bindTexture(0, currentTexture.id());
         }
 
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
         vertices.flip();
         GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, vertices);
 
-        Matrix3x2 identity = new Matrix3x2().identity();
-        identity.upload(currentShader.mvpLocation());
+        IDENTITY_MVP.upload(currentShader.mvpLocation());
         if (currentShader.textureLocation() >= 0) {
             GL20.glUniform1i(currentShader.textureLocation(), 0);
         }

@@ -183,8 +183,20 @@ public final class EntityBinding {
         if (!ComponentBindings.hasComponent(context.world(), entity, type)) {
             return null;
         }
-        Object binding = ComponentBindings.create(context, hostApi, entity, type);
-        return hostApi.wrapComponent(type, binding);
+        return wrapComponent(type);
+    }
+
+    /**
+     * @param type component type name
+     * @return wrapped component binding
+     * @throws IllegalStateException when the component is missing
+     */
+    @HostAccess.Export
+    public Object requireComponent(String type) {
+        if (!ComponentBindings.hasComponent(context.world(), entity, type)) {
+            throw missingComponent(type);
+        }
+        return wrapComponent(type);
     }
 
     /**
@@ -198,6 +210,34 @@ public final class EntityBinding {
             return null;
         }
         return lookup.find(entity, scriptClassName);
+    }
+
+    /**
+     * @param scriptClassName script class name from the bundle
+     * @return live script instance value
+     * @throws IllegalStateException when no matching script instance exists on this entity
+     */
+    @HostAccess.Export
+    public Object requireScriptComponent(String scriptClassName) {
+        Object instance = getScriptComponent(scriptClassName);
+        if (instance == null) {
+            throw new IllegalStateException(
+                    "Entity '" + getName() + "' (id=" + entity + ") is missing required script '"
+                            + scriptClassName + "'"
+            );
+        }
+        return instance;
+    }
+
+    private Object wrapComponent(String type) {
+        Object binding = ComponentBindings.create(context, hostApi, entity, type);
+        return hostApi.wrapComponent(type, binding);
+    }
+
+    private IllegalStateException missingComponent(String type) {
+        return new IllegalStateException(
+                "Entity '" + getName() + "' (id=" + entity + ") is missing required component '" + type + "'"
+        );
     }
 
     /**

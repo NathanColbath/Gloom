@@ -42,6 +42,7 @@ public final class BuildAssetScanner {
         Map<String, StudioAsset> supplementalByGuid = new HashMap<>();
         List<String> log = new ArrayList<>();
 
+        // Seed from every scene so builds include transitive refs even when a scene is not the startup scene.
         List<Path> scenePaths = discoverSceneFiles(projectRoot);
         log.add("Discovered " + scenePaths.size() + " scene file(s).");
         for (Path scenePath : scenePaths) {
@@ -57,6 +58,7 @@ public final class BuildAssetScanner {
             log.add("Scene " + scenePath.getFileName() + ": " + sceneGuids.size() + " direct reference(s).");
         }
 
+        // BFS expands prefab nests, animation clips, sprite→texture parents, and particle refs.
         Set<String> referenced = expandClosure(projectRoot, assets, seedGuids, supplementalByGuid, log);
         EnumMap<BuildPackCategory, List<StudioAsset>> grouped = new EnumMap<>(BuildPackCategory.class);
         for (BuildPackCategory category : BuildPackCategory.values()) {
@@ -76,6 +78,7 @@ public final class BuildAssetScanner {
                 continue;
             }
             grouped.get(BuildPackCategory.METADATA).add(asset);
+            // Sprites ship as metadata rows; raster bytes come from the parent texture pack entry.
             if (asset.type() == AssetType.SPRITE) {
                 continue;
             }
@@ -186,7 +189,7 @@ public final class BuildAssetScanner {
                         .forEach(scenes::add);
             }
         }
-        scenes.sort(Path::compareTo);
+        scenes.sort(Path::compareTo); // Stable scan order for reproducible build logs.
         return scenes;
     }
 

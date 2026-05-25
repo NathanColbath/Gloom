@@ -1,10 +1,13 @@
 package org.llw.studio.editor;
 
 import org.llw.studio.editor.animation.AnimationEditorState;
+import org.llw.studio.editor.panels.AnimationPanel;
 import org.llw.studio.editor.panels.ParticlePanel;
 import org.llw.studio.editor.panels.ShaderGraphPanel;
 import org.llw.studio.editor.particles.ParticleEditorState;
 import org.llw.studio.editor.tilemap.TilemapEditState;
+import org.llw.studio.editor.ui.UiEditorState;
+import org.llw.studio.materials.runtime.MaterialProgramCache;
 import org.llw.studio.particles.runtime.ParticleWorld;
 import org.llw.studio.shadergraph.editor.ShaderGraphEditorState;
 import org.llw.studio.scene.Scene;
@@ -28,10 +31,13 @@ public final class EditorSession {
   private ShaderGraphEditorState shaderGraphEditorState;
   private ShaderGraphPanel shaderGraphPanel;
   private ParticlePanel particlePanel;
+  private AnimationPanel animationPanel;
   private ParticleEditorState particleEditorState;
   private final ParticleWorld particleWorld = new ParticleWorld();
   private ParticleWorld playParticleWorld;
   private final TilemapEditState tilemapEditState = new TilemapEditState();
+  private final UiEditorState uiEditorState = new UiEditorState();
+  private MaterialProgramCache materialProgramCache;
 
   /** @return shared scene-tool state for toolbar and scene view */
   public SceneToolState toolState() {
@@ -165,6 +171,15 @@ public final class EditorSession {
     this.particlePanel = particlePanel;
   }
 
+  public void setAnimationPanel(AnimationPanel animationPanel) {
+    this.animationPanel = animationPanel;
+  }
+
+  /** @return animation dock panel for inspector shortcuts */
+  public AnimationPanel animationPanel() {
+    return animationPanel;
+  }
+
   /** @return particle system dock panel for inspector shortcuts */
   public ParticlePanel particlePanel() {
     return particlePanel;
@@ -191,5 +206,22 @@ public final class EditorSession {
   /** @return particle world during play mode, or null when stopped */
   public ParticleWorld playParticleWorld() {
     return playParticleWorld;
+  }
+
+  /** @return UI editor canvas selection and layout state */
+  public UiEditorState uiEditorState() {
+    return uiEditorState;
+  }
+
+  /**
+   * @param materialProgramCache material programs for inspector invalidation; may be null
+   */
+  public void setMaterialProgramCache(MaterialProgramCache materialProgramCache) {
+    this.materialProgramCache = materialProgramCache;
+  }
+
+  /** @return material program cache when a project is loaded */
+  public MaterialProgramCache materialProgramCache() {
+    return materialProgramCache;
   }
 }

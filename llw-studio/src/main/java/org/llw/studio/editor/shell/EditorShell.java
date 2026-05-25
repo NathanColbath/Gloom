@@ -129,6 +129,7 @@ public final class EditorShell {
   public void stopPlayMode() {
     context.setPlayPrepareStatus(null);
     if (context.isPlaying()) {
+      // Map play selection back to edit scene via stable scene-object id before tearing down play world.
       EntityId selected = selection.selected();
       int selectedSceneId = -1;
       if (!selected.isNone() && context.playScene() != null) {
@@ -178,6 +179,7 @@ public final class EditorShell {
    * @param frameDeltaSeconds wall-clock seconds since the previous frame; when {@code <= 0}, uses ImGui delta
    */
   public void render(float frameDeltaSeconds) {
+    // Script watcher / play-prepare callbacks enqueue here before any panel draws.
     mainThreadQueue.flush();
 
     float deltaTime = frameDeltaSeconds > 0f ? frameDeltaSeconds : ImGui.getIO().getDeltaTime();
@@ -187,6 +189,7 @@ public final class EditorShell {
     if (deltaTime > 0.1f) {
       deltaTime = 0.1f;
     }
+    // Exactly one preview/sim path per frame: play, animation preview, particle editor, or edit particles.
     if (context.isPlaying() && context.playScene() != null) {
       PlayUiInputBridge.setWantCaptureKeyboard(ImGui.getIO().getWantCaptureKeyboard());
       playModeRunner.update(context.playScene(), deltaTime, session.isGameViewFocused());
@@ -262,6 +265,7 @@ public final class EditorShell {
     EntityId selected = selection.selected();
     int selectedSceneId = selected.isNone() ? -1 : SceneObjectIds.get(context.editScene().world(), selected);
     context.setPlayPrepareStatus("Preparing scripts...");
+    // Heavy script bundle + scene clone off the UI thread; activation must run on main thread.
     playPrepareExecutor.submit(() -> {
       PlayModeRunner.PlayPrepareResult prepared = playModeRunner.prepareScene(
               context.editScene(),

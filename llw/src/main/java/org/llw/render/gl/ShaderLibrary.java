@@ -3,6 +3,7 @@ package org.llw.render.gl;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.llw.render.backend.GpuShaderLibrary;
 import org.llw.render.graphics.ShaderProgram;
 import org.llw.util.log.Log;
 import org.llw.util.log.Loggers;
@@ -14,11 +15,12 @@ import org.llw.util.log.Logger;
  * <p>{@link #loadDefaults()} registers the built-in sprite, shape, and text shaders from
  * {@link DefaultShaders} in-memory sources.
  */
-public final class ShaderLibrary {
+public final class ShaderLibrary implements GpuShaderLibrary {
     private static final Logger log = Log.get(Loggers.GL);
 
     private final Map<String, ShaderProgram> programs = new HashMap<>();
     private ShaderProgram spriteShader;
+    private ShaderProgram litSpriteShader;
     private ShaderProgram shapeShader;
     private ShaderProgram textShader;
 
@@ -30,6 +32,9 @@ public final class ShaderLibrary {
         spriteShader = loadFromSources("sprite",
                 DefaultShaders.SPRITE_VERTEX,
                 DefaultShaders.SPRITE_FRAGMENT);
+        litSpriteShader = loadFromSources("lit_sprite",
+                DefaultShaders.LIT_SPRITE_VERTEX,
+                DefaultShaders.LIT_SPRITE_FRAGMENT);
         shapeShader = loadFromSources("shape",
                 DefaultShaders.SHAPE_VERTEX,
                 DefaultShaders.SHAPE_FRAGMENT);
@@ -45,6 +50,11 @@ public final class ShaderLibrary {
      */
     public ShaderProgram spriteShader() {
         return spriteShader;
+    }
+
+    /** @return built-in normal-map 2D lit sprite shader */
+    public ShaderProgram litSpriteShader() {
+        return litSpriteShader;
     }
 
     /**

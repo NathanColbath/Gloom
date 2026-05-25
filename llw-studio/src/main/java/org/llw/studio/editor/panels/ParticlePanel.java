@@ -167,6 +167,9 @@ public final class ParticlePanel implements EditorPanel, AutoCloseable {
             }
             return;
         }
+        if (selected != null) {
+            return;
+        }
         EntityId entity = selection.selected();
         if (entity.isNone()) {
             return;
@@ -199,6 +202,7 @@ public final class ParticlePanel implements EditorPanel, AutoCloseable {
         if (particleState.playing()) {
             particleState.advancePreview(delta, particleWorld, assets, centerX, centerY);
         } else {
+            // Paused: keep emitter at preview center without simulating so layout matches the image.
             EmitterState preview = particleWorld.previewEmitter(particleState.activeGuid());
             if (preview != null) {
                 preview.worldX = centerX;

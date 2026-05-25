@@ -30,7 +30,7 @@ public final class UndoStack {
     public void execute(EditorCommand command) {
         command.execute();
         undo.push(command);
-        redo.clear();
+        redo.clear(); // New edit branch invalidates redo history.
     }
 
     /**
@@ -83,6 +83,7 @@ public final class UndoStack {
      * @param newScene unused; reserved for future scene rebinding
      */
     public void reset(Scene newScene) {
+        // Undo history is tied to the loaded edit scene; discard on scene load/switch.
         undo.clear();
         redo.clear();
     }

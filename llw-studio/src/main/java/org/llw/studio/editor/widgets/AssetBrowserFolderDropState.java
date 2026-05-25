@@ -36,6 +36,7 @@ public final class AssetBrowserFolderDropState {
             AssetDatabase assets,
             Runnable onAssetsChanged
     ) {
+        // Replay registered screen rects as invisible buttons so ImGui hit-tests match drawn grid cells.
         for (int i = 0; i < zones.size(); i++) {
             FolderDropZone zone = zones.get(i);
             ImGui.setCursorScreenPos(zone.x1, zone.y1);
